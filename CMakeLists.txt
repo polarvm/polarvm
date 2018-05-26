@@ -7,6 +7,7 @@ if(POLICY CMP0068)
 endif()
 # Add path for custom CMake modules.
 list(APPEND CMAKE_MODULE_PATH
+   "${CMAKE_CURRENT_SOURCE_DIR}/cmake"
    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
 # Make a job pool for things that can't yet be distributed
@@ -96,7 +97,24 @@ option(POLAR_STDLIB_ASSERTIONS
 # POLAR_VERSION is deliberately /not/ cached so that an existing build directory
 # can be reused when a new version of Swift comes out (assuming the user hasn't
 # manually set it as part of their own CMake configuration).
-set(POLAR_VERSION "0.0.1")
+
+if(NOT DEFINED POLAR_VERSION_MAJOR)
+   set(POLAR_VERSION_MAJOR 6)
+endif()
+if(NOT DEFINED POLAR_VERSION_MINOR)
+   set(POLAR_VERSION_MINOR 0)
+endif()
+if(NOT DEFINED POLAR_VERSION_PATCH)
+   set(POLAR_VERSION_PATCH 1)
+endif()
+if(NOT DEFINED POLAR_VERSION_SUFFIX)
+   set(POLAR_VERSION_SUFFIX "")
+endif()
+
+set(POLAR_VERSION "${POLAR_VERSION_MAJOR}.${POLAR_VERSION_MINOR}.${POLAR_VERSION_PATCH}")
+set(POLAR_PACKAGE_NAME polarPHP)
+set(POLAR_PACKAGE_STRING "${POLAR_PACKAGE_NAME} ${POLAR_PACKAGE_VERSION}")
+set(POLAR_PACKAGE_BUGREPORT "http://polarphp.org/bugs/")
 
 set(POLAR_VENDOR "" CACHE STRING
    "The vendor name of the polarphp virtual machine")
@@ -148,6 +166,12 @@ endforeach()
 # End of user-configurable options.
 #
 
+# All options referred to from HandleLLVMOptions have to be specified
+# BEFORE this include, otherwise options will not be correctly set on
+# first cmake run
+include(config-ix)
+include(HandlePolarOptions)
+
 polar_precondition(CMAKE_SYSTEM_NAME)
 
 #
@@ -176,7 +200,7 @@ include(PolarSetIfArchBitness)
 include(PolarSource)
 include(AddPolar)
 include(PolarList)
-include(PolarOptionSetup)
+include(HandlePolarOptions)
 
 # Configure polarphp include, install, build components.
 polar_configure_components()
@@ -241,6 +265,14 @@ endif()
 #
 # Find optional dependencies.
 #
+
+# Configure the three polarPHP configuration header files.
+configure_file(
+   ${POLAR_MAIN_INCLUDE_DIR}/polar/global/Config.h.cmake
+   ${POLAR_INCLUDE_DIR}/polar/global/Config.h)
+configure_file(
+   ${POLAR_MAIN_INCLUDE_DIR}/polar/global/PolarConfig.h.cmake
+   ${POLAR_INCLUDE_DIR}/polar/global/PolarConfig.h)
 
 if(POLAR_INCLUDE_TESTS)
    add_subdirectory(unittests)
