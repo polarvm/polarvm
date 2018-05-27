@@ -67,7 +67,10 @@ option(POLAR_INCLUDE_DOCS
    TRUE)
 
 set(POLAR_TARGET_ARCH "host"
-  CACHE STRING "Set target to use for polarPHP JIT or use \"host\" for automatic detection.")
+   CACHE STRING "Set target to use for polarPHP JIT or use \"host\" for automatic detection.")
+
+option(BUILD_SHARED_LIBS
+   "Build all libraries as shared libraries instead of static" OFF)
 
 #
 # Miscellaneous User-configurable options.
@@ -102,7 +105,7 @@ option(POLAR_STDLIB_ASSERTIONS
 # manually set it as part of their own CMake configuration).
 
 if(NOT DEFINED POLAR_VERSION_MAJOR)
-   set(POLAR_VERSION_MAJOR 6)
+   set(POLAR_VERSION_MAJOR 0)
 endif()
 if(NOT DEFINED POLAR_VERSION_MINOR)
    set(POLAR_VERSION_MINOR 0)
@@ -117,7 +120,7 @@ endif()
 set(POLAR_PACKAGE_VERSION "${POLAR_VERSION_MAJOR}.${POLAR_VERSION_MINOR}.${POLAR_VERSION_PATCH}")
 set(POLAR_PACKAGE_NAME polarPHP)
 set(POLAR_PACKAGE_STRING "${POLAR_PACKAGE_NAME} ${POLAR_PACKAGE_VERSION}")
-set(POLAR_PACKAGE_BUGREPORT "http://polarphp.org/bugs/")
+set(POLAR_BUG_REPORT_URL "http://polarphp.org/bugs/")
 
 set(POLAR_VENDOR "" CACHE STRING
    "The vendor name of the polarphp virtual machine")
@@ -131,14 +134,14 @@ set(POLAR_ENABLE_LLD_LINKER FALSE CACHE BOOL
 set(POLAR_ENABLE_GOLD_LINKER FALSE CACHE BOOL
    "Enable using the gold linker when available")
 
-set(POLAR_TOOLS_ENABLE_LTO OFF CACHE STRING "Build Swift tools with LTO. One
+set(POLAR_TOOLS_ENABLE_LTO OFF CACHE STRING "Build PolarPHP tools with LTO. One
    must specify the form of LTO by setting this to one of: 'full', 'thin'. This
    option only affects the tools that run on the host (the compiler), and has
    no effect on the target libraries (the standard library and the runtime).")
 
 # The following only works with the Ninja generator in CMake >= 3.0.
 set(POLAR_PARALLEL_LINK_JOBS "" CACHE STRING
-   "Define the maximum number of linker jobs for swift.")
+   "Define the maximum number of linker jobs for polarPHP.")
 
 option(POLAR_FORCE_OPTIMIZED_TYPECHECKER "Override the optimization setting of
    the type checker so that it always compiles with optimization. This eases
@@ -182,6 +185,12 @@ foreach(_platform FREEBSD;LINUX;WINDOWS;HAIKU)
    set(POLAR_${_platform}_ICU_I18N_INCLUDE "" CACHE STRING
       "Path to a directory containing headers icui18n for ${_platform}")
 endforeach()
+
+if (BUILD_SHARED_LIBS)
+   set(POLAR_SHARED ON)
+else()
+   set(POLAR_STATIC ON)
+endif()
 
 #
 # User-configurable Darwin-specific options.
@@ -257,14 +266,14 @@ if(POLAR_PARALLEL_LINK_JOBS)
       message(WARNING "Job pooling is only available with Ninja generators.")
    else()
       set_property(GLOBAL APPEND PROPERTY JOB_POOLS polar_link_job_pool=${POLAR_PARALLEL_LINK_JOBS})
-      set(CMAKE_JOB_POOL_LINK swift_link_job_pool)
+      set(CMAKE_JOB_POOL_LINK polar_link_job_pool)
    endif()
 endif()
 
 #
 # Find required dependencies.
 #
-if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND "${SWIFT_PATH_TO_LIBICU_BUILD}" STREQUAL "")
+if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND "${POLAR_PATH_TO_LIBICU_BUILD}" STREQUAL "")
    find_package(ICU REQUIRED COMPONENTS uc i18n)
 endif()
 
@@ -275,10 +284,10 @@ endif()
 # Configure the three polarPHP configuration header files.
 configure_file(
    ${POLAR_MAIN_INCLUDE_DIR}/polar/global/Config.h.cmake
-   ${POLAR_INCLUDE_DIR}/global/Config.h)
+   ${POLAR_INCLUDE_DIR}/polar/global/Config.h)
 configure_file(
    ${POLAR_MAIN_INCLUDE_DIR}/polar/global/PolarConfig.h.cmake
-   ${POLAR_INCLUDE_DIR}/global/PolarConfig.h)
+   ${POLAR_INCLUDE_DIR}/polar/global/PolarConfig.h)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND POLAR_INCLUDE_TESTS)
    set(PPOLAR_FOUND_NATIVE_GTEST OFF)

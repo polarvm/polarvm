@@ -9,14 +9,14 @@
 // 
 // Created by softboy on 2018/05/27.
 
-#ifndef POLAR_GLOABL_CONFIG_H
-#define POLAR_GLOABL_CONFIG_H
+#ifndef POLAR_GLOABL_POLAR_CONFIG_H
+#define POLAR_GLOABL_POLAR_CONFIG_H
 
 /* Host triple POLAR will be executed on */
 #cmakedefine POLAR_HOST_TRIPLE "${POLAR_HOST_TRIPLE}"
 
 /* POLAR architecture name for the native architecture, if available */
-#cmakedefine POLAR_NATIVE_ARCH ${POLAR_NATIVE_ARCH}
+#cmakedefine POLAR_NATIVE_ARCH "${POLAR_NATIVE_ARCH}"
 
 /* Define if this is Unixish platform */
 #cmakedefine POLAR_ON_UNIX ${POLAR_ON_UNIX}
@@ -36,4 +36,4 @@
 /* polarphp version string */
 #define POLAR_VERSION_STRING "${POLAR_PACKAGE_VERSION}"
 
-#endif
+#endif // POLAR_GLOABL_POLAR_CONFIG_H
