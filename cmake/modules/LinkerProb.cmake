@@ -1,6 +1,6 @@
 if(NOT WIN32 AND NOT APPLE)
    # Detect what linker we have here
-   if(POLAR_USE_LINKER )
+   if(POLAR_USE_LINKER)
       set(command ${CMAKE_C_COMPILER} -fuse-ld=${POLAR_USE_LINKER} -Wl,--version)
    else()
       set(command ${CMAKE_C_COMPILER} -Wl,--version)

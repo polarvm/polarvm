@@ -202,6 +202,7 @@ include(PolarSource)
 include(AddPolar)
 include(PolarList)
 include(HandlePolarOptions)
+include(AddPolarUnittests)
 
 # Configure polarphp include, install, build components.
 polar_configure_components()
@@ -275,7 +276,15 @@ configure_file(
    ${POLAR_MAIN_INCLUDE_DIR}/polar/global/PolarConfig.h.cmake
    ${POLAR_INCLUDE_DIR}/polar/global/PolarConfig.h)
 
-if(POLAR_INCLUDE_TESTS)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND POLAR_INCLUDE_TESTS)
+   set(PPOLAR_FOUND_NATIVE_GTEST OFF)
+   find_package(GTest)
+   if(GTEST_FOUND)
+      set(POLAR_FOUND_NATIVE_GTEST ON)
+   endif()
+   if(NOT POLAR_FOUND_NATIVE_GTEST)
+      add_subdirectory(thirdparty/unittest)
+   endif()
    add_subdirectory(unittests)
 endif()
 if(POLAR_INCLUDE_DOCS)
