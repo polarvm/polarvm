@@ -10,3 +10,7 @@
 7. 内置包管理器
 
 ## 快速安装
+
+## 贡献代码
+
+欢迎大家贡献代码，怎么提交`patches`和贡献的流程请您阅读 [CONTRIBUTING.md](CONTRIBUTING.md)

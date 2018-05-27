@@ -169,7 +169,8 @@ endforeach()
 # All options referred to from HandleLLVMOptions have to be specified
 # BEFORE this include, otherwise options will not be correctly set on
 # first cmake run
-include(config-ix)
+include(LinkerProb)
+include(Config-ix)
 include(HandlePolarOptions)
 
 polar_precondition(CMAKE_SYSTEM_NAME)
