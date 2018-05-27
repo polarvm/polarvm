@@ -323,5 +323,6 @@ if(XCODE)
       SOURCES ${POLAR_TOPLEVEL_HEADERS})
 endif()
 
+add_subdirectory(include)
 add_subdirectory(src)
 

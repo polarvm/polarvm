@@ -1,0 +1,8 @@
+polar_collect_files(
+   TYPE_HEADER
+   RELATIVE
+   DIR ${CMAKE_CURRENT_SOURCE_DIR}
+   OUTPUT_VAR POLAR_HEADER_SOURCES)
+
+add_custom_target(headers ALL
+   SOURCES ${POLAR_HEADER_SOURCES})
