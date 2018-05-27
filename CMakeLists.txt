@@ -275,10 +275,10 @@ endif()
 # Configure the three polarPHP configuration header files.
 configure_file(
    ${POLAR_MAIN_INCLUDE_DIR}/polar/global/Config.h.cmake
-   ${POLAR_INCLUDE_DIR}/polar/global/Config.h)
+   ${POLAR_INCLUDE_DIR}/global/Config.h)
 configure_file(
    ${POLAR_MAIN_INCLUDE_DIR}/polar/global/PolarConfig.h.cmake
-   ${POLAR_INCLUDE_DIR}/polar/global/PolarConfig.h)
+   ${POLAR_INCLUDE_DIR}/global/PolarConfig.h)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND POLAR_INCLUDE_TESTS)
    set(PPOLAR_FOUND_NATIVE_GTEST OFF)

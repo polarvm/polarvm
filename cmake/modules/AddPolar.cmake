@@ -292,7 +292,7 @@ function(polar_add_library_internal name)
       # FIXME: Add name_static to anywhere in TARGET ${name}'s PROPERTY.
       set(ARG_STATIC)
    endif()
-   
+
    if(ARG_MODULE)
       add_library(${name} MODULE ${ALL_FILES})
       polar_setup_rpath(${name})

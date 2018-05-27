@@ -25,11 +25,14 @@ elseif(CMAKE_HOST_UNIX)
    endif()
 endif(MSVC OR MINGW)
 
+polar_collect_files(
+   TYPE_SOURCE
+   RELATIVE
+   DIR ${CMAKE_CURRENT_SOURCE_DIR}
+   OUTPUT_VAR POLAR_UTILS_SOURCES)
+
 polar_add_library(PolarUtils
-   CommandLine.cpp
-   SourceLocation.cpp
-   SourceMgr.cpp
-   Unicode.cpp
+   ${POLAR_UTILS_SOURCES}
    ADDITIONAL_HEADER_DIRS
    Unix
    Windows
