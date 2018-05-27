@@ -66,6 +66,9 @@ option(POLAR_INCLUDE_DOCS
    "Create targets for building docs."
    TRUE)
 
+set(POLAR_TARGET_ARCH "host"
+  CACHE STRING "Set target to use for polarPHP JIT or use \"host\" for automatic detection.")
+
 #
 # Miscellaneous User-configurable options.
 #
@@ -142,6 +145,30 @@ option(POLAR_FORCE_OPTIMIZED_TYPECHECKER "Override the optimization setting of
    debugging after type checking occurs by speeding up type checking" FALSE)
 
 #
+# Assume a new enough ar to generate the index at construction time. This avoids
+# having to invoke ranlib as a secondary command.
+#
+set(CMAKE_C_ARCHIVE_CREATE "<CMAKE_AR> crs <TARGET> <LINK_FLAGS> <OBJECTS>")
+set(CMAKE_C_ARCHIVE_APPEND "<CMAKE_AR> qs <TARGET> <LINK_FLAGS> <OBJECTS>")
+set(CMAKE_C_ARCHIVE_FINISH "")
+
+set(CMAKE_CXX_ARCHIVE_CREATE "<CMAKE_AR> crs <TARGET> <LINK_FLAGS> <OBJECTS>")
+set(CMAKE_CXX_ARCHIVE_APPEND "<CMAKE_AR> qs <TARGET> <LINK_FLAGS> <OBJECTS>")
+set(CMAKE_CXX_ARCHIVE_FINISH "")
+
+set(POLAR_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+set(POLAR_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}")
+set(POLAR_CMAKE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
+set(POLAR_MAIN_INCLUDE_DIR "${POLAR_SOURCE_DIR}/include")
+set(POLAR_INCLUDE_DIR "${CMAKE_CURRENT_BINARY_DIR}/include")
+
+set(POLAR_RUNTIME_OUTPUT_INTDIR "${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR}/bin")
+set(POLAR_LIBRARY_OUTPUT_INTDIR "${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR}/lib")
+if("${POLAR_NATIVE_POLAR_TOOLS_PATH}" STREQUAL "")
+   set(POLAR_NATIVE_POLAR_TOOLS_PATH "${POLAR_RUNTIME_OUTPUT_INTDIR}")
+endif()
+
+#
 # User-configurable ICU specific options for Android, FreeBSD, Linux and Haiku.
 #
 
@@ -166,26 +193,15 @@ endforeach()
 # End of user-configurable options.
 #
 
-# All options referred to from HandleLLVMOptions have to be specified
+# All options referred to from HandlePolarOptions have to be specified
 # BEFORE this include, otherwise options will not be correctly set on
 # first cmake run
-include(LinkerProb)
-include(Config-ix)
 include(HandlePolarOptions)
 
+include(LinkerProb)
+include(Config-ix)
+
 polar_precondition(CMAKE_SYSTEM_NAME)
-
-#
-# Assume a new enough ar to generate the index at construction time. This avoids
-# having to invoke ranlib as a secondary command.
-#
-set(CMAKE_C_ARCHIVE_CREATE "<CMAKE_AR> crs <TARGET> <LINK_FLAGS> <OBJECTS>")
-set(CMAKE_C_ARCHIVE_APPEND "<CMAKE_AR> qs <TARGET> <LINK_FLAGS> <OBJECTS>")
-set(CMAKE_C_ARCHIVE_FINISH "")
-
-set(CMAKE_CXX_ARCHIVE_CREATE "<CMAKE_AR> crs <TARGET> <LINK_FLAGS> <OBJECTS>")
-set(CMAKE_CXX_ARCHIVE_APPEND "<CMAKE_AR> qs <TARGET> <LINK_FLAGS> <OBJECTS>")
-set(CMAKE_CXX_ARCHIVE_FINISH "")
 
 #
 # Include CMake modules
@@ -206,18 +222,6 @@ include(AddPolarUnittests)
 
 # Configure polarphp include, install, build components.
 polar_configure_components()
-
-set(POLAR_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
-set(POLAR_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}")
-set(POLAR_CMAKE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
-set(POLAR_MAIN_INCLUDE_DIR "${POLAR_SOURCE_DIR}/include")
-set(POLAR_INCLUDE_DIR "${CMAKE_CURRENT_BINARY_DIR}/include")
-
-set(POLAR_RUNTIME_OUTPUT_INTDIR "${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR}/bin")
-set(POLAR_LIBRARY_OUTPUT_INTDIR "${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR}/lib")
-if("${POLAR_NATIVE_POLAR_TOOLS_PATH}" STREQUAL "")
-   set(POLAR_NATIVE_POLAR_TOOLS_PATH "${POLAR_RUNTIME_OUTPUT_INTDIR}")
-endif()
 
 # This setting causes all CMakeLists.txt to automatically have
 # ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CURRENT_SOURCE_DIR} as an

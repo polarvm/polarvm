@@ -12,6 +12,18 @@
 #ifndef POLAR_GLOABL_CONFIG_H
 #define POLAR_GLOABL_CONFIG_H
 
+/* Host triple POLAR will be executed on */
+#cmakedefine POLAR_HOST_TRIPLE "${POLAR_HOST_TRIPLE}"
+
+/* POLAR architecture name for the native architecture, if available */
+#cmakedefine POLAR_NATIVE_ARCH ${POLAR_NATIVE_ARCH}
+
+/* Define if this is Unixish platform */
+#cmakedefine POLAR_ON_UNIX ${POLAR_ON_UNIX}
+
+/* Define if this is Win32ish platform */
+#cmakedefine POLAR_ON_WIN32 ${POLAR_ON_WIN32}
+
 /* Major version of the polarphp API */
 #define POLAR_VERSION_MAJOR ${POLAR_VERSION_MAJOR}
 
