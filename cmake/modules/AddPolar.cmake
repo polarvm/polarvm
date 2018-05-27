@@ -292,15 +292,15 @@ function(polar_add_library_internal name)
       # FIXME: Add name_static to anywhere in TARGET ${name}'s PROPERTY.
       set(ARG_STATIC)
    endif()
-
+   # is this really good ?
    if(ARG_MODULE)
-      add_library(${name} MODULE ${ALL_FILES})
+      add_library(${name} MODULE ${ALL_FILES} ${POLAR_HEADER_SOURCES})
       polar_setup_rpath(${name})
    elseif(ARG_SHARED)
-      add_library(${name} SHARED ${ALL_FILES})
+      add_library(${name} SHARED ${ALL_FILES} ${POLAR_HEADER_SOURCES})
       polar_setup_rpath(${name})
    else()
-      add_library(${name} STATIC ${ALL_FILES})
+      add_library(${name} STATIC ${ALL_FILES} ${POLAR_HEADER_SOURCES})
    endif()
    
    polar_set_output_directory(${name} BINARY_DIR ${POLAR_RUNTIME_OUTPUT_INTDIR} LIBRARY_DIR ${POLAR_LIBRARY_OUTPUT_INTDIR})

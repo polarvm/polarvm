@@ -248,6 +248,8 @@ include_directories(BEFORE
    ${POLAR_INCLUDE_DIR}
    )
 
+message(${POLAR_INCLUDE_DIR})
+
 # Xcode: use libc++ and c++11 using proper build settings.
 if(XCODE)
    polar_common_xcode_cxx_config()
@@ -288,6 +290,9 @@ configure_file(
 configure_file(
    ${POLAR_MAIN_INCLUDE_DIR}/polar/global/PolarConfig.h.cmake
    ${POLAR_INCLUDE_DIR}/polar/global/PolarConfig.h)
+configure_file(
+  ${POLAR_MAIN_INCLUDE_DIR}/polar/global/DataTypes.h.cmake
+  ${POLAR_INCLUDE_DIR}/polar/global/DataTypes.h)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND POLAR_INCLUDE_TESTS)
    set(PPOLAR_FOUND_NATIVE_GTEST OFF)
