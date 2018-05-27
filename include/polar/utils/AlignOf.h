@@ -12,6 +12,8 @@
 #ifndef POLAR_UTILS_ALIGN_OF_H
 #define POLAR_UTILS_ALIGN_OF_H
 
+#include "polar/global/Global.h"
+
 namespace polar {
 namespace utils {
 
