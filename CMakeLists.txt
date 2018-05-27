@@ -214,7 +214,7 @@ polar_print_versions()
 
 include(PolarComponents)
 include(PolarSetIfArchBitness)
-include(PolarSource)
+include(PolarProcessSources)
 include(AddPolar)
 include(PolarList)
 include(HandlePolarOptions)
@@ -314,4 +314,5 @@ if(XCODE)
       SOURCES ${POLAR_TOPLEVEL_HEADERS})
 endif()
 
+add_subdirectory(src)
 

@@ -303,8 +303,6 @@ function(polar_add_library_internal name)
       add_library(${name} STATIC ${ALL_FILES})
    endif()
    
-   polar_setup_dependency_debugging(${name} ${POLAR_COMMON_DEPENDS})
-   
    polar_set_output_directory(${name} BINARY_DIR ${POLAR_RUNTIME_OUTPUT_INTDIR} LIBRARY_DIR ${POLAR_LIBRARY_OUTPUT_INTDIR})
    # $<TARGET_OBJECTS> doesn't require compile flags.
    if(NOT obj_name)
@@ -616,3 +614,215 @@ macro(polar_add_executable name)
       target_link_libraries(${name} PRIVATE ${POLAR_PTHREAD_LIB})
    endif()
 endmacro(polar_add_executable name)
+
+function(polar_install_library_symlink name dest type)
+   cmake_parse_arguments(ARG "ALWAYS_GENERATE" "COMPONENT" "" ${ARGN})
+   foreach(path ${CMAKE_MODULE_PATH})
+      if(EXISTS ${path}/POLARInstallSymlink.cmake)
+         set(INSTALL_SYMLINK ${path}/POLARInstallSymlink.cmake)
+         break()
+      endif()
+   endforeach()
+   
+   set(component ${ARG_COMPONENT})
+   if(NOT component)
+      set(component ${name})
+   endif()
+   
+   set(full_name ${CMAKE_${type}_LIBRARY_PREFIX}${name}${CMAKE_${type}_LIBRARY_SUFFIX})
+   set(full_dest ${CMAKE_${type}_LIBRARY_PREFIX}${dest}${CMAKE_${type}_LIBRARY_SUFFIX})
+   
+   set(output_dir lib${POLAR_LIBDIR_SUFFIX})
+   if(WIN32 AND "${type}" STREQUAL "SHARED")
+      set(output_dir bin)
+   endif()
+   
+   install(SCRIPT ${INSTALL_SYMLINK}
+      CODE "install_symlink(${full_name} ${full_dest} ${output_dir})"
+      COMPONENT ${component})
+   
+   if (NOT CMAKE_CONFIGURATION_TYPES AND NOT ARG_ALWAYS_GENERATE)
+      add_POLAR_install_targets(install-${name}
+         DEPENDS ${name} ${dest} install-${dest}
+         COMPONENT ${name})
+   endif()
+endfunction()
+
+function(polar_install_symlink name dest)
+   cmake_parse_arguments(ARG "ALWAYS_GENERATE" "COMPONENT" "" ${ARGN})
+   foreach(path ${CMAKE_MODULE_PATH})
+      if(EXISTS ${path}/PolarInstallSymlink.cmake)
+         set(INSTALL_SYMLINK ${path}/PolarInstallSymlink.cmake)
+         break()
+      endif()
+   endforeach()
+   
+   if(ARG_COMPONENT)
+      set(component ${ARG_COMPONENT})
+   else()
+      if(ARG_ALWAYS_GENERATE)
+         set(component ${dest})
+      else()
+         set(component ${name})
+      endif()
+   endif()
+   
+   set(full_name ${name}${CMAKE_EXECUTABLE_SUFFIX})
+   set(full_dest ${dest}${CMAKE_EXECUTABLE_SUFFIX})
+   
+   install(SCRIPT ${INSTALL_SYMLINK}
+      CODE "polar_install_symlink(${full_name} ${full_dest} ${POLAR_TOOLS_INSTALL_DIR})"
+      COMPONENT ${component})
+   
+   if (NOT CMAKE_CONFIGURATION_TYPES AND NOT ARG_ALWAYS_GENERATE)
+      polar_add_install_targets(install-${name}
+         DEPENDS ${name} ${dest} install-${dest}
+         COMPONENT ${name})
+   endif()
+endfunction()
+
+function(polar_add_tool_symlink link_name target)
+   cmake_parse_arguments(ARG "ALWAYS_GENERATE" "OUTPUT_DIR" "" ${ARGN})
+   set(dest_binary "$<TARGET_FILE:${target}>")
+   
+   # This got a bit gross... For multi-configuration generators the target
+   # properties return the resolved value of the string, not the build system
+   # expression. To reconstruct the platform-agnostic path we have to do some
+   # magic. First we grab one of the types, and a type-specific path. Then from
+   # the type-specific path we find the last occurrence of the type in the path,
+   # and replace it with CMAKE_CFG_INTDIR. This allows the build step to be type
+   # agnostic again.
+   if(NOT ARG_OUTPUT_DIR)
+      # If you're not overriding the OUTPUT_DIR, we can make the link relative in
+      # the same directory.
+      if(UNIX)
+         set(dest_binary "$<TARGET_FILE_NAME:${target}>")
+      endif()
+      if(CMAKE_CONFIGURATION_TYPES)
+         list(GET CMAKE_CONFIGURATION_TYPES 0 first_type)
+         string(TOUPPER ${first_type} first_type_upper)
+         set(first_type_suffix _${first_type_upper})
+      endif()
+      get_target_property(target_type ${target} TYPE)
+      if(${target_type} STREQUAL "STATIC_LIBRARY")
+         get_target_property(ARG_OUTPUT_DIR ${target} ARCHIVE_OUTPUT_DIRECTORY${first_type_suffix})
+      elseif(UNIX AND ${target_type} STREQUAL "SHARED_LIBRARY")
+         get_target_property(ARG_OUTPUT_DIR ${target} LIBRARY_OUTPUT_DIRECTORY${first_type_suffix})
+      else()
+         get_target_property(ARG_OUTPUT_DIR ${target} RUNTIME_OUTPUT_DIRECTORY${first_type_suffix})
+      endif()
+      if(CMAKE_CONFIGURATION_TYPES)
+         string(FIND "${ARG_OUTPUT_DIR}" "/${first_type}/" type_start REVERSE)
+         string(SUBSTRING "${ARG_OUTPUT_DIR}" 0 ${type_start} path_prefix)
+         string(SUBSTRING "${ARG_OUTPUT_DIR}" ${type_start} -1 path_suffix)
+         string(REPLACE "/${first_type}/" "/${CMAKE_CFG_INTDIR}/"
+            path_suffix ${path_suffix})
+         set(ARG_OUTPUT_DIR ${path_prefix}${path_suffix})
+      endif()
+   endif()
+   
+   if(UNIX)
+      set(POLAR_LINK_OR_COPY create_symlink)
+   else()
+      set(POLAR_LINK_OR_COPY copy)
+   endif()
+   
+   set(output_path "${ARG_OUTPUT_DIR}/${link_name}${CMAKE_EXECUTABLE_SUFFIX}")
+   
+   set(target_name ${link_name})
+   if(TARGET ${link_name})
+      set(target_name ${link_name}-link)
+   endif()
+   
+   
+   if(ARG_ALWAYS_GENERATE)
+      set_property(DIRECTORY APPEND PROPERTY
+         ADDITIONAL_MAKE_CLEAN_FILES ${dest_binary})
+      add_custom_command(TARGET ${target} POST_BUILD
+         COMMAND ${CMAKE_COMMAND} -E ${POLAR_LINK_OR_COPY} "${dest_binary}" "${output_path}")
+   else()
+      add_custom_command(OUTPUT ${output_path}
+         COMMAND ${CMAKE_COMMAND} -E ${POLAR_LINK_OR_COPY} "${dest_binary}" "${output_path}"
+         DEPENDS ${target})
+      add_custom_target(${target_name} ALL DEPENDS ${target} ${output_path})
+      set_target_properties(${target_name} PROPERTIES FOLDER Tools)
+      
+      # Make sure both the link and target are toolchain tools
+      if (${link_name} IN_LIST POLAR_TOOLCHAIN_TOOLS AND ${target} IN_LIST POLAR_TOOLCHAIN_TOOLS)
+         set(TOOL_IS_TOOLCHAIN ON)
+      endif()
+      
+      if ((TOOL_IS_TOOLCHAIN OR NOT POLAR_INSTALL_TOOLCHAIN_ONLY) AND POLAR_BUILD_TOOLS)
+         polar_install_symlink(${link_name} ${target})
+      endif()
+   endif()
+endfunction()
+
+function(polar_externalize_debuginfo name)
+   if(NOT POLAR_EXTERNALIZE_DEBUGINFO)
+      return()
+   endif()
+   
+   if(NOT POLAR_EXTERNALIZE_DEBUGINFO_SKIP_STRIP)
+      if(APPLE)
+         set(strip_command COMMAND xcrun strip -Sxl $<TARGET_FILE:${name}>)
+      else()
+         set(strip_command COMMAND strip -gx $<TARGET_FILE:${name}>)
+      endif()
+   endif()
+   
+   if(APPLE)
+      if(CMAKE_CXX_FLAGS MATCHES "-flto"
+            OR CMAKE_CXX_FLAGS_${uppercase_CMAKE_BUILD_TYPE} MATCHES "-flto")
+         
+         set(lto_object ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${name}-lto.o)
+         set_property(TARGET ${name} APPEND_STRING PROPERTY
+            LINK_FLAGS " -Wl,-object_path_lto,${lto_object}")
+      endif()
+      add_custom_command(TARGET ${name} POST_BUILD
+         COMMAND xcrun dsymutil $<TARGET_FILE:${name}>
+         ${strip_command}
+         )
+   else()
+      add_custom_command(TARGET ${name} POST_BUILD
+         COMMAND objcopy --only-keep-debug $<TARGET_FILE:${name}> $<TARGET_FILE:${name}>.debug
+         ${strip_command} -R .gnu_debuglink
+         COMMAND objcopy --add-gnu-debuglink=$<TARGET_FILE:${name}>.debug $<TARGET_FILE:${name}>
+         )
+   endif()
+endfunction()
+
+function(polar_setup_rpath name)
+   if(CMAKE_INSTALL_RPATH)
+      return()
+   endif()
+   
+   if(POLAR_INSTALL_PREFIX AND NOT (POLAR_INSTALL_PREFIX STREQUAL CMAKE_INSTALL_PREFIX))
+      set(extra_libdir ${POLAR_LIBRARY_DIR})
+   elseif(POLAR_BUILD_LIBRARY_DIR)
+      set(extra_libdir ${POLAR_LIBRARY_DIR})
+   endif()
+   
+   if (APPLE)
+      set(_install_name_dir INSTALL_NAME_DIR "@rpath")
+      set(_install_rpath "@loader_path/../lib" ${extra_libdir})
+   elseif(UNIX)
+      set(_install_rpath "\$ORIGIN/../lib${POLAR_LIBDIR_SUFFIX}" ${extra_libdir})
+      if(${CMAKE_SYSTEM_NAME} MATCHES "(FreeBSD|DragonFly)")
+         set_property(TARGET ${name} APPEND_STRING PROPERTY
+            LINK_FLAGS " -Wl,-z,origin ")
+      elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" AND NOT POLAR_LINKER_IS_GOLD)
+         # $ORIGIN is not interpreted at link time by ld.bfd
+         set_property(TARGET ${name} APPEND_STRING PROPERTY
+            LINK_FLAGS " -Wl,-rpath-link,${POLAR_LIBRARY_OUTPUT_INTDIR} ")
+      endif()
+   else()
+      return()
+   endif()
+   
+   set_target_properties(${name} PROPERTIES
+      BUILD_WITH_INSTALL_RPATH On
+      INSTALL_RPATH "${_install_rpath}"
+      ${_install_name_dir})
+   
+endfunction()
