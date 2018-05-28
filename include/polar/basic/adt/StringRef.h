@@ -105,7 +105,8 @@ public:
       : m_data(Str.data()), m_length(Str.length())
    {}
    
-   static StringRef withNullAsEmpty(const char *data) {
+   static StringRef withNullAsEmpty(const char *data)
+   {
       return StringRef(data ? data : "");
    }
    
