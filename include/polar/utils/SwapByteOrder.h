@@ -21,9 +21,9 @@
 namespace polar {
 namespace utils {
 
-/// swap_byte_order_16 - This function returns a byte-swapped representation of
+/// swap_byte_order - This function returns a byte-swapped representation of
 /// the 16-bit argument.
-inline uint16_t swap_byte_order_16(uint16_t value)
+inline uint16_t swap_byte_order(uint16_t value)
 {
 #if defined(_MSC_VER) && !defined(_DEBUG)
    // The DLL version of the runtime lacks these functions (bug!?), but in a
@@ -36,9 +36,9 @@ inline uint16_t swap_byte_order_16(uint16_t value)
 #endif
 }
 
-/// swap_byte_order_32 - This function returns a byte-swapped representation of
+/// swap_byte_order - This function returns a byte-swapped representation of
 /// the 32-bit argument.
-inline uint32_t swap_byte_order_32(uint32_t value)
+inline uint32_t swap_byte_order(uint32_t value)
 {
 #if defined(__llvm__) || (POLAR_GNUC_PREREQ(4, 3, 0) && !defined(__ICC))
    return __builtin_bswap32(value);
@@ -53,17 +53,17 @@ inline uint32_t swap_byte_order_32(uint32_t value)
 #endif
 }
 
-/// swap_byte_order_64 - This function returns a byte-swapped representation of
+/// swap_byte_order - This function returns a byte-swapped representation of
 /// the 64-bit argument.
-inline uint64_t swap_byte_order_64(uint64_t value)
+inline uint64_t swap_byte_order(uint64_t value)
 {
 #if defined(__llvm__) || (POLAR_GNUC_PREREQ(4, 3, 0) && !defined(__ICC))
    return __builtin_bswap64(value);
 #elif defined(_MSC_VER) && !defined(_DEBUG)
    return _byteswap_uint64(value);
 #else
-   uint64_t hi = swap_byte_order_32(uint32_t(value));
-   uint32_t lo = swap_byte_order_32(uint32_t(value >> 32));
+   uint64_t hi = swap_byte_order(uint32_t(value));
+   uint32_t lo = swap_byte_order(uint32_t(value >> 32));
    return (hi << 32) | lo;
 #endif
 }
@@ -72,30 +72,30 @@ inline unsigned char  get_swapped_bytes(unsigned char value) { return value; }
 inline   signed char  get_swapped_bytes(signed char value) { return value; }
 inline          char  get_swapped_bytes(char value) { return value; }
 
-inline unsigned short get_swapped_bytes(unsigned short value) { return swap_byte_order_16(value); }
-inline   signed short get_swapped_bytes(  signed short value) { return swap_byte_order_16(value); }
+inline unsigned short get_swapped_bytes(unsigned short value) { return swap_byte_order(value); }
+inline   signed short get_swapped_bytes(  signed short value) { return swap_byte_order(value); }
 
-inline unsigned int   get_swapped_bytes(unsigned int   value) { return swap_byte_order_32(value); }
-inline   signed int   get_swapped_bytes(  signed int   value) { return swap_byte_order_32(value); }
+inline unsigned int   get_swapped_bytes(unsigned int   value) { return swap_byte_order(value); }
+inline   signed int   get_swapped_bytes(  signed int   value) { return swap_byte_order(value); }
 
 #if __LONG_MAX__ == __INT_MAX__
-inline unsigned long  get_swapped_bytes(unsigned long  value) { return swap_byte_order_32(value); }
-inline   signed long  get_swapped_bytes(  signed long  value) { return swap_byte_order_32(value); }
+inline unsigned long  get_swapped_bytes(unsigned long  value) { return swap_byte_order(value); }
+inline   signed long  get_swapped_bytes(  signed long  value) { return swap_byte_order(value); }
 #elif __LONG_MAX__ == __LONG_LONG_MAX__
-inline unsigned long  get_swapped_bytes(unsigned long  value) { return swap_byte_order_64(value); }
-inline   signed long  get_swapped_bytes(  signed long  value) { return swap_byte_order_64(value); }
+inline unsigned long  get_swapped_bytes(unsigned long  value) { return swap_byte_order(value); }
+inline   signed long  get_swapped_bytes(  signed long  value) { return swap_byte_order(value); }
 #else
 #error "Unknown long size!"
 #endif
 
 inline unsigned long long get_swapped_bytes(unsigned long long value)
 {
-   return swap_byte_order_64(value);
+   return swap_byte_order(value);
 }
 
 inline signed long long get_swapped_bytes(signed long long value)
 {
-   return swap_byte_order_64(value);
+   return swap_byte_order(value);
 }
 
 inline float get_swapped_bytes(float value)
@@ -105,7 +105,7 @@ inline float get_swapped_bytes(float value)
       float f;
    } in, out;
    in.f = value;
-   out.i = swap_byte_order_32(in.i);
+   out.i = swap_byte_order(in.i);
    return out.f;
 }
 
@@ -116,7 +116,7 @@ inline double get_swapped_bytes(double value)
       double d;
    } in, out;
    in.d = value;
-   out.i = swap_byte_order_64(in.i);
+   out.i = swap_byte_order(in.i);
    return out.d;
 }
 

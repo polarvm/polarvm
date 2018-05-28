@@ -353,7 +353,7 @@ constexpr inline bool is_shifted_int(int64_t value)
 ///
 /// This is written as two functions rather than as simply
 ///
-///   return N >= 64 || X < (UINT64_C(1) << N);
+///   return N >= 64 || value < (UINT64_C(1) << N);
 ///
 /// to keep MSVC from (incorrectly) warning on is_uint<64> that we're shifting
 /// left too many places.
@@ -442,62 +442,62 @@ inline bool is_int_n(unsigned size, int64_t value)
 
 /// Return true if the argument is a non-empty sequence of ones starting at the
 /// least significant bit with the remainder zero (32 bit version).
-/// Ex. is_mask_32(0x0000FFFFU) == true.
-constexpr inline bool is_mask_32(uint32_t value)
+/// Ex. is_mask(0x0000FFFFU) == true.
+constexpr inline bool is_mask(uint32_t value)
 {
    return value && ((value + 1) & value) == 0;
 }
 
 /// Return true if the argument is a non-empty sequence of ones starting at the
 /// least significant bit with the remainder zero (64 bit version).
-constexpr inline bool is_mask_64(uint64_t value)
+constexpr inline bool is_mask(uint64_t value)
 {
    return value && ((value + 1) & value) == 0;
 }
 
 /// Return true if the argument contains a non-empty sequence of ones with the
-/// remainder zero (32 bit version.) Ex. is_shifted_mask_32(0x0000FF00U) == true.
-constexpr inline bool is_shifted_mask_32(uint32_t value)
+/// remainder zero (32 bit version.) Ex. is_shifted_mask(0x0000FF00U) == true.
+constexpr inline bool is_shifted_mask(uint32_t value)
 {
-   return value && is_mask_32((value - 1) | value);
+   return value && is_mask((value - 1) | value);
 }
 
 /// Return true if the argument contains a non-empty sequence of ones with the
 /// remainder zero (64 bit version.)
-constexpr inline bool is_shifted_mask_64(uint64_t value)
+constexpr inline bool is_shifted_mask(uint64_t value)
 {
-   return value && is_mask_64((value - 1) | value);
+   return value && is_mask((value - 1) | value);
 }
 
 /// Return true if the argument is a power of two > 0.
-/// Ex. is_power_of_two_32(0x00100000U) == true (32 bit edition.)
-constexpr inline bool is_power_of_two_32(uint32_t value)
+/// Ex. is_power_of_two(0x00100000U) == true (32 bit edition.)
+constexpr inline bool is_power_of_two(uint32_t value)
 {
    return value && !(value & (value - 1));
 }
 
 /// Return true if the argument is a power of two > 0 (64 bit edition.)
-constexpr inline bool is_power_of_two_64(uint64_t value)
+constexpr inline bool is_power_of_two(uint64_t value)
 {
    return value && !(value & (value - 1));
 }
 
 /// Return a byte-swapped representation of the 16-bit argument.
-inline uint16_t byte_swap_16(uint16_t value)
+inline uint16_t byte_swap(uint16_t value)
 {
-   return polar::utils::swap_byte_order_16(value);
+   return polar::utils::swap_byte_order(value);
 }
 
 /// Return a byte-swapped representation of the 32-bit argument.
-inline uint32_t byte_swap_32(uint32_t value)
+inline uint32_t byte_swap(uint32_t value)
 {
-   return polar::utils::swap_byte_order_32(value);
+   return polar::utils::swap_byte_order(value);
 }
 
 /// Return a byte-swapped representation of the 64-bit argument.
-inline uint64_t byte_swap_64(uint64_t value)
+inline uint64_t byte_swap(uint64_t value)
 {
-   return polar::utils::swap_byte_order_64(value);
+   return polar::utils::swap_byte_order(value);
 }
 
 /// \brief Count the number of ones from the most significant bit to the first
@@ -597,30 +597,30 @@ inline double Log2(double value)
 
 /// Return the floor log base 2 of the specified value, -1 if the value is zero.
 /// (32 bit edition.)
-/// Ex. log2_32(32) == 5, log2_32(1) == 0, log2_32(0) == -1, log2_32(6) == 2
-inline unsigned log2_32(uint32_t value)
+/// Ex. log2(32) == 5, log2(1) == 0, log2(0) == -1, log2(6) == 2
+inline unsigned log2(uint32_t value)
 {
    return 31 - count_leading_zeros(value);
 }
 
 /// Return the floor log base 2 of the specified value, -1 if the value is zero.
 /// (64 bit edition.)
-inline unsigned log2_64(uint64_t value)
+inline unsigned log2(uint64_t value)
 {
    return 63 - count_leading_zeros(value);
 }
 
 /// Return the ceil log base 2 of the specified value, 32 if the value is zero.
 /// (32 bit edition).
-/// Ex. log2_32_ceil(32) == 5, log2_32_ceil(1) == 0, log2_32_ceil(6) == 3
-inline unsigned log2_32_ceil(uint32_t value)
+/// Ex. log2_ceil(32) == 5, log2_ceil(1) == 0, log2_ceil(6) == 3
+inline unsigned log2_ceil(uint32_t value)
 {
    return 32 - count_leading_zeros(value - 1);
 }
 
 /// Return the ceil log base 2 of the specified value, 64 if the value is zero.
 /// (64 bit edition.)
-inline unsigned log2_64_ceil(uint64_t value)
+inline unsigned log2_ceil(uint64_t value)
 {
    return 64 - count_leading_zeros(value - 1);
 }
@@ -693,7 +693,7 @@ constexpr inline uint64_t min_align(uint64_t lhs, uint64_t rhs)
 /// align_addr(7, 4) == 8 and align_addr(8, 4) == 8.
 inline uintptr_t align_addr(const void *addr, size_t alignment)
 {
-   assert(alignment && is_power_of_two_64((uint64_t)alignment) &&
+   assert(alignment && is_power_of_two((uint64_t)alignment) &&
           "alignment is not a power of two!");
    assert((uintptr_t)addr + alignment - 1 >= (uintptr_t)addr);
    return (((uintptr_t)addr + alignment - 1) & ~(uintptr_t)(alignment - 1));
@@ -815,7 +815,7 @@ inline uint64_t offset_to_alignment(uint64_t value, uint64_t align)
 /// Sign-extend the number in the bottom B bits of X to a 32-bit integer.
 /// Requires 0 < B <= 32.
 template <unsigned BitWidth>
-constexpr inline int32_t sign_extend_32(uint32_t value)
+constexpr inline int32_t sign_extend(uint32_t value)
 {
    static_assert(BitWidth > 0, "Bit width can't be 0.");
    static_assert(BitWidth <= 32, "Bit width out of range.");
@@ -824,7 +824,7 @@ constexpr inline int32_t sign_extend_32(uint32_t value)
 
 /// Sign-extend the number in the bottom B bits of X to a 32-bit integer.
 /// Requires 0 < B < 32.
-inline int32_t sign_extend_32(uint32_t value, unsigned bitWidth)
+inline int32_t sign_extend(uint32_t value, unsigned bitWidth)
 {
    assert(bitWidth > 0 && "Bit width can't be 0.");
    assert(bitWidth <= 32 && "Bit width out of range.");
@@ -834,7 +834,7 @@ inline int32_t sign_extend_32(uint32_t value, unsigned bitWidth)
 /// Sign-extend the number in the bottom B bits of X to a 64-bit integer.
 /// Requires 0 < B < 64.
 template <unsigned BitWidth>
-constexpr inline int64_t sign_extend_64(uint64_t value)
+constexpr inline int64_t sign_extend(uint64_t value)
 {
    static_assert(BitWidth > 0, "Bit width can't be 0.");
    static_assert(BitWidth <= 64, "Bit width out of range.");
@@ -843,7 +843,8 @@ constexpr inline int64_t sign_extend_64(uint64_t value)
 
 /// Sign-extend the number in the bottom B bits of X to a 64-bit integer.
 /// Requires 0 < B < 64.
-inline int64_t sign_extend_64(uint64_t value, unsigned bitWidth) {
+inline int64_t sign_extend(uint64_t value, unsigned bitWidth)
+{
    assert(bitWidth > 0 && "Bit width can't be 0.");
    assert(bitWidth <= 64 && "Bit width out of range.");
    return int64_t(value << (64 - bitWidth)) >> (64 - bitWidth);
@@ -895,11 +896,11 @@ saturating_multiply(T lhs, T rhs, bool *resultOverflowed = nullptr)
    overflowed = false;
    
    // Log2(Z) would be either Log2Z or Log2Z + 1.
-   // Special case: if X or Y is 0, log2_64 gives -1, and Log2Z
+   // Special case: if X or Y is 0, log2 gives -1, and Log2Z
    // will necessarily be less than Log2Max as desired.
-   int log2Z = log2_64(lhs) + log2_64(rhs);
+   int log2Z = log2(lhs) + log2(rhs);
    const T max = std::numeric_limits<T>::max();
-   int log2Max = log2_64(max);
+   int log2Max = log2(max);
    if (log2Z < log2Max) {
       return lhs * rhs;
    }
