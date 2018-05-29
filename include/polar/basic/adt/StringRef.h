@@ -25,7 +25,7 @@
 #include <utility>
 
 namespace polar {
-namespace baisc {
+namespace basic {
 
 class APInt;
 class HashCode;
