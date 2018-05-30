@@ -256,7 +256,7 @@ T mask_leading_zeros(unsigned size)
 /// \param ZB the behavior on an input of 0. Only ZeroBehavior::Max and ZeroBehavior::Undefined are
 ///   valid arguments.
 template <typename T>
-T findLastSet(T value, ZeroBehavior zb = ZeroBehavior::Max)
+T find_last_set(T value, ZeroBehavior zb = ZeroBehavior::Max)
 {
    if (zb == ZeroBehavior::Max && value == 0) {
       return std::numeric_limits<T>::max();

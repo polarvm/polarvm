@@ -16,7 +16,7 @@
 #include <utility>
 
 namespace polar {
-namespace baisc {
+namespace basic {
 
 /// \brief A range adaptor for a pair of iterators.
 ///
