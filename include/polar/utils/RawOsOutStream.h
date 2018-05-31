@@ -12,5 +12,35 @@
 #ifndef POLAR_UTILS_RAW_OS_OUT_STREAM_H
 #define POLAR_UTILS_RAW_OS_OUT_STREAM_H
 
+#include "polar/utils/RawOutStream.h"
+#include <iosfwd>
+
+namespace polar {
+namespace utils {
+
+/// raw_os_ostream - A raw_ostream that writes to an std::ostream.  This is a
+/// simple adaptor class.  It does not check for output errors; clients should
+/// use the underlying stream to detect errors.
+class RawOsOutStream : public RawOutStream
+{
+   std::ostream &m_outStream;
+   
+   /// write_impl - See raw_ostream::write_impl.
+   void writeImpl(const char *ptr, size_t size) override;
+   
+   /// current_pos - Return the current position within the stream, not
+   /// counting the bytes currently in the buffer.
+   uint64_t getCurrentPos() const override;
+   
+public:
+   RawOsOutStream(std::ostream &outStream)
+      : m_outStream(outStream)
+   {}
+   
+   ~RawOsOutStream() override;
+};
+
+} // utils
+} // polar
 
 #endif // POLAR_UTILS_RAW_OS_OUT_STREAM_H

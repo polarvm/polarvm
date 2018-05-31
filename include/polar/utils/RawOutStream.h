@@ -46,7 +46,7 @@ using polar::basic::SmallVector;
 /// output to a stream.  It does not support seeking, reopening, rewinding, line
 /// buffered disciplines etc. It is a simple buffer that outputs
 /// a chunk at a time.
-class RawOstream
+class RawOutStream
 {
 private:
    /// The buffer is handled in such a way that the buffer is
@@ -60,7 +60,7 @@ private:
    ///  2. Buffered (m_bufferMode != Unbuffered && m_outBufStart != 0 &&
    ///               m_outBufEnd - m_outBufStart >= 1).
    ///
-   /// If buffered, then the RawOstream owns the buffer if (m_bufferMode ==
+   /// If buffered, then the RawOutStream owns the buffer if (m_bufferMode ==
    /// InternalBuffer); otherwise the buffer has been set via SetBuffer and is
    /// managed by the subclass.
    ///
@@ -93,17 +93,17 @@ public:
       SAVEDCOLOR
    };
    
-   explicit RawOstream(bool unbuffered = false)
+   explicit RawOutStream(bool unbuffered = false)
       : m_bufferMode(unbuffered ? BufferKind::Unbuffered : BufferKind::InternalBuffer)
    {
       // Start out ready to flush.
       m_outBufStart = m_outBufEnd = m_outBufCur = nullptr;
    }
    
-   RawOstream(const RawOstream &) = delete;
-   void operator=(const RawOstream &) = delete;
+   RawOutStream(const RawOutStream &) = delete;
+   void operator=(const RawOutStream &) = delete;
    
-   virtual ~RawOstream();
+   virtual ~RawOutStream();
    
    /// tell - Return the current offset with the file.
    uint64_t tell() const
@@ -163,7 +163,7 @@ public:
       }
    }
    
-   RawOstream &operator<<(char character)
+   RawOutStream &operator<<(char character)
    {
       if (m_outBufCur >= m_outBufEnd) {
          return write(character);
@@ -172,7 +172,7 @@ public:
       return *this;
    }
    
-   RawOstream &operator<<(unsigned char character)
+   RawOutStream &operator<<(unsigned char character)
    {
       if (m_outBufCur >= m_outBufEnd) {
          return write(character);
@@ -181,7 +181,7 @@ public:
       return *this;
    }
    
-   RawOstream &operator<<(signed char character)
+   RawOutStream &operator<<(signed char character)
    {
       if (m_outBufCur >= m_outBufEnd) {
          return write(character);
@@ -190,7 +190,7 @@ public:
       return *this;
    }
    
-   RawOstream &operator<<(StringRef str)
+   RawOutStream &operator<<(StringRef str)
    {
       // Inline fast path, particularly for strings with a known length.
       size_t size = str.getSize();
@@ -206,7 +206,7 @@ public:
       return *this;
    }
    
-   RawOstream &operator<<(const char *str)
+   RawOutStream &operator<<(const char *str)
    {
       // Inline fast path, particularly for constant strings where a sufficiently
       // smart compiler will simplify strlen.
@@ -214,65 +214,65 @@ public:
       return this->operator<<(StringRef(str));
    }
    
-   RawOstream &operator<<(const std::string &str)
+   RawOutStream &operator<<(const std::string &str)
    {
       // Avoid the fast path, it would only increase code size for a marginal win.
       return write(str.data(), str.length());
    }
    
-   RawOstream &operator<<(const polar::basic::SmallVectorImpl<char> &str)
+   RawOutStream &operator<<(const polar::basic::SmallVectorImpl<char> &str)
    {
       return write(str.getData(), str.getSize());
    }
    
-   RawOstream &operator<<(unsigned long num);
-   RawOstream &operator<<(long num);
-   RawOstream &operator<<(unsigned long long num);
-   RawOstream &operator<<(long long num);
-   RawOstream &operator<<(const void *ptr);
+   RawOutStream &operator<<(unsigned long num);
+   RawOutStream &operator<<(long num);
+   RawOutStream &operator<<(unsigned long long num);
+   RawOutStream &operator<<(long long num);
+   RawOutStream &operator<<(const void *ptr);
    
-   RawOstream &operator<<(unsigned int num)
+   RawOutStream &operator<<(unsigned int num)
    {
       return this->operator<<(static_cast<unsigned long>(num));
    }
    
-   RawOstream &operator<<(int num) {
+   RawOutStream &operator<<(int num) {
       return this->operator<<(static_cast<long>(num));
    }
    
-   RawOstream &operator<<(double num);
+   RawOutStream &operator<<(double num);
    
    /// Output \p N in hexadecimal, without any prefix or padding.
-   RawOstream &writeHex(unsigned long long num);
+   RawOutStream &writeHex(unsigned long long num);
    
    /// Output a formatted UUID with dash separators.
    using uuid_t = uint8_t[16];
-   RawOstream &writeUuid(const uuid_t uuid);
+   RawOutStream &writeUuid(const uuid_t uuid);
    
    /// Output \p Str, turning '\\', '\t', '\n', '"', and anything that doesn't
    /// satisfy std::isprint into an escape sequence.
-   RawOstream &writeEscaped(StringRef str, bool useHexEscapes = false);
+   RawOutStream &writeEscaped(StringRef str, bool useHexEscapes = false);
    
-   RawOstream &write(unsigned char character);
-   RawOstream &write(const char *ptr, size_t size);
+   RawOutStream &write(unsigned char character);
+   RawOutStream &write(const char *ptr, size_t size);
    
    // Formatted output, see the format() function in Support/Format.h.
-   RawOstream &operator<<(const FormatObjectBase &Fmt);
+   RawOutStream &operator<<(const FormatObjectBase &Fmt);
    
    // Formatted output, see the leftJustify() function in Support/Format.h.
-   RawOstream &operator<<(const FormattedString &);
+   RawOutStream &operator<<(const FormattedString &);
    
    // Formatted output, see the formatHex() function in Support/Format.h.
-   RawOstream &operator<<(const FormattedNumber &);
+   RawOutStream &operator<<(const FormattedNumber &);
    
    // Formatted output, see the formatv() function in Support/FormatVariadic.h.
-   RawOstream &operator<<(const FormatvObjectBase &);
+   RawOutStream &operator<<(const FormatvObjectBase &);
    
    // Formatted output, see the format_bytes() function in Support/Format.h.
-   RawOstream &operator<<(const FormattedBytes &);
+   RawOutStream &operator<<(const FormattedBytes &);
    
    /// indent - Insert 'numSpaces' spaces.
-   RawOstream &indent(unsigned numSpaces);
+   RawOutStream &indent(unsigned numSpaces);
    
    /// Changes the foreground color of text that will be output from this point
    /// forward.
@@ -281,7 +281,7 @@ public:
    /// @param Bold bold/brighter text, default false
    /// @param BG if true change the background, default: change foreground
    /// @returns itself so it can be used within << invocations
-   virtual RawOstream &changeColor(enum Colors color,
+   virtual RawOutStream &changeColor(enum Colors color,
                                    bool bold = false,
                                    bool bg = false)
    {
@@ -293,13 +293,13 @@ public:
    
    /// Resets the colors to terminal defaults. Call this when you are done
    /// outputting colored text, or before program exit.
-   virtual RawOstream &resetColor()
+   virtual RawOutStream &resetColor()
    {
       return *this;
    }
    
    /// Reverses the foreground and background colors.
-   virtual RawOstream &reverseColor()
+   virtual RawOutStream &reverseColor()
    {
       return *this;
    }
@@ -346,7 +346,7 @@ private:
    virtual uint64_t getCurrentPos() const = 0;
    
 protected:
-   /// Use the provided buffer as the RawOstream buffer. This is intended for
+   /// Use the provided buffer as the RawOutStream buffer. This is intended for
    /// use only by subclasses which can arrange for the output to go directly
    /// into the desired output buffer, instead of being copied on each flush.
    void setBuffer(char *bufferStart, size_t size)
@@ -383,13 +383,13 @@ private:
 /// An abstract base class for streams implementations that also support a
 /// pwrite operation. This is useful for code that can mostly stream out data,
 /// but needs to patch in a header that needs to know the output size.
-class RawPwriteStream : public RawOstream
+class RawPwriteStream : public RawOutStream
 {
    virtual void pwriteImpl(const char *ptr, size_t size, uint64_t offset) = 0;
    
 public:
    explicit RawPwriteStream(bool unbuffered = false)
-      : RawOstream(unbuffered)
+      : RawOutStream(unbuffered)
    {}
    
    void pwrite(const char *ptr, size_t size, uint64_t offset)
@@ -410,7 +410,7 @@ public:
 // File Output Streams
 //===----------------------------------------------------------------------===//
 
-/// A RawOstream that writes to a file descriptor.
+/// A RawOutStream that writes to a file descriptor.
 ///
 class RawFdOstream : public RawPwriteStream
 {
@@ -421,7 +421,7 @@ class RawFdOstream : public RawPwriteStream
    uint64_t m_pos;
    bool m_supportsSeeking;
    
-   /// See RawOstream::write_impl.
+   /// See RawOutStream::write_impl.
    void writeImpl(const char *ptr, size_t size) override;
    
    void pwriteImpl(const char *Ptr, size_t Size, uint64_t offset) override;
@@ -474,11 +474,11 @@ public:
    /// to the offset specified from the beginning of the file.
    uint64_t seek(uint64_t off);
    
-   RawOstream &changeColor(enum Colors colors, bool bold=false,
+   RawOutStream &changeColor(enum Colors colors, bool bold=false,
                            bool bg=false) override;
-   RawOstream &resetColor() override;
+   RawOutStream &resetColor() override;
    
-   RawOstream &reverseColor() override;
+   RawOutStream &reverseColor() override;
    
    bool isDisplayed() const override;
    
@@ -499,7 +499,7 @@ public:
    }
    
    /// Set the flag read by has_error() to false. If the error flag is set at the
-   /// time when this RawOstream's destructor is called, report_fatal_error is
+   /// time when this RawOutStream's destructor is called, report_fatal_error is
    /// called to report the error. Use clear_error() after handling the error to
    /// avoid this behavior.
    ///
@@ -513,28 +513,28 @@ public:
    }
 };
 
-/// This returns a reference to a RawOstream for standard output. Use it like:
+/// This returns a reference to a RawOutStream for standard output. Use it like:
 /// outs() << "foo" << "bar";
-RawOstream &out_stream();
+RawOutStream &out_stream();
 
-/// This returns a reference to a RawOstream for standard error. Use it like:
+/// This returns a reference to a RawOutStream for standard error. Use it like:
 /// errs() << "foo" << "bar";
-RawOstream &error_stream();
+RawOutStream &error_stream();
 
-/// This returns a reference to a RawOstream which simply discards output.
-RawOstream &null_stream();
+/// This returns a reference to a RawOutStream which simply discards output.
+RawOutStream &null_stream();
 
 //===----------------------------------------------------------------------===//
 // Output Stream Adaptors
 //===----------------------------------------------------------------------===//
 
-/// A RawOstream that writes to an std::string.  This is a simple adaptor
+/// A RawOutStream that writes to an std::string.  This is a simple adaptor
 /// class. This class does not encounter output errors.
-class RawStringOstream : public RawOstream
+class RawStringOstream : public RawOutStream
 {
    std::string &m_outStream;
    
-   /// See RawOstream::write_impl.
+   /// See RawOutStream::write_impl.
    void writeImpl(const char *ptr, size_t size) override;
    
    /// Return the current position within the stream, not counting the bytes
@@ -559,7 +559,7 @@ public:
    }
 };
 
-/// A RawOstream that writes to an SmallVector or SmallString.  This is a
+/// A RawOutStream that writes to an SmallVector or SmallString.  This is a
 /// simple adaptor class. This class does not encounter output errors.
 /// RawSvectorOstream operates without a buffer, delegating all memory
 /// management to the SmallString. Thus the SmallString is always up-to-date,
@@ -568,7 +568,7 @@ class RawSvectorOstream : public RawPwriteStream
 {
    SmallVectorImpl<char> &m_outStream;
    
-   /// See RawOstream::write_impl.
+   /// See RawOutStream::write_impl.
    void writeImpl(const char *ptr, size_t size) override;
    
    void pwriteImpl(const char *ptr, size_t size, uint64_t offset) override;
@@ -597,10 +597,10 @@ public:
    }
 };
 
-/// A RawOstream that discards all output.
+/// A RawOutStream that discards all output.
 class RawNullOstream : public RawPwriteStream
 {
-   /// See RawOstream::write_impl.
+   /// See RawOutStream::write_impl.
    void writeImpl(const char *ptr, size_t size) override;
    void pwriteImpl(const char *ptr, size_t size, uint64_t offset) override;
    
@@ -615,11 +615,11 @@ public:
 
 class BufferOstream : public RawSvectorOstream
 {
-   RawOstream &m_outStream;
+   RawOutStream &m_outStream;
    SmallVector<char, 0> m_buffer;
    
 public:
-   BufferOstream(RawOstream &outStream) 
+   BufferOstream(RawOutStream &outStream) 
       : RawSvectorOstream(m_buffer), m_outStream(outStream)
    {}
    
