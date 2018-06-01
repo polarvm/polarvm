@@ -17,7 +17,7 @@
 using polar::utils::get_swapped_bytes;
 using polar::utils::swap_byte_order;
 
-TEST(SwapByteOrderTestTest, testUnsignedRoundTrip)
+TEST(GetSwappedBytesTest, testUnsignedRoundTrip)
 {
    // The point of the bit twiddling of magic is to test with and without bits
    // in every byte.
@@ -43,7 +43,7 @@ TEST(SwapByteOrderTestTest, testUnsignedRoundTrip)
    }
 }
 
-TEST(SwapByteOrderTestTest, testSignedRoundTrip) {
+TEST(GetSwappedBytesTest, testSignedRoundTrip) {
    // The point of the bit twiddling of magic is to test with and without bits
    // in every byte.
    uint64_t value = 1;
@@ -89,56 +89,56 @@ TEST(SwapByteOrderTestTest, testSignedRoundTrip) {
    }
 }
 
-TEST(SwapByteOrderTestTest, testUInt8_t)
+TEST(GetSwappedBytesTest, testUInt8_t)
 {
   EXPECT_EQ(uint8_t(0x11), get_swapped_bytes(uint8_t(0x11)));
 }
 
-TEST(SwapByteOrderTestTest, testUint16_t)
+TEST(GetSwappedBytesTest, testUint16_t)
 {
   EXPECT_EQ(uint16_t(0x1122), get_swapped_bytes(uint16_t(0x2211)));
 }
 
-TEST(SwapByteOrderTestTest, testUint32_t)
+TEST(GetSwappedBytesTest, testUint32_t)
 {
   EXPECT_EQ(uint32_t(0x11223344), get_swapped_bytes(uint32_t(0x44332211)));
 }
 
-TEST(SwapByteOrderTestTest, testUint64_t)
+TEST(GetSwappedBytesTest, testUint64_t)
 {
   EXPECT_EQ(uint64_t(0x1122334455667788ULL),
     get_swapped_bytes(uint64_t(0x8877665544332211ULL)));
 }
 
-TEST(SwapByteOrderTestTest, TestInt8_t)
+TEST(GetSwappedBytesTest, TestInt8_t)
 {
   EXPECT_EQ(int8_t(0x11), get_swapped_bytes(int8_t(0x11)));
 }
 
-TEST(SwapByteOrderTestTest, TestInt16_t)
+TEST(GetSwappedBytesTest, TestInt16_t)
 {
   EXPECT_EQ(int16_t(0x1122), get_swapped_bytes(int16_t(0x2211)));
 }
 
-TEST(SwapByteOrderTestTest, TestInt32_t)
+TEST(GetSwappedBytesTest, TestInt32_t)
 {
   EXPECT_EQ(int32_t(0x11223344), get_swapped_bytes(int32_t(0x44332211)));
 }
 
-TEST(SwapByteOrderTestTest, TestInt64_t)
+TEST(GetSwappedBytesTest, TestInt64_t)
 {
   EXPECT_EQ(int64_t(0x1122334455667788LL),
     get_swapped_bytes(int64_t(0x8877665544332211LL)));
 }
 
-TEST(SwapByteOrderTestTest, testFloat)
+TEST(GetSwappedBytesTest, testFloat)
 {
   EXPECT_EQ(1.79366203433576585078237386661e-43f, get_swapped_bytes(-0.0f));
   // 0x11223344
   EXPECT_EQ(7.1653228759765625e2f, get_swapped_bytes(1.2795344e-28f));
 }
 
-TEST(SwapByteOrderTestTest, testDouble)
+TEST(GetSwappedBytesTest, testDouble)
 {
   EXPECT_EQ(6.32404026676795576546008054871e-322, get_swapped_bytes(-0.0));
   // 0x1122334455667788

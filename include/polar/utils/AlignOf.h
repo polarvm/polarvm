@@ -110,7 +110,8 @@ namespace internal
              typename T2 = char, typename T3 = char, typename T4 = char,
              typename T5 = char, typename T6 = char, typename T7 = char,
              typename T8 = char, typename T9 = char, typename T10 = char>
-   class AlignerImpl {
+   class AlignerImpl
+   {
       T1 t1; T2 t2; T3 t3; T4 t4; T5 t5; T6 t6; T7 t7; T8 t8; T9 t9; T10 t10;
       
       AlignerImpl() = delete;
@@ -143,7 +144,8 @@ struct AlignedCharArrayUnion : polar::utils::AlignedCharArray<
       alignof(polar::utils::internal::AlignerImpl<T1, T2, T3, T4, T5,
               T6, T7, T8, T9, T10>),
 sizeof(::polar::utils::internal::SizerImpl<T1, T2, T3, T4, T5,
-       T6, T7, T8, T9, T10>)> {
+       T6, T7, T8, T9, T10>)>
+{
 };
 
 } // utils

@@ -1,2 +1,3 @@
 polar_add_unittest(PolarBaseLibTests BasicUtilsTest
-   SwapByteOrderTest.cpp)
+   SwapByteOrderTest.cpp
+   AlignOfTest.cpp)
