@@ -10,19 +10,19 @@
 // Created by softboy on 2018/05/27.
 
 /* Please leave this file C-compatible. */
-|*===----------------------------------------------------------------------===*|
-|*                                                                            *|
-|* This file contains definitions to figure out the size of _HOST_ data types.*|
-|* This file is important because different host OS's define different macros,*|
-|* which makes portability tough.  This file exports the following            *|
-|* definitions:                                                               *|
-|*                                                                            *|
-|*   [u]int(32|64)_t : typedefs for signed and unsigned 32/64 bit system types*|
-|*   [U]INT(8|16|32|64)_(MIN|MAX) : Constants for the min and max values.     *|
-|*                                                                            *|
-|* No library is required when using these functions.                         *|
-|*                                                                            *|
-|*===----------------------------------------------------------------------===*/
+// |*===----------------------------------------------------------------------===*|
+// |*                                                                            *|
+// |* This file contains definitions to figure out the size of _HOST_ data types.*|
+// |* This file is important because different host OS's define different macros,*|
+// |* which makes portability tough.  This file exports the following            *|
+// |* definitions:                                                               *|
+// |*                                                                            *|
+// |*   [u]int(32|64)_t : typedefs for signed and unsigned 32/64 bit system types*|
+// |*   [U]INT(8|16|32|64)_(MIN|MAX) : Constants for the min and max values.     *|
+// |*                                                                            *|
+// |* No library is required when using these functions.                         *|
+// |*                                                                            *|
+// |*===----------------------------------------------------------------------===*/
 
 #ifndef POLAR_GLOBAL_DATATYPES_H
 #define POLAR_GLOBAL_DATATYPES_H
