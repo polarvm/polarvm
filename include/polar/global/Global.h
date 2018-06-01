@@ -280,6 +280,8 @@ void as_const(const T &&) = delete;
 #  endif // __cplusplus
 #endif // __ASSEMBLER__
 
+} // polar
+
 #if defined(_MSC_VER)
 #include <sal.h>
 #endif

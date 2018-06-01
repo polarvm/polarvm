@@ -68,34 +68,73 @@ inline uint64_t swap_byte_order(uint64_t value)
 #endif
 }
 
-inline unsigned char  get_swapped_bytes(unsigned char value) { return value; }
-inline   signed char  get_swapped_bytes(signed char value) { return value; }
-inline          char  get_swapped_bytes(char value) { return value; }
+inline unsigned char get_swapped_bytes(unsigned char value)
+{
+   return value;
+}
 
-inline unsigned short get_swapped_bytes(unsigned short value) { return swap_byte_order(value); }
-inline   signed short get_swapped_bytes(  signed short value) { return swap_byte_order(value); }
+inline signed char get_swapped_bytes(signed char value)
+{
+   return value;
+}
 
-inline unsigned int   get_swapped_bytes(unsigned int   value) { return swap_byte_order(value); }
-inline   signed int   get_swapped_bytes(  signed int   value) { return swap_byte_order(value); }
+inline char get_swapped_bytes(char value)
+{
+   return value;
+}
+
+inline unsigned short get_swapped_bytes(unsigned short value)
+{
+   return swap_byte_order(value);
+}
+
+inline signed short get_swapped_bytes(signed short value)
+{
+   return swap_byte_order(static_cast<std::uint16_t>(value));
+}
+
+inline unsigned int get_swapped_bytes(unsigned int value)
+{
+   return swap_byte_order(value);
+}
+
+inline signed int get_swapped_bytes(signed int value)
+{
+   return swap_byte_order(static_cast<std::uint32_t>(value));
+}
 
 #if __LONG_MAX__ == __INT_MAX__
-inline unsigned long  get_swapped_bytes(unsigned long  value) { return swap_byte_order(value); }
-inline   signed long  get_swapped_bytes(  signed long  value) { return swap_byte_order(value); }
+inline unsigned long get_swapped_bytes(unsigned long value)
+{
+   return swap_byte_order(static_cast<std::uint32_t>(value));
+}
+
+inline signed long get_swapped_bytes(signed long value)
+{
+   return swap_byte_order(static_cast<std::uint32_t>(value));
+}
 #elif __LONG_MAX__ == __LONG_LONG_MAX__
-inline unsigned long  get_swapped_bytes(unsigned long  value) { return swap_byte_order(value); }
-inline   signed long  get_swapped_bytes(  signed long  value) { return swap_byte_order(value); }
+inline unsigned long get_swapped_bytes(unsigned long value)
+{
+   return swap_byte_order(static_cast<std::uint64_t>(value));
+}
+
+inline signed long get_swapped_bytes(signed long value)
+{
+   return swap_byte_order(static_cast<std::uint64_t>(value));
+}
 #else
 #error "Unknown long size!"
 #endif
 
 inline unsigned long long get_swapped_bytes(unsigned long long value)
 {
-   return swap_byte_order(value);
+   return swap_byte_order(static_cast<std::uint64_t>(value));
 }
 
 inline signed long long get_swapped_bytes(signed long long value)
 {
-   return swap_byte_order(value);
+   return swap_byte_order(static_cast<std::uint64_t>(value));
 }
 
 inline float get_swapped_bytes(float value)
@@ -123,7 +162,7 @@ inline double get_swapped_bytes(double value)
 template<typename T>
 inline void swap_byte_order(T &value)
 {
-   Value = get_swapped_bytes(value);
+   value = get_swapped_bytes(value);
 }
 
 } // utils
