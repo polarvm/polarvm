@@ -1,2 +1,3 @@
 polar_add_unittest(PolarBaseLibTests BasicAdtTest
-   HashingTest.cpp)
+   HashingTest.cpp
+   StlExtrasTest.cpp)

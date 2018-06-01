@@ -94,7 +94,7 @@ struct TrailingZerosCounter<T, 8>
          return 64;
       }
 #if __has_builtin(__builtin_ctzll) || POLAR_GNUC_PREREQ(4, 0, 0)
-      return __builtin_ctzll(Val);
+      return __builtin_ctzll(value);
 #elif defined(_MSC_VER)
       unsigned long index;
       _bitscanForward64(&index, value);
@@ -263,7 +263,7 @@ T find_last_set(T value, ZeroBehavior zb = ZeroBehavior::Max)
    }
    // Use ^ instead of - because both gcc and llvm can remove the associated ^
    // in the __builtin_clz intrinsic on x86.
-   return count_leading_zeros(Val, ZeroBehavior::Undefined) ^
+   return count_leading_zeros(value, ZeroBehavior::Undefined) ^
          (std::numeric_limits<T>::digits - 1);
 }
 
@@ -485,19 +485,19 @@ constexpr inline bool is_power_of_two(uint64_t value)
 /// Return a byte-swapped representation of the 16-bit argument.
 inline uint16_t byte_swap(uint16_t value)
 {
-   return polar::utils::swap_byte_order(value);
+   return polar::utils::swap_byte_order_16(value);
 }
 
 /// Return a byte-swapped representation of the 32-bit argument.
 inline uint32_t byte_swap(uint32_t value)
 {
-   return polar::utils::swap_byte_order(value);
+   return polar::utils::swap_byte_order_32(value);
 }
 
 /// Return a byte-swapped representation of the 64-bit argument.
 inline uint64_t byte_swap(uint64_t value)
 {
-   return polar::utils::swap_byte_order(value);
+   return polar::utils::swap_byte_order_64(value);
 }
 
 /// \brief Count the number of ones from the most significant bit to the first
@@ -870,7 +870,7 @@ saturating_add(T lhs, T rhs, bool *resultOverflowed = nullptr)
    bool &overflowed = resultOverflowed ? *resultOverflowed : dummy;
    // Hacker's Delight, p. 29
    T ret = lhs + rhs;
-   overflowed = (ret < lhs || Z < rhs);
+   overflowed = (ret < lhs || ret < rhs);
    if (overflowed) {
       return std::numeric_limits<T>::max();
    } else {

@@ -33,7 +33,7 @@
 namespace polar {
 namespace basic {
 
-using utils = polar::utils;
+namespace utils = polar::utils;
 
 /// This is all the non-templated stuff common to all SmallVectors.
 class SmallVectorBase
@@ -84,12 +84,13 @@ private:
    // Allocate raw space for N elements of type T.  If T has a ctor or dtor, we
    // don't want it to be automatically run, so we need to represent the space as
    // something else.  Use an array of char of sufficient alignment.
-   using U = AlignedCharArrayUnion<T>;
+   using U = utils::AlignedCharArrayUnion<T>;
    U m_firstEl;
    // Space after 'firstEl' is clobbered, do not add any instance vars after it.
    
 protected:
-   SmallVectorTemplateCommon(size_t size) : SmallVectorBase(&firstEl, size)
+   SmallVectorTemplateCommon(size_t size)
+      : SmallVectorBase(&m_firstEl, size)
    {}
    
    void growPod(size_t minSizeInBytes, size_t tsize)
@@ -202,7 +203,7 @@ public:
    /// Return the total number of elements in the currently allocated buffer.
    size_t getCapacity() const
    {
-      return capacityPtr() - begin();
+      return getCapacityPtr() - begin();
    }
    
    /// Return a pointer to the vector's buffer, even if empty().
@@ -248,7 +249,7 @@ public:
       return begin()[0];
    }
    
-   inline const_reference front()
+   inline const_reference front() const
    {
       return getFront();
    }
@@ -270,7 +271,7 @@ public:
       return end()[-1];
    }
    
-   inline const_reference back()
+   inline const_reference back() const
    {
       return getBack();
    }
@@ -319,11 +320,11 @@ public:
    
    void pushBack(const T &element)
    {
-      if (POLAR_UNLIKELY(m_endX >= m_capacityX)) {
+      if (POLAR_UNLIKELY(this->m_endX >= this->m_capacityX)) {
          grow();
       } 
-      ::new ((void*) end()) T(element);
-      setEnd(end() + 1);
+      ::new ((void*) this->end()) T(element);
+      setEnd(this->end() + 1);
    }
    
    inline void push_back(const T &element)
@@ -333,11 +334,11 @@ public:
    
    void pushBack(T &&element)
    {
-      if (POLAR_UNLIKELY(m_endX >= m_capacityX)) {
-         grow();
+      if (POLAR_UNLIKELY(this->m_endX >= this->m_capacityX)) {
+         this->grow();
       }
-      ::new ((void*) end()) T(::std::move(element));
-      setEnd(end() + 1);
+      ::new ((void*) this->end()) T(::std::move(element));
+      setEnd(this->end() + 1);
    }
    
    inline void push_back(T &&element)
@@ -347,8 +348,8 @@ public:
    
    void popBack()
    {
-      setEnd(end() - 1);
-      end()->~T();
+      this->setEnd(this->end() - 1);
+      this->end()->~T();
    }
    
    inline void pop_back()
@@ -361,8 +362,8 @@ public:
 template <typename T, bool isPodLike>
 void SmallVectorTemplateBase<T, isPodLike>::grow(size_t minSize)
 {
-   size_t curCapacity = getCapacity();
-   size_t curSize = getSize();
+   size_t curCapacity = this->getCapacity();
+   size_t curSize =this-> getSize();
    // Always grow, even from zero.
    size_t newCapacity = size_t(utils::next_power_of_two(curCapacity+2));
    if (newCapacity < minSize) {
@@ -373,18 +374,18 @@ void SmallVectorTemplateBase<T, isPodLike>::grow(size_t minSize)
       utils::report_bad_alloc_error("Allocation of SmallVector element failed.");
    }
    // Move the elements over.
-   uninitializedMove(begin(), end(), newElts);
+   uninitializedMove(this->begin(), this->end(), newElts);
    
    // Destroy the original elements.
-   destroy_range(begin(), end());
+   destroy_range(this->begin(), this->end());
    
    // If this wasn't grown from the inline copy, deallocate the old space.
-   if (!isSmall()) {
-      free(begin());
+   if (!this->isSmall()) {
+      free(this->begin());
    }
-   setEnd(NewElts + curSize);
-   m_beginX = NewElts;
-   m_capacityX = begin() + newCapacity;
+   this->setEnd(newElts + curSize);
+   this->m_beginX = newElts;
+   this->m_capacityX = this->begin() + newCapacity;
 }
 
 
@@ -440,17 +441,17 @@ protected:
    /// least one more element or MinSize if specified.
    void grow(size_t minSize = 0)
    {
-      growPod(minSize * sizeof(T), sizeof(T));
+      this->growPod(minSize * sizeof(T), sizeof(T));
    }
    
 public:
    void pushBack(const T &element)
    {
-      if (POLAR_UNLIKELY(m_endX >= m_capacityX)) {
+      if (POLAR_UNLIKELY(this->m_endX >= this->m_capacityX)) {
          grow();
       }
-      memcpy(end(), &element, sizeof(T));
-      setEnd(end() + 1);
+      memcpy(this->end(), &element, sizeof(T));
+      this->setEnd(this->end() + 1);
    }
    
    inline void push_back(const T &element)
@@ -460,7 +461,7 @@ public:
    
    void popBack()
    {
-      setEnd(end() - 1);
+      this->setEnd(this->end() - 1);
    }
    
    inline void pop_back()
