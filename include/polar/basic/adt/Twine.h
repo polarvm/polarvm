@@ -566,7 +566,7 @@ inline Twine Twine::concat(const Twine &suffix) const
 
 inline Twine operator+(const Twine &lhs, const Twine &rhs)
 {
-   return LHS.concat(rhs);
+   return lhs.concat(rhs);
 }
 
 /// Additional overload to guarantee simplified codegen; this is equivalent to
