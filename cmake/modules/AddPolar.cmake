@@ -571,8 +571,6 @@ macro(polar_add_executable name)
       add_executable(${name} ${ALL_FILES})
    endif()
    
-   polar_setup_dependency_debugging(${name} ${POLAR_COMMON_DEPENDS})
-   
    if(NOT ARG_NO_INSTALL_RPATH)
       polar_setup_rpath(${name})
    endif()

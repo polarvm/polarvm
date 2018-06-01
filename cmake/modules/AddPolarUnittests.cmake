@@ -3,7 +3,7 @@ set_target_properties(PolarPHPUnitTests PROPERTIES FOLDER "Tests")
 
 # Generic support for adding a unittest.
 function(polar_add_unittest test_suite test_name)
-   if(NOT PDK_BUILD_TESTS)
+   if(NOT POLAR_INCLUDE_TESTS)
       set(EXCLUDE_FROM_ALL ON)
    endif()
    # Our current version of gtest does not properly recognize C++11 support
@@ -34,7 +34,7 @@ function(polar_add_unittest test_suite test_name)
    
    set(POLAR_REQUIRES_RTTI OFF)
    
-   list(APPEND POLAR_LINK_COMPONENTS Support) # gtest needs it for raw_ostream
+   list(APPEND POLAR_LINK_COMPONENTS Utils) # gtest needs it for raw_ostream
    polar_add_executable(${test_name} IGNORE_EXTERNALIZE_DEBUGINFO NO_INSTALL_RPATH ${ARGN})
    set(outdir ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
    polar_set_output_directory(${test_name} BINARY_DIR ${outdir} LIBRARY_DIR ${outdir})
