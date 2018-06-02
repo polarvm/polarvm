@@ -377,7 +377,7 @@ void SmallVectorTemplateBase<T, isPodLike>::grow(size_t minSize)
    uninitializedMove(this->begin(), this->end(), newElts);
    
    // Destroy the original elements.
-   destroy_range(this->begin(), this->end());
+   this->destroyRange(this->begin(), this->end());
    
    // If this wasn't grown from the inline copy, deallocate the old space.
    if (!this->isSmall()) {
@@ -405,7 +405,7 @@ protected:
    /// Move the range [I, E) onto the uninitialized memory
    /// starting with "Dest", constructing elements into it as needed.
    template<typename It1, typename It2>
-   static void uninitialized_move(It1 iter, It1 end, It2 dest)
+   static void uninitializedMove(It1 iter, It1 end, It2 dest)
    {
       // Just do a copy.
       uninitializedCopy(iter, end, dest);
@@ -495,7 +495,7 @@ public:
    ~SmallVectorImpl()
    {
       // Destroy the constructed elements in the vector.
-      destroyRange(this->begin(), this->end());
+      this->destroyRange(this->begin(), this->end());
       
       // If this wasn't grown from the inline copy, deallocate the old space.
       if (!this->isSmall()) {
@@ -505,14 +505,14 @@ public:
    
    void clear()
    {
-      destroyRange(this->begin(), this->end());
+      this->destroyRange(this->begin(), this->end());
       this->m_endX = this->m_beginX;
    }
    
    void resize(size_type size)
    {
       if (size < this->getSize()) {
-         destroyRange(this->begin() + size, this->end());
+         this->destroyRange(this->begin() + size, this->end());
          setEnd(this->begin() + size);
       } else if (size > this->getSize()) {
          if (this->getCapacity() < size) {
@@ -565,11 +565,11 @@ public:
       size_type numInputs = std::distance(start, end);
       // Grow allocated space if needed.
       if (numInputs > size_type(this->getCapacityPtr() - this->end())) {
-         grow(this->getSize() + numInputs);
+         this->grow(this->getSize() + numInputs);
       }
       // Copy the new elements over.
-      uninitialized_copy(start, end, this->end());
-      setEnd(this->end() + numInputs);
+      this->uninitializedCopy(start, end, this->end());
+      this->setEnd(this->end() + numInputs);
    }
    
    /// Add the specified range to the end of the SmallVector.
@@ -592,7 +592,8 @@ public:
    // FIXME: Consider assigning over existing elements, rather than clearing &
    // re-initializing them - for all assign(...) variants.
    
-   void assign(size_type numElts, const T &element) {
+   void assign(size_type numElts, const T &element)
+   {
       clear();
       if (this->getCapacity() < numElts) {
          grow(numElts);
@@ -988,7 +989,7 @@ SmallVectorImpl<T> &SmallVectorImpl<T>::operator=(SmallVectorImpl<T> &&rhs)
    }
    // If the RHS isn't small, clear this vector and then steal its buffer.
    if (!rhs.isSmall()) {
-      destroyRange(this->begin(), this->end());
+      this->destroyRange(this->begin(), this->end());
       if (!this->isSmall()) {
          free(this->begin());
       }
@@ -1010,8 +1011,8 @@ SmallVectorImpl<T> &SmallVectorImpl<T>::operator=(SmallVectorImpl<T> &&rhs)
          newEnd = std::move(rhs.begin(), rhs.end(), newEnd);
       }
       // Destroy excess elements and trim the bounds.
-      destroyRange(newEnd, this->end());
-      setEnd(newEnd);
+      this->destroyRange(newEnd, this->end());
+      this->setEnd(newEnd);
       // Clear the RHS.
       rhs.clear();
       return *this;
@@ -1023,8 +1024,8 @@ SmallVectorImpl<T> &SmallVectorImpl<T>::operator=(SmallVectorImpl<T> &&rhs)
    // elements.
    if (this->getCapacity() < rhsSize) {
       // Destroy current elements.
-      destroyRange(this->begin(), this->end());
-      setEnd(this->begin());
+      this->destroyRange(this->begin(), this->end());
+      this->setEnd(this->begin());
       curSize = 0;
       this->grow(rhsSize);
    } else if (curSize) {
@@ -1033,10 +1034,10 @@ SmallVectorImpl<T> &SmallVectorImpl<T>::operator=(SmallVectorImpl<T> &&rhs)
    }
    
    // Move-construct the new elements in place.
-   uninitializedMove(rhs.begin() + curSize, rhs.end(),
+   this->uninitializedMove(rhs.begin() + curSize, rhs.end(),
                      this->begin() + curSize);
    // Set end.
-   setEnd(this->begin() + rhsSize);
+   this->setEnd(this->begin() + rhsSize);
    rhs.clear();
    return *this;
 }
@@ -1087,19 +1088,19 @@ public:
                                                    std::input_iterator_tag>::value>::type>
    SmallVector(ItTy start, ItTy end) : SmallVectorImpl<T>(N)
    {
-      append(start, end);
+      this->append(start, end);
    }
    
    template <typename RangeTy>
    explicit SmallVector(const IteratorRange<RangeTy> &range)
       : SmallVectorImpl<T>(N)
    {
-      append(range.begin(), range.end());
+      this->append(range.begin(), range.end());
    }
    
    SmallVector(std::initializer_list<T> elements) : SmallVectorImpl<T>(N)
    {
-      assign(elements);
+      this->assign(elements);
    }
    
    SmallVector(const SmallVector &rhs) : SmallVectorImpl<T>(N)

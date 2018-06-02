@@ -90,7 +90,7 @@ public:
    /// Construct a string ref from a cstring.
    POLAR_ATTRIBUTE_ALWAYS_INLINE
    /*implicit*/ StringRef(const char *str)
-      : m_data(Str), m_length(Str ? ::strlen(str) : 0)
+      : m_data(str), m_length(str ? ::strlen(str) : 0)
    {}
    
    /// Construct a string ref from a pointer and length.
@@ -175,6 +175,12 @@ public:
       assert(!empty());
       return m_data[0];
    }
+
+   POLAR_NODISCARD
+   inline char front() const
+   {
+      return getFront();
+   }
    
    /// back - Get the last character in the string.
    POLAR_NODISCARD
@@ -182,6 +188,12 @@ public:
    {
       assert(!empty());
       return m_data[m_length-1];
+   }
+
+   POLAR_NODISCARD
+   inline char back() const
+   {
+      return getBack();
    }
    
    // copy - Allocate copy in Allocator and return StringRef to it.
@@ -211,7 +223,7 @@ public:
    POLAR_NODISCARD
    bool equalsLower(StringRef other) const
    {
-      return m_length == other.m_length && compare_lower(other) == 0;
+      return m_length == other.m_length && compareLower(other) == 0;
    }
    
    /// compare - Compare two strings; the result is -1, 0, or 1 if this string
@@ -221,8 +233,8 @@ public:
    int compare(StringRef other) const
    {
       // Check the prefix for a mismatch.
-      if (int Res = compareMemory(Data, RHS.Data, std::min(m_length, other.m_length))) {
-         return Res < 0 ? -1 : 1;
+      if (int result = compareMemory(m_data, other.m_data, std::min(m_length, other.m_length))) {
+         return result < 0 ? -1 : 1;
       }
       // Otherwise the prefixes match, so we only need to check the lengths.
       if (m_length == other.m_length) {
@@ -365,11 +377,11 @@ public:
    /// \p From, or npos if not found.
    POLAR_NODISCARD
    POLAR_ATTRIBUTE_ALWAYS_INLINE
-   size_t findIf(function_ref<bool(char)> func, size_t from = 0) const
+   size_t findIf(FunctionRef<bool(char)> func, size_t from = 0) const
    {
       StringRef str = dropFront(from);
       while (!str.empty()) {
-         if (func(str.front())) {
+         if (func(str.getFront())) {
             return getSize() - str.getSize();
          }
          str = str.dropFront();
@@ -383,9 +395,9 @@ public:
    /// from \p From, or npos if not found.
    POLAR_NODISCARD
    POLAR_ATTRIBUTE_ALWAYS_INLINE
-   size_t findIfNot(function_ref<bool(char)> func, size_t from = 0) const
+   size_t findIfNot(FunctionRef<bool(char)> func, size_t from = 0) const
    {
-      return find_if([F](char c) { return !dropFront(c); }, from);
+      return findIf([func](char c) { return !func(c); }, from);
    }
    
    /// Search for the first string \p Str in the string.
@@ -705,7 +717,7 @@ public:
    /// in the prefix satisfies the given predicate.
    POLAR_NODISCARD
    POLAR_ATTRIBUTE_ALWAYS_INLINE
-   StringRef takeWhile(function_ref<bool(char)> func) const
+   StringRef takeWhile(FunctionRef<bool(char)> func) const
    {
       return substr(0, findIfNot(func));
    }
@@ -714,7 +726,7 @@ public:
    /// the prefix satisfies the given predicate.
    POLAR_NODISCARD
    POLAR_ATTRIBUTE_ALWAYS_INLINE
-   StringRef takeUntil(function_ref<bool(char)> func) const
+   StringRef takeUntil(FunctionRef<bool(char)> func) const
    {
       return substr(0, findIf(func));
    }
@@ -743,7 +755,7 @@ public:
    /// the given predicate dropped from the beginning of the string.
    POLAR_NODISCARD
    POLAR_ATTRIBUTE_ALWAYS_INLINE
-   StringRef dropWhile(function_ref<bool(char)> func) const
+   StringRef dropWhile(FunctionRef<bool(char)> func) const
    {
       return substr(findIfNot(func));
    }
@@ -752,7 +764,7 @@ public:
    /// satisfying the given predicate dropped from the beginning of the string.
    POLAR_NODISCARD
    POLAR_ATTRIBUTE_ALWAYS_INLINE
-   StringRef dropUntil(function_ref<bool(char)> func) const
+   StringRef dropUntil(FunctionRef<bool(char)> func) const
    {
       return substr(findIf(func));
    }
@@ -916,7 +928,7 @@ public:
    POLAR_NODISCARD
    StringRef rtrim(char character) const
    {
-      return dropBack(m_length - std::min(Length, findLastNotOf(character) + 1));
+      return dropBack(m_length - std::min(m_length, findLastNotOf(character) + 1));
    }
    
    /// Return string with consecutive characters in \p Chars starting from
@@ -924,7 +936,7 @@ public:
    POLAR_NODISCARD
    StringRef rtrim(StringRef chars = " \t\n\v\f\r") const
    {
-      return dropBack(Length - std::min(m_length, findLastNotOf(chars) + 1));
+      return dropBack(m_length - std::min(m_length, findLastNotOf(chars) + 1));
    }
    
    /// Return string with consecutive \p Char characters starting from the
@@ -1006,7 +1018,7 @@ inline bool operator>=(StringRef lhs, StringRef rhs)
 
 inline std::string &operator+=(std::string &buffer, StringRef string)
 {
-   return buffer.append(string.getData(), string.size());
+   return buffer.append(string.getData(), string.getSize());
 }
 
 /// @}

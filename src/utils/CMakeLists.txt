@@ -36,8 +36,6 @@ polar_add_library(PolarUtils
    ADDITIONAL_HEADER_DIRS
    Unix
    Windows
-   ${POLAR_MAIN_INCLUDE_DIR}/polar/basic/adt
-   ${POLAR_MAIN_INCLUDE_DIR}/polar/Utils
-   ${Backtrace_INCLUDE_DIRS}
-   LINK_LIBS ${system_libs}
+   ${POLAR_MAIN_INCLUDE_DIR}/polar/utils
+   LINK_LIBS ${system_libs} PolarBasic
    )

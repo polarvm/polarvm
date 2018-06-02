@@ -34,7 +34,6 @@
 namespace polar {
 namespace basic {
 
-
 // Only used by compiler if both template types are the same.  Useful when
 // using SFINAE to test for the existence of member functions.
 template <typename T, T>
@@ -621,7 +620,6 @@ class concat_iterator
       for (auto &IncrementHelperFn : IncrementHelperFns)
          if ((this->*IncrementHelperFn)())
             return;
-      
       polar_unreachable("Attempted to increment an end concat iterator!");
    }
    
@@ -910,6 +908,28 @@ inline void array_pod_sort(
    }
    qsort(&*start, nelts, sizeof(*start),
          reinterpret_cast<int (*)(const void *, const void *)>(Compare));
+}
+
+// Provide wrappers to std::sort which shuffle the elements before sorting
+// to help uncover non-deterministic behavior (PR35135).
+template <typename IteratorTy>
+inline void sort(IteratorTy start, IteratorTy end)
+{
+#ifdef EXPENSIVE_CHECKS
+  std::mt19937 generator(std::random_device{}());
+  std::shuffle(start, End, Generator);
+#endif
+  std::sort(start, end);
+}
+
+template <typename IteratorTy, typename Compare>
+inline void sort(IteratorTy start, IteratorTy end, Compare comp)
+{
+#ifdef EXPENSIVE_CHECKS
+  std::mt19937 generator(std::random_device{}());
+  std::shuffle(start, end, generator);
+#endif
+  std::sort(start, end, comp);
 }
 
 //===----------------------------------------------------------------------===//
@@ -1247,7 +1267,7 @@ public:
    
    EnumeratorIter<R> &operator++()
    {
-      assert(m_result.index != std::numeric_limits<size_t>::max());
+      assert(m_result.m_index != std::numeric_limits<size_t>::max());
       ++m_result.m_iter;
       ++m_result.m_index;
       return *this;
