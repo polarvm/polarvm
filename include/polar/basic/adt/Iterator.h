@@ -184,7 +184,7 @@ public:
       static_assert(
                IsRandomAccess,
                "Relational operators are only defined for random access iterators.");
-      return !static_cast<const DerivedT *>(this)->operator>(RHS);
+      return !static_cast<const DerivedT *>(this)->operator>(rhs);
    }
    
    bool operator>=(const DerivedT &rhs) const
@@ -397,7 +397,7 @@ public:
 
 template <typename RangeT, typename WrappedIteratorT =
           decltype(std::begin(std::declval<RangeT>()))>
-iterator_range<PointerIterator<WrappedIteratorT>>
+IteratorRange<PointerIterator<WrappedIteratorT>>
 make_pointer_range(RangeT &&range)
 {
    using PointerIteratorT = PointerIterator<WrappedIteratorT>;

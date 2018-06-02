@@ -209,7 +209,7 @@ class MappedIterator
       typename std::remove_reference<FuncReturnTy>::type> {
 public:
    MappedIterator(ItTy iter, FuncTy func)
-      : MappedIterator::IteratorAdaptorBase(std::move(iter)), func(std::move(func))
+      : MappedIterator::IteratorAdaptorBase(std::move(iter)), m_func(std::move(func))
    {}
    
    ItTy getCurrent()
@@ -325,7 +325,7 @@ class filter_iterator
    
    void findNextValid()
    {
-      assert(Payload && "Payload should be engaged when findNextValid is called");
+      assert(m_payload && "Payload should be engaged when findNextValid is called");
       while (this->I != m_payload->m_end && !m_payload->m_pred(*this->m_iter))
          BaseT::operator++();
    }
@@ -355,7 +355,7 @@ public:
    }
    
    template <typename RT, typename PT>
-   friend iterator_range<filter_iterator<internal::IterOfRange<RT>, PT>>
+   friend IteratorRange<filter_iterator<internal::IterOfRange<RT>, PT>>
    make_filter_range(RT &&, PT);
 };
 
@@ -367,7 +367,7 @@ public:
 /// temporary is going to be dropped on the floor after the make_iterator_range
 /// full expression that contains this function call.
 template <typename RangeT, typename PredicateT>
-iterator_range<filter_iterator<internal::IterOfRange<RangeT>, PredicateT>>
+IteratorRange<filter_iterator<internal::IterOfRange<RangeT>, PredicateT>>
 make_filter_range(RangeT &&range, PredicateT pred)
 {
    using FilterIteratorT =
@@ -428,23 +428,23 @@ protected:
    template <size_t... Ns>
    value_type deref(index_sequence<Ns...>) const
    {
-      return value_type(*std::get<Ns>(iterators)...);
+      return value_type(*std::get<Ns>(m_iterators)...);
    }
    
    template <size_t... Ns>
    decltype(m_iterators) tupInc(index_sequence<Ns...>) const
    {
-      return std::tuple<Iters...>(std::next(std::get<Ns>(iterators))...);
+      return std::tuple<Iters...>(std::next(std::get<Ns>(m_iterators))...);
    }
    
    template <size_t... Ns>
    decltype(m_iterators) tupDec(index_sequence<Ns...>) const
    {
-      return std::tuple<Iters...>(std::prev(std::get<Ns>(iterators))...);
+      return std::tuple<Iters...>(std::prev(std::get<Ns>(m_iterators))...);
    }
    
 public:
-   zip_common(Iters &&... ts) : iterators(std::forward<Iters>(ts)...)
+   zip_common(Iters &&... ts) : m_iterators(std::forward<Iters>(ts)...)
    {}
    
    value_type operator*()
@@ -488,10 +488,11 @@ template <typename... Iters>
 class zip_shortest : public zip_common<zip_shortest<Iters...>, Iters...>
 {
    template <size_t... Ns>
-   bool test(const zip_shortest<Iters...> &other, index_sequence<Ns...>) const {
-      return all_of(std::initializer_list<bool>{std::get<Ns>(this->iterators) !=
-                                                std::get<Ns>(other.iterators)...},
-                    identity<bool>{});
+   bool test(const zip_shortest<Iters...> &other, index_sequence<Ns...>) const
+   {
+      return all_of(std::initializer_list<bool>{std::get<Ns>(this->m_iterators) !=
+                                                std::get<Ns>(other.m_iterators)...},
+                    Identity<bool>{});
    }
    
 public:
@@ -527,7 +528,8 @@ private:
    }
    
    template <size_t... Ns>
-   iterator endImpl(index_sequence<Ns...>) const {
+   iterator endImpl(index_sequence<Ns...>) const
+   {
       return iterator(std::end(std::get<Ns>(ts))...);
    }
    
@@ -1043,7 +1045,7 @@ OutputIt transform(R &&range, OutputIt dfirst, UnaryPredicate pred)
 /// Provide wrappers to std::partition which take ranges instead of having to
 /// pass begin/end explicitly.
 template <typename R, typename UnaryPredicate>
-auto partition(R &&range, UnaryPredicate P) -> decltype(adl_begin(range))
+auto partition(R &&range, UnaryPredicate pred) -> decltype(adl_begin(range))
 {
    return std::partition(adl_begin(range), adl_end(range), pred);
 }
@@ -1329,9 +1331,10 @@ auto apply_tuple_impl(Func &&func, Tuple &&tuple, index_sequence<Index...>)
 /// return the result.
 template <typename Func, typename Tuple>
 auto apply_tuple(Func &&func, Tuple &&tuple) -> decltype(internal::apply_tuple_impl(
-                                                            std::forward<Func>(f), std::forward<Tuple>(t),
+                                                            std::forward<Func>(func), std::forward<Tuple>(tuple),
                                                             build_index_impl<
-                                                            std::tuple_size<typename std::decay<Tuple>::type>::value>{})) {
+                                                            std::tuple_size<typename std::decay<Tuple>::type>::value>{}))
+{
    using Indices = build_index_impl<
    std::tuple_size<typename std::decay<Tuple>::type>::value>;
    

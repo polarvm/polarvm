@@ -660,9 +660,13 @@ inline bool operator!=(ArrayRef<T> lhs, ArrayRef<T> rhs)
 
 /// @}
 
+} // basic
+
+namespace utils {
+
 // ArrayRefs can be treated like a POD type.
-template <typename T> struct isPodLike;
-template <typename T> struct isPodLike<ArrayRef<T>>
+template <typename T> struct is_pod_like;
+template <typename T> struct is_pod_like<ArrayRef<T>>
 {
    static const bool value = true;
 };
@@ -673,7 +677,8 @@ HashCode hash_value(ArrayRef<T> array)
    return hash_combine_range(array.begin(), array.end());
 }
 
-} // basic
+} // utils
+
 } // polar
 
 #endif // POLAR_BASIC_ADT_ARRAY_REF_H

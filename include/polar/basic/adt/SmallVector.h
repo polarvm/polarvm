@@ -208,7 +208,7 @@ public:
    
    /// Return a pointer to the vector's buffer, even if empty().
    pointer getData()
-   { 
+   {
       return pointer(begin());
    }
    
@@ -322,7 +322,7 @@ public:
    {
       if (POLAR_UNLIKELY(this->m_endX >= this->m_capacityX)) {
          grow();
-      } 
+      }
       ::new ((void*) this->end()) T(element);
       setEnd(this->end() + 1);
    }
@@ -473,9 +473,9 @@ public:
 /// This class consists of common code factored out of the SmallVector class to
 /// reduce code duplication based on the SmallVector 'N' template parameter.
 template <typename T>
-class SmallVectorImpl : public SmallVectorTemplateBase<T, isPodLike<T>::value>
+class SmallVectorImpl : public SmallVectorTemplateBase<T, utils::is_pod_like<T>::value>
 {
-   using SuperClass = SmallVectorTemplateBase<T, isPodLike<T>::value>;
+   using SuperClass = SmallVectorTemplateBase<T, utils::is_pod_like<T>::value>;
    
 public:
    using iterator = typename SuperClass::iterator;
@@ -485,7 +485,7 @@ public:
 protected:
    // Default ctor - Initialize to empty.
    explicit SmallVectorImpl(unsigned N)
-      : SmallVectorTemplateBase<T, isPodLike<T>::value>(N*sizeof(T))
+      : SmallVectorTemplateBase<T, utils::is_pod_like<T>::value>(N*sizeof(T))
    {
    }
    
@@ -495,61 +495,61 @@ public:
    ~SmallVectorImpl()
    {
       // Destroy the constructed elements in the vector.
-      destroyRange(begin(), end());
+      destroyRange(this->begin(), this->end());
       
       // If this wasn't grown from the inline copy, deallocate the old space.
-      if (!isSmall()) {
-         free(begin());
+      if (!this->isSmall()) {
+         free(this->begin());
       }
    }
    
    void clear()
    {
-      destroyRange(begin(), end());
-      m_endX = m_beginX;
+      destroyRange(this->begin(), this->end());
+      this->m_endX = this->m_beginX;
    }
    
    void resize(size_type size)
    {
-      if (size < getSize()) {
-         destroyRange(begin() + size, end());
-         setEnd(begin() + size);
-      } else if (size > getSize()) {
-         if (getCapacity() < N) {
+      if (size < this->getSize()) {
+         destroyRange(this->begin() + size, this->end());
+         setEnd(this->begin() + size);
+      } else if (size > this->getSize()) {
+         if (this->getCapacity() < size) {
             grow(size);
          }
-         for (auto iter = end(), end = begin() + size; iter != end; ++iter) {
+         for (auto iter = this->end(), end = this->begin() + size; iter != end; ++iter) {
             new (&*iter) T();
          }
-         setEnd(begin() + size);
+         setEnd(this->begin() + size);
       }
    }
    
    void resize(size_type size, const T &newValue)
    {
-      if (size < getSize()) {
-         destroy_range(begin() + size, end());
-         setEnd(begin() + size);
-      } else if (size > getSize()) {
-         if (getCapacity() < size) {
+      if (size < this->getSize()) {
+         destroy_range(this->begin() + size, this->end());
+         setEnd(this->begin() + size);
+      } else if (size > this->getSize()) {
+         if (this->getCapacity() < size) {
             grow(size);
          }
-         std::uninitialized_fill(end(), begin() + size, newValue);
-         setEnd(begin() + size);
+         std::uninitialized_fill(this->end(), this->begin() + size, newValue);
+         setEnd(this->begin() + size);
       }
    }
    
    void reserve(size_type size)
    {
-      if (getCapacity() < size) {
+      if (this->getCapacity() < size) {
          grow(size);
-      }    
+      }
    }
    
    POLAR_NODISCARD T popBackValue()
    {
-      T result = ::std::move(getBack());
-      popBack();
+      T result = ::std::move(this->getBack());
+      this->popBack();
       return result;
    }
    
@@ -564,8 +564,8 @@ public:
    {
       size_type numInputs = std::distance(start, end);
       // Grow allocated space if needed.
-      if (numInputs > size_type(getCapacityPtr() - this->end())) {
-         grow(getSize() + numInputs);
+      if (numInputs > size_type(this->getCapacityPtr() - this->end())) {
+         grow(this->getSize() + numInputs);
       }
       // Copy the new elements over.
       uninitialized_copy(start, end, this->end());
@@ -576,12 +576,12 @@ public:
    void append(size_type numInputs, const T &element)
    {
       // Grow allocated space if needed.
-      if (numInputs > size_type(getCapacityPtr() - end())) {
-         grow(getSize() + numInputs);
+      if (numInputs > size_type(this->getCapacityPtr() - this->end())) {
+         grow(this->getSize() + numInputs);
       }
       // Copy the new elements over.
-      std::uninitialized_fill_n(end(), numInputs, element);
-      setEnd(end() + numInputs);
+      std::uninitialized_fill_n(this->end(), numInputs, element);
+      setEnd(this->end() + numInputs);
    }
    
    void append(std::initializer_list<T> elements)
@@ -594,11 +594,11 @@ public:
    
    void assign(size_type numElts, const T &element) {
       clear();
-      if (getCapacity() < numElts) {
+      if (this->getCapacity() < numElts) {
          grow(numElts);
       }
-      setEnd(begin() + numElts);
-      std::uninitialized_fill(begin(), end(), element);
+      setEnd(this->begin() + numElts);
+      std::uninitialized_fill(this->begin(), this->end(), element);
    }
    
    template <typename InIter,
@@ -622,61 +622,61 @@ public:
       // Just cast away constness because this is a non-const member function.
       iterator iter = const_cast<iterator>(citer);
       
-      assert(iter >= begin() && "Iterator to erase is out of bounds.");
-      assert(iter < end() && "Erasing at past-the-end iterator.");
+      assert(iter >= this->begin() && "Iterator to erase is out of bounds.");
+      assert(iter < this->end() && "Erasing at past-the-end iterator.");
       
       iterator removed = iter;
       // Shift all elts down one.
-      std::move(iter + 1, end(), iter);
+      std::move(iter + 1, this->end(), iter);
       // Drop the last elt.
-      pop_back();
+      this->pop_back();
       return(removed);
    }
    
-   iterator erase(const_iterator cstart, const_iterator cend) 
+   iterator erase(const_iterator cstart, const_iterator cend)
    {
       // Just cast away constness because this is a non-const member function.
       iterator startIter = const_cast<iterator>(cstart);
       iterator endIter = const_cast<iterator>(cend);
       
-      assert(startIter >= begin() && "Range to erase is out of bounds.");
+      assert(startIter >= this->begin() && "Range to erase is out of bounds.");
       assert(startIter <= endIter && "Trying to erase invalid range.");
-      assert(endIter <= end() && "Trying to erase past the end.");
+      assert(endIter <= this->end() && "Trying to erase past the end.");
       
       iterator removed = startIter;
       // Shift all elts down.
-      iterator iter = std::move(endIter, end(), startIter);
+      iterator iter = std::move(endIter, this->end(), startIter);
       // Drop the last elts.
-      destroyRange(iter, end());
-      setEnd(iter);
+      destroyRange(iter, this->end());
+      this->setEnd(iter);
       return(removed);
    }
    
    iterator insert(iterator iter, T &&element)
    {
-      if (iter == end()) {  // Important special case for empty vector.
+      if (iter == this->end()) {  // Important special case for empty vector.
          push_back(::std::move(element));
-         return end() - 1;
+         return this->end() - 1;
       }
       
-      assert(iter >= begin() && "Insertion iterator is out of bounds.");
-      assert(iter <= end() && "Inserting past the end of the vector.");
+      assert(iter >= this->begin() && "Insertion iterator is out of bounds.");
+      assert(iter <= this->end() && "Inserting past the end of the vector.");
       
-      if (m_endX >= m_capacityX) {
-         size_t EltNo = iter - begin();
-         grow();
-         iter = begin() + EltNo;
+      if (this->m_endX >= this->m_capacityX) {
+         size_t eltNo = iter - this->begin();
+         this->grow();
+         iter = this->begin() + eltNo;
       }
       
-      ::new ((void*) end()) T(::std::move(back()));
+      ::new ((void*) this->end()) T(::std::move(this->back()));
       // Push everything else over.
-      std::move_backward(iter, end() - 1, end());
-      setEnd(end() + 1);
+      std::move_backward(iter, this->end() - 1, this->end());
+      setEnd(this->end() + 1);
       
       // If we just moved the element we're inserting, be sure to update
       // the reference.
       T *eltPtr = &element;
-      if (iter <= eltPtr && eltPtr < m_endX) {
+      if (iter <= eltPtr && eltPtr < this->m_endX) {
          ++eltPtr;
       }
       *iter = ::std::move(*eltPtr);
@@ -685,28 +685,28 @@ public:
    
    iterator insert(iterator iter, const T &element)
    {
-      if (iter == end()) {  // Important special case for empty vector.
+      if (iter == this->end()) {  // Important special case for empty vector.
          push_back(element);
-         return end() - 1;
+         return this->end() - 1;
       }
       
-      assert(iter >= begin() && "Insertion iterator is out of bounds.");
-      assert(iter <= end() && "Inserting past the end of the vector.");
+      assert(iter >= this->begin() && "Insertion iterator is out of bounds.");
+      assert(iter <= this->end() && "Inserting past the end of the vector.");
       
-      if (m_endX >= m_capacityX) {
-         size_t eltNo = iter - begin();
-         grow();
-         iter = begin() + eltNo;
+      if (this->m_endX >= this->m_capacityX) {
+         size_t eltNo = iter - this->begin();
+         this->grow();
+         iter = this->begin() + eltNo;
       }
-      ::new ((void*) end()) T(std::move(back()));
+      ::new ((void*) this->end()) T(std::move(this->back()));
       // Push everything else over.
-      std::move_backward(iter, end() - 1, end());
-      setEnd(end() + 1);
+      std::move_backward(iter, this->end() - 1, this->end());
+      setEnd(this->end() + 1);
       
       // If we just moved the element we're inserting, be sure to update
       // the reference.
       const T *eltPtr = &element;
-      if (iter <= eltPtr && eltPtr < m_endX) {
+      if (iter <= eltPtr && eltPtr < this->m_endX) {
          ++eltPtr;
       }
       *iter = *eltPtr;
@@ -716,30 +716,30 @@ public:
    iterator insert(iterator iter, size_type numToInsert, const T &element)
    {
       // Convert iterator to elt# to avoid invalidating iterator when we reserve()
-      size_t InsertElt = iter - begin();
+      size_t insertElt = iter - this->begin();
       
-      if (iter == end()) {  // Important special case for empty vector.
+      if (iter == this->end()) {  // Important special case for empty vector.
          append(numToInsert, element);
-         return begin() + InsertElt;
+         return this->begin() + insertElt;
       }
       
-      assert(iter >= begin() && "Insertion iterator is out of bounds.");
-      assert(iter <= end() && "Inserting past the end of the vector.");
+      assert(iter >= this->begin() && "Insertion iterator is out of bounds.");
+      assert(iter <= this->end() && "Inserting past the end of the vector.");
       
       // Ensure there is enough space.
-      reserve(getSize() + numToInsert);
+      reserve(this->getSize() + numToInsert);
       
       // Uninvalidate the iterator.
-      iter = begin() + InsertElt;
+      iter = this->begin() + insertElt;
       
       // If there are more elements between the insertion point and the end of the
       // range than there are being inserted, we can use a simple approach to
       // insertion.  Since we already reserved space, we know that this won't
       // reallocate the vector.
-      if (size_t(end() - iter) >= numToInsert) {
-         T *oldEnd = end();
-         append(std::move_iterator<iterator>(end() - numToInsert),
-                std::move_iterator<iterator>(end()));
+      if (size_t(this->end() - iter) >= numToInsert) {
+         T *oldEnd = this->end();
+         append(std::move_iterator<iterator>(this->end() - numToInsert),
+                std::move_iterator<iterator>(this->end()));
          
          // Copy the existing elements that get replaced.
          std::move_backward(iter, oldEnd - numToInsert, oldEnd);
@@ -752,13 +752,13 @@ public:
       // not inserting at the end.
       
       // Move over the elements that we're about to overwrite.
-      T *oldEnd = end();
-      setEnd(end() + numToInsert);
+      T *oldEnd = this->end();
+      setEnd(this->end() + numToInsert);
       size_t numOverwritten = oldEnd - iter;
-      uninitializedMove(iter, oldEnd, end() - numOverwritten);
+      uninitializedMove(iter, oldEnd, this->end() - numOverwritten);
       
       // Replace the overwritten part.
-      std::fill_n(I, numOverwritten, element);
+      std::fill_n(iter, numOverwritten, element);
       
       // Insert the non-overwritten middle part.
       std::uninitialized_fill_n(oldEnd, numToInsert - numOverwritten, element);
@@ -772,32 +772,32 @@ public:
    iterator insert(iterator iter, ItTy from, ItTy to)
    {
       // Convert iterator to elt# to avoid invalidating iterator when we reserve()
-      size_t insertElt = iter - begin();
+      size_t insertElt = iter - this->begin();
       
-      if (iter == end()) {  // Important special case for empty vector.
+      if (iter == this->end()) {  // Important special case for empty vector.
          append(from, to);
-         return begin() + insertElt;
+         return this->begin() + insertElt;
       }
       
-      assert(iter >= begin() && "Insertion iterator is out of bounds.");
-      assert(iter <= end() && "Inserting past the end of the vector.");
+      assert(iter >= this->begin() && "Insertion iterator is out of bounds.");
+      assert(iter <= this->end() && "Inserting past the end of the vector.");
       
       size_t numToInsert = std::distance(from, to);
       
       // Ensure there is enough space.
-      reserve(getSize() + numToInsert);
+      reserve(this->getSize() + numToInsert);
       
       // Uninvalidate the iterator.
-      I = begin() + insertElt;
+      iter = this->begin() + insertElt;
       
       // If there are more elements between the insertion point and the end of the
       // range than there are being inserted, we can use a simple approach to
       // insertion.  Since we already reserved space, we know that this won't
       // reallocate the vector.
-      if (size_t(end() - iter) >= numToInsert) {
-         T *oldEnd = end();
-         append(std::move_iterator<iterator>(end() - numToInsert),
-                std::move_iterator<iterator>(end()));
+      if (size_t(this->end() - iter) >= numToInsert) {
+         T *oldEnd = this->end();
+         append(std::move_iterator<iterator>(this->end() - numToInsert),
+                std::move_iterator<iterator>(this->end()));
          
          // Copy the existing elements that get replaced.
          std::move_backward(iter, oldEnd - numToInsert, oldEnd);
@@ -810,10 +810,10 @@ public:
       // not inserting at the end.
       
       // Move over the elements that we're about to overwrite.
-      T *oldEnd = end();
-      setEnd(end() + numToInsert);
+      T *oldEnd = this->end();
+      setEnd(this->end() + numToInsert);
       size_t numOverwritten = oldEnd - iter;
-      uninitializedMove(iter, oldEnd, end() - numOverwritten);
+      uninitializedMove(iter, oldEnd, this->end() - numOverwritten);
       
       // Replace the overwritten part.
       for (T *targetIter = iter; numOverwritten > 0; --numOverwritten) {
@@ -835,11 +835,11 @@ public:
    template <typename... ArgTypes>
    void emplaceBack(ArgTypes &&... args)
    {
-      if (POLAR_UNLIKELY(m_endX >= m_capacityX)) {
-         grow();
+      if (POLAR_UNLIKELY(this->m_endX >= this->m_capacityX)) {
+         this->grow();
       }
-      ::new ((void *)end()) T(std::forward<ArgTypes>(args)...);
-      setEnd(end() + 1);
+      ::new ((void *)this->end()) T(std::forward<ArgTypes>(args)...);
+      setEnd(this->end() + 1);
    }
    
    template <typename... ArgTypes>
@@ -854,10 +854,10 @@ public:
    
    bool operator==(const SmallVectorImpl &rhs) const
    {
-      if (getSize() != rhs.getSize()) {
+      if (this->getSize() != rhs.getSize()) {
          return false;
       }
-      return std::equal(begin(), end(), rhs.begin());
+      return std::equal(this->begin(), this->end(), rhs.begin());
    }
    
    bool operator!=(const SmallVectorImpl &rhs) const
@@ -867,7 +867,7 @@ public:
    
    bool operator<(const SmallVectorImpl &rhs) const
    {
-      return std::lexicographical_compare(begin(), end(),
+      return std::lexicographical_compare(this->begin(), this->end(),
                                           rhs.begin(), rhs.end());
    }
    
@@ -882,8 +882,8 @@ public:
    /// which will only be overwritten.
    void setSize(size_type size)
    {
-      assert(size <= capacity());
-      setEnd(begin() + size);
+      assert(size <= this->getCapacity());
+      setEnd(this->begin() + size);
    }
 };
 
@@ -894,20 +894,20 @@ void SmallVectorImpl<T>::swap(SmallVectorImpl<T> &rhs)
       return;
    }
    // We can only avoid copying elements if neither vector is small.
-   if (!isSmall() && !rhs.isSmall()) {
-      std::swap(m_beginX, rhs.m_beginX);
-      std::swap(m_endX, rhs.m_endX);
-      std::swap(m_capacityX, rhs.m_capacityX);
+   if (!this->isSmall() && !rhs.isSmall()) {
+      std::swap(this->m_beginX, rhs.m_beginX);
+      std::swap(this->m_endX, rhs.m_endX);
+      std::swap(this->m_capacityX, rhs.m_capacityX);
       return;
    }
-   if (rhs.size() > getCapacity()) {
+   if (rhs.getSize() > this->getCapacity()) {
       grow(rhs.getSize());
    }
-   if (size() > rhs.getCapacity()) {
-      rhs.grow(getSize());
+   if (this->getSize() > rhs.getCapacity()) {
+      rhs.grow(this->getSize());
    }
    // Swap the shared elements.
-   size_t numShared = getSize();
+   size_t numShared = this->getSize();
    if (numShared > rhs.getSize()) {
       numShared = rhs.getSize();
    }
@@ -915,16 +915,16 @@ void SmallVectorImpl<T>::swap(SmallVectorImpl<T> &rhs)
       std::swap((*this)[i], rhs[i]);
    }
    // Copy over the extra elts.
-   if (getSize() > rhs.getSize()) {
-      size_t eltDiff = getSize() - rhs.getSize();
-      uninitializedCopy(begin() + numShared, end(), rhs.end());
+   if (this->getSize() > rhs.getSize()) {
+      size_t eltDiff = this->getSize() - rhs.getSize();
+      uninitializedCopy(this->begin() + numShared, this->end(), rhs.end());
       rhs.setEnd(rhs.end() + eltDiff);
-      destroyRange(begin() + numShared, end());
-      setEnd(begin() + numShared);
-   } else if (rhs.getSize() > getSize()) {
-      size_t eltDiff = rhs.getSize() - getSize();
-      uninitializedCopy(rhs.begin() + numShared, rhs.end(), end());
-      setEnd(end() + eltDiff);
+      destroyRange(this->begin() + numShared, this->end());
+      setEnd(this->begin() + numShared);
+   } else if (rhs.getSize() > this->getSize()) {
+      size_t eltDiff = rhs.getSize() - this->getSize();
+      uninitializedCopy(rhs.begin() + numShared, rhs.end(), this->end());
+      setEnd(this->end() + eltDiff);
       destroyRange(rhs.begin() + numShared, rhs.end());
       rhs.setEnd(rhs.begin() + numShared);
    }
@@ -940,17 +940,17 @@ SmallVectorImpl<T> &SmallVectorImpl<T>::operator= (const SmallVectorImpl<T> &rhs
    // If we already have sufficient space, assign the common elements, then
    // destroy any excess.
    size_t rhsSize = rhs.getSize();
-   size_t curSize = getSize();
+   size_t curSize = this->getSize();
    if (curSize >= rhsSize) {
       // Assign common elements.
       iterator newEnd;
       if (rhsSize) {
-         newEnd = std::copy(rhs.begin(), rhs.begin() + rhsSize, begin());
+         newEnd = std::copy(rhs.begin(), rhs.begin() + rhsSize, this->begin());
       } else {
-         newEnd = begin();
+         newEnd = this->begin();
       }
       // Destroy excess elements.
-      destroyRange(newEnd, end());      
+      destroyRange(newEnd, this->end());
       // Trim.
       setEnd(newEnd);
       return *this;
@@ -959,23 +959,23 @@ SmallVectorImpl<T> &SmallVectorImpl<T>::operator= (const SmallVectorImpl<T> &rhs
    // If we have to grow to have enough elements, destroy the current elements.
    // This allows us to avoid copying them during the grow.
    // FIXME: don't do this if they're efficiently moveable.
-   if (getCapacity() < rhsSize) {
+   if (this->getCapacity() < rhsSize) {
       // Destroy current elements.
-      destroyRange(begin(), end());
-      setEnd(begin());
+      destroyRange(this->begin(), this->end());
+      setEnd(this->begin());
       curSize = 0;
-      grow(rhsSize);
+      this->grow(rhsSize);
    } else if (curSize) {
       // Otherwise, use assignment for the already-constructed elements.
-      std::copy(rhs.begin(), rhs.begin() + curSize, begin());
+      std::copy(rhs.begin(), rhs.begin() + curSize, this->begin());
    }
    
    // Copy construct the new elements in place.
    uninitializedCopy(rhs.begin() + curSize, rhs.end(),
-                     begin() + curSize);
+                     this->begin() + curSize);
    
    // Set end.
-   setEnd(begin() + rhsSize);
+   setEnd(this->begin() + rhsSize);
    return *this;
 }
 
@@ -988,13 +988,13 @@ SmallVectorImpl<T> &SmallVectorImpl<T>::operator=(SmallVectorImpl<T> &&rhs)
    }
    // If the RHS isn't small, clear this vector and then steal its buffer.
    if (!rhs.isSmall()) {
-      destroyRange(begin(), end());
-      if (!isSmall()) {
-         free(begin());
+      destroyRange(this->begin(), this->end());
+      if (!this->isSmall()) {
+         free(this->begin());
       }
-      m_beginX = rhs.m_beginX;
-      m_endX = rhs.m_endX;
-      m_capacityX = rhs.m_capacityX;
+      this->m_beginX = rhs.m_beginX;
+      this->m_endX = rhs.m_endX;
+      this->m_capacityX = rhs.m_capacityX;
       rhs.resetToSmall();
       return *this;
    }
@@ -1002,15 +1002,15 @@ SmallVectorImpl<T> &SmallVectorImpl<T>::operator=(SmallVectorImpl<T> &&rhs)
    // If we already have sufficient space, assign the common elements, then
    // destroy any excess.
    size_t rhsSize = rhs.getSize();
-   size_t curSize = getSize();
+   size_t curSize = this->getSize();
    if (curSize >= rhsSize) {
       // Assign common elements.
-      iterator newEnd = begin();
+      iterator newEnd = this->begin();
       if (rhsSize) {
          newEnd = std::move(rhs.begin(), rhs.end(), newEnd);
       }
       // Destroy excess elements and trim the bounds.
-      destroyRange(newEnd, end());
+      destroyRange(newEnd, this->end());
       setEnd(newEnd);
       // Clear the RHS.
       rhs.clear();
@@ -1021,22 +1021,22 @@ SmallVectorImpl<T> &SmallVectorImpl<T>::operator=(SmallVectorImpl<T> &&rhs)
    // This allows us to avoid copying them during the grow.
    // FIXME: this may not actually make any sense if we can efficiently move
    // elements.
-   if (getCapacity() < rhsSize) {
+   if (this->getCapacity() < rhsSize) {
       // Destroy current elements.
-      destroyRange(begin(), end());
-      setEnd(begin());
+      destroyRange(this->begin(), this->end());
+      setEnd(this->begin());
       curSize = 0;
-      grow(rhsSize);
+      this->grow(rhsSize);
    } else if (curSize) {
       // Otherwise, use assignment for the already-constructed elements.
-      std::move(rhs.begin(), rhs.begin() + curSize, begin());
+      std::move(rhs.begin(), rhs.begin() + curSize, this->begin());
    }
    
    // Move-construct the new elements in place.
    uninitializedMove(rhs.begin() + curSize, rhs.end(),
-                     begin() + curSize);
+                     this->begin() + curSize);
    // Set end.
-   setEnd(begin() + rhsSize);
+   setEnd(this->begin() + rhsSize);
    rhs.clear();
    return *this;
 }
