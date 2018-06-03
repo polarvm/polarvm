@@ -24,7 +24,7 @@
 namespace polar {
 namespace basic {
 
-using Utils = polar::utils;
+namespace utils = polar::utils;
 
 /// \brief An opaque object representing a hash code.
 ///
@@ -79,7 +79,7 @@ public:
 /// differing argument types even if they would implicit promote to a common
 /// type without changing the value.
 template <typename T>
-typename std::enable_if<is_integral_or_enum<T>::value, HashCode>::type
+typename std::enable_if<utils::is_integral_or_enum<T>::value, HashCode>::type
 hash_value(T value);
 
 /// \brief Compute a HashCode for a pointer's address.
@@ -125,7 +125,7 @@ inline uint64_t fetch64(const char *p)
    memcpy(&result, p, sizeof(result));
    if (POLAR_BYTE_ORDER == POLAR_BIG_ENDIAN)
    {
-      Utils::swap_byte_order(result);
+      utils::swap_byte_order(result);
    }
    return result;
 }
@@ -135,7 +135,7 @@ inline uint32_t fetch32(const char *p)
    uint32_t result;
    memcpy(&result, p, sizeof(result));
    if (POLAR_BYTE_ORDER == POLAR_BIG_ENDIAN) {
-      Utils::swap_byte_order(result);
+      utils::swap_byte_order(result);
    }
    return result;
 }
@@ -341,21 +341,23 @@ inline size_t get_execution_seed()
 // for equality. For all the platforms we care about, this holds for integers
 // and pointers, but there are platforms where it doesn't and we would like to
 // support user-defined types which happen to satisfy this property.
-template <typename T> struct is_hashable_data
-      : std::integral_constant<bool, ((is_integral_or_enum<T>::value ||
-                                       std::is_pointer<T>::value) &&
-                                      64 % sizeof(T) == 0)>
+template <typename T>
+struct is_hashable_data : std::integral_constant<bool, ((utils::is_integral_or_enum<T>::value ||
+                                                         std::is_pointer<T>::value) &&
+                                                        64 % sizeof(T) == 0)>
 {};
 
 // Special case std::pair to detect when both types are viable and when there
 // is no alignment-derived padding in the pair. This is a bit of a lie because
 // std::pair isn't truly POD, but it's close enough in all reasonable
 // implementations for our use case of hashing the underlying data.
-template <typename T, typename U> struct is_hashable_data<std::pair<T, U> >
+template <typename T, typename U>
+struct is_hashable_data<std::pair<T, U>> 
       : std::integral_constant<bool, (is_hashable_data<T>::value &&
                                       is_hashable_data<U>::value &&
                                       (sizeof(T) + sizeof(U)) ==
-                                      sizeof(std::pair<T, U>))> {};
+                                      sizeof(std::pair<T, U>))>
+{};
 
 /// \brief Helper to get the hashable data representation for a type.
 /// This variant is enabled when the type itself can be used.
@@ -642,7 +644,7 @@ inline HashCode hash_integer_value(uint64_t value)
 // Declared and documented above, but defined here so that any of the hashing
 // infrastructure is available.
 template <typename T>
-typename std::enable_if<is_integral_or_enum<T>::value, HashCode>::type
+typename std::enable_if<utils::is_integral_or_enum<T>::value, HashCode>::type
 hash_value(T value)
 {
    return ::polar::basic::hashing::internal::hash_integer_value(
