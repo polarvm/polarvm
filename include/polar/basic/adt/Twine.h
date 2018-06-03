@@ -536,7 +536,7 @@ inline Twine Twine::concat(const Twine &suffix) const
 {
    // Concatenation with null is null.
    if (isNull() || suffix.isNull()) {
-       return Twine(NodeKind::NullKind);
+      return Twine(NodeKind::NullKind);
    }
    // Concatenation with empty yields the other side.
    if (isEmpty()){
