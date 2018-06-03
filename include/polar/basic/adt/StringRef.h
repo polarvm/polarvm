@@ -772,7 +772,7 @@ public:
    /// Returns true if this StringRef has the given prefix and removes that
    /// prefix.
    POLAR_ATTRIBUTE_ALWAYS_INLINE
-   bool consume_front(StringRef prefix)
+   bool consumeFront(StringRef prefix)
    {
       if (!startsWith(prefix)) {
          return false;
