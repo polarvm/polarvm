@@ -171,7 +171,7 @@ public:
    
    ~BumpPtrAllocatorImpl()
    {
-      deallocateSlabs(Slabs.begin(), m_slabs.end());
+      deallocateSlabs(m_slabs.begin(), m_slabs.end());
       deallocateCustomSizedSlabs();
    }
    
@@ -449,7 +449,7 @@ public:
          }
       };
       
-      for (auto iter = m_allocator.m_slabs.begin(), end = m_allocator.m_slabs.end(); iter != end;
+      for (auto iter = m_allocator.m_slabs.begin(), endMark = m_allocator.m_slabs.end(); iter != endMark;
            ++iter) {
          size_t allocatedSlabSize = BumpPtrAllocator::computeSlabSize(
                   std::distance(m_allocator.m_slabs.begin(), iter));
@@ -463,7 +463,7 @@ public:
       for (auto &ptrAndSize : m_allocator.m_customSizedSlabs) {
          void *ptr = ptrAndSize.first;
          size_t size = ptrAndSize.second;
-         destroyElements((char *)align_addr(Ptr, alignof(T)), (char *)ptr + size);
+         destroyElements((char *)align_addr(ptr, alignof(T)), (char *)ptr + size);
       }
       
       m_allocator.reset();
@@ -475,6 +475,42 @@ public:
       return m_allocator.allocate<T>(num);
    }
 };
+
+/// \{
+/// Counterparts of allocation functions defined in namespace 'std', which crash
+/// on allocation failure instead of returning null pointer.
+
+POLAR_ATTRIBUTE_RETURNS_NONNULL
+inline void *safe_malloc(size_t size)
+{
+   void *result = std::malloc(size);
+   if (result == nullptr) {
+      report_bad_alloc_error("Allocation failed.");
+   }
+   return result;
+}
+
+POLAR_ATTRIBUTE_RETURNS_NONNULL
+inline void *safe_calloc(size_t count, size_t size)
+{
+   void *result = std::calloc(count, size);
+   if (result == nullptr) {
+      report_bad_alloc_error("Allocation failed.");
+   }
+   return result;
+}
+
+POLAR_ATTRIBUTE_RETURNS_NONNULL
+inline void *safe_realloc(void *ptr, size_t size)
+{
+   void *result = std::realloc(ptr, size);
+   if (result == nullptr) {
+      report_bad_alloc_error("Allocation failed.");
+   }
+   return result;
+}
+
+/// \}
 
 } // utils
 } // polar
@@ -495,7 +531,7 @@ void *operator new(size_t size,
       } x;
    };
    return allocator.allocate(
-            size, std::min((size_t)polar::utils::next_power_of_two(Size), offsetof(S, x)));
+            size, std::min((size_t)polar::utils::next_power_of_two(size), offsetof(S, x)));
 }
 
 template <typename AllocatorT, size_t SlabSize, size_t SizeThreshold>

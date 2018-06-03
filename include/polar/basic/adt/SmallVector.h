@@ -648,7 +648,7 @@ public:
       // Shift all elts down.
       iterator iter = std::move(endIter, this->end(), startIter);
       // Drop the last elts.
-      destroyRange(iter, this->end());
+      this->destroyRange(iter, this->end());
       this->setEnd(iter);
       return(removed);
    }
@@ -1035,7 +1035,7 @@ SmallVectorImpl<T> &SmallVectorImpl<T>::operator=(SmallVectorImpl<T> &&rhs)
    
    // Move-construct the new elements in place.
    this->uninitializedMove(rhs.begin() + curSize, rhs.end(),
-                     this->begin() + curSize);
+                           this->begin() + curSize);
    // Set end.
    this->setEnd(this->begin() + rhsSize);
    rhs.clear();

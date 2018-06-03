@@ -32,10 +32,10 @@ polar_collect_files(
    OUTPUT_VAR POLAR_UTILS_SOURCES)
 
 polar_add_library(PolarUtils
-   ${POLAR_UTILS_SOURCES}
+   ${POLAR_UTILS_SOURCES} $<TARGET_OBJECTS:PolarBasic>
    ADDITIONAL_HEADER_DIRS
    Unix
    Windows
    ${POLAR_MAIN_INCLUDE_DIR}/polar/utils
-   LINK_LIBS ${system_libs} PolarBasic
+   LINK_LIBS ${system_libs}
    )

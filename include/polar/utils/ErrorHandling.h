@@ -16,13 +16,20 @@
 #include <string>
 
 namespace polar {
-namespace utils {
 
+// forward class with namespace
+namespace basic {
 class StringRef;
 class Twine;
+} // basic
+
+namespace utils {
+
+using polar::basic::StringRef;
+using polar::basic::Twine;
 
 /// An error handler callback.
-using FatalErrorHandlerType = void (*)(void *userData, const std::string& reason, bool genCrashDiag);
+using FatalErrorHandlerType = void (*)(void *userData, const std::string &reason, bool genCrashDiag);
 
 /// install_fatal_error_handler - Installs a new error handler to be used
 /// whenever a serious (non-recoverable) error is encountered by LLVM.

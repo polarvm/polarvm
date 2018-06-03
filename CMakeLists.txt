@@ -293,6 +293,9 @@ configure_file(
 configure_file(
   ${POLAR_MAIN_INCLUDE_DIR}/polar/global/DataTypes.h.cmake
   ${POLAR_INCLUDE_DIR}/polar/global/DataTypes.h)
+configure_file(
+  ${POLAR_MAIN_INCLUDE_DIR}/polar/global/AbiBreaking.h.cmake
+  ${POLAR_INCLUDE_DIR}/polar/global/AbiBreaking.h)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND POLAR_INCLUDE_TESTS)
    set(PPOLAR_FOUND_NATIVE_GTEST OFF)

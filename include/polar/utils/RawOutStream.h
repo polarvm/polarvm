@@ -41,6 +41,7 @@ class FormattedBytes;
 
 using polar::basic::SmallVectorImpl;
 using polar::basic::SmallVector;
+using polar::basic::StringRef;
 
 /// This class implements an extremely fast bulk output stream that can *only*
 /// output to a stream.  It does not support seeking, reopening, rewinding, line
@@ -131,7 +132,7 @@ public:
       // If we're supposed to be buffered but haven't actually gotten around
       // to allocating the buffer yet, return the value that would be used.
       if (m_bufferMode != BufferKind::Unbuffered && m_outBufStart == nullptr) {
-         return preferred_buffer_size();
+         return getPreferredBufferSize();
       }
       
       // Otherwise just return the size of the allocated buffer.
@@ -355,7 +356,7 @@ protected:
    }
    
    /// Return an efficient buffer size for the underlying output mechanism.
-   virtual size_t preferredBufferSize() const;
+   virtual size_t getPreferredBufferSize() const;
    
    /// Return the beginning of the current stream buffer, or 0 if the stream is
    /// unbuffered.
@@ -430,11 +431,11 @@ class RawFdOstream : public RawPwriteStream
    /// currently in the buffer.
    uint64_t getCurrentPos() const override
    {
-      return pos;
+      return m_pos;
    }
    
    /// Determine an efficient buffer size.
-   size_t preferredBufferSize() const override;
+   size_t getPreferredBufferSize() const override;
    
    /// Set the flag indicating that an output error has been encountered.
    void errorDetected(std::error_code errorCode)
@@ -581,7 +582,8 @@ public:
    ///
    /// \param O The vector to write to; this should generally have at least 128
    /// bytes free to avoid any extraneous memory overhead.
-   explicit RawSvectorOstream(SmallVectorImpl<char> &O) : OS(O)
+   explicit RawSvectorOstream(SmallVectorImpl<char> &outStream)
+      : m_outStream(outStream)
    {
       setUnbuffered();
    }
