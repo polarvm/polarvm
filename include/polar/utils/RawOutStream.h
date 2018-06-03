@@ -531,7 +531,7 @@ RawOutStream &null_stream();
 
 /// A RawOutStream that writes to an std::string.  This is a simple adaptor
 /// class. This class does not encounter output errors.
-class RawStringOstream : public RawOutStream
+class RawStringOutStream : public RawOutStream
 {
    std::string &m_outStream;
    
@@ -546,10 +546,10 @@ class RawStringOstream : public RawOutStream
    }
    
 public:
-   explicit RawStringOstream(std::string &out) : m_outStream(out)
+   explicit RawStringOutStream(std::string &out) : m_outStream(out)
    {}
    
-   ~RawStringOstream() override;
+   ~RawStringOutStream() override;
    
    /// Flushes the stream contents to the target string and returns  the string's
    /// reference.
@@ -562,10 +562,10 @@ public:
 
 /// A RawOutStream that writes to an SmallVector or SmallString.  This is a
 /// simple adaptor class. This class does not encounter output errors.
-/// RawSvectorOstream operates without a buffer, delegating all memory
+/// RawSvectorOutStream operates without a buffer, delegating all memory
 /// management to the SmallString. Thus the SmallString is always up-to-date,
 /// may be used directly and there is no need to call flush().
-class RawSvectorOstream : public RawPwriteStream
+class RawSvectorOutStream : public RawPwriteStream
 {
    SmallVectorImpl<char> &m_outStream;
    
@@ -578,17 +578,17 @@ class RawSvectorOstream : public RawPwriteStream
    uint64_t getCurrentPos() const override;
    
 public:
-   /// Construct a new RawSvectorOstream.
+   /// Construct a new RawSvectorOutStream.
    ///
    /// \param O The vector to write to; this should generally have at least 128
    /// bytes free to avoid any extraneous memory overhead.
-   explicit RawSvectorOstream(SmallVectorImpl<char> &outStream)
+   explicit RawSvectorOutStream(SmallVectorImpl<char> &outStream)
       : m_outStream(outStream)
    {
       setUnbuffered();
    }
    
-   ~RawSvectorOstream() override = default;
+   ~RawSvectorOutStream() override = default;
    
    void flush() = delete;
    
@@ -615,14 +615,14 @@ public:
    ~RawNullOstream() override;
 };
 
-class BufferOstream : public RawSvectorOstream
+class BufferOstream : public RawSvectorOutStream
 {
    RawOutStream &m_outStream;
    SmallVector<char, 0> m_buffer;
    
 public:
    BufferOstream(RawOutStream &outStream) 
-      : RawSvectorOstream(m_buffer), m_outStream(outStream)
+      : RawSvectorOutStream(m_buffer), m_outStream(outStream)
    {}
    
    ~BufferOstream() override

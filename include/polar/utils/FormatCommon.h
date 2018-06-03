@@ -47,7 +47,7 @@ struct FmtAlign
          return;
       }
       SmallString<64> item;
-      RawSvectorOstream svtream(item);
+      RawSvectorOutStream svtream(item);
       
       m_adapter.format(svtream, options);
       if (m_amount <= item.getSize()) {
