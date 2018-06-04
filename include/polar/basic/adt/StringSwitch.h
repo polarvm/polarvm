@@ -104,7 +104,7 @@ public:
    {
       assert(N);
       if (!m_result && m_str.getSize() >= N-1 &&
-          (N == 1 || std::memcmp(str, m_str.data(), N-1) == 0)) {
+          (N == 1 || std::memcmp(str, m_str.getData(), N-1) == 0)) {
          m_result = &value;
       }
       return *this;
@@ -208,7 +208,7 @@ public:
    POLAR_ATTRIBUTE_ALWAYS_INLINE StringSwitch &condLower(const char (&str)[N],
                                                          const T &value)
    {
-      if (!m_result && m_str.equals_lower(StringRef(str, N - 1))) {
+      if (!m_result && m_str.equalsLower(StringRef(str, N - 1))) {
          m_result = &value;
       }
       return *this;

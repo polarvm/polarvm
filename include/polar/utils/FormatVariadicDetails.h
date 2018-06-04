@@ -111,7 +111,7 @@ typename std::enable_if<uses_FormatProvider<T>::value,
 provider_FormatAdapter<T>>::type
 build_format_adapter(T &&item)
 {
-   return provider_FormatAdapter<T>(std::forward<T>(Item));
+   return provider_FormatAdapter<T>(std::forward<T>(item));
 }
 
 template <typename T>

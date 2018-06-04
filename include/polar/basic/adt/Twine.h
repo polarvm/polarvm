@@ -188,7 +188,7 @@ class Twine
    
    /// Construct a twine from explicit values.
    explicit Twine(Child lhs, NodeKind lhsKind, Child rhs, NodeKind rhsKind)
-      : m_lhs(lhs), m_rhs(rhs), m_lhsKind(LHSKind), m_rhsKind(rhsKind)
+      : m_lhs(lhs), m_rhs(rhs), m_lhsKind(lhsKind), m_rhsKind(rhsKind)
    {
       assert(isValid() && "Invalid twine!");
    }
@@ -247,7 +247,7 @@ class Twine
          return false;
       }
       
-      if (getRhsKind() == TwineKind &&
+      if (getRhsKind() == NodeKind::TwineKind &&
           !m_rhs.m_twine->isBinary()) {
          return false;
       }
@@ -292,8 +292,8 @@ public:
    /// default "" values, without introducing unnecessary string constants.
    /*implicit*/ Twine(const char *str)
    {
-      if (Str[0] != '\0') {
-         m_lhs.cString = Str;
+      if (str[0] != '\0') {
+         m_lhs.m_CString = str;
          m_lhsKind = NodeKind::CStringKind;
       } else {
          m_lhsKind = NodeKind::EmptyKind;
@@ -311,12 +311,12 @@ public:
    /// Construct from a StringRef.
    /*implicit*/ Twine(const StringRef &str) : m_lhsKind(NodeKind::StringRefKind)
    {
-      m_lhs.m_stdString = &str;
+      m_lhs.m_stringRef = &str;
       assert(isValid() && "Invalid twine!");
    }
    
    /// Construct from a SmallString.
-   /*implicit*/ Twine(const SmallVectorImpl<char> &Str)
+   /*implicit*/ Twine(const SmallVectorImpl<char> &str)
       : m_lhsKind(NodeKind::SmallStringKind) {
       m_lhs.m_smallString = &str;
       assert(isValid() && "Invalid twine!");
@@ -374,7 +374,7 @@ public:
    /// Construct a twine to print \p Val as an unsigned decimal integer.
    explicit Twine(const unsigned long long &value) : m_lhsKind(NodeKind::DecULLKind)
    {
-      m_lhs.m_decLongLong = &value;
+      m_lhs.m_decULongLong = &value;
    }
    
    /// Construct a twine to print \p Val as a signed decimal integer.

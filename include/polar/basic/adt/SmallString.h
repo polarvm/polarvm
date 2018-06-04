@@ -56,21 +56,21 @@ public:
    template<typename InputIter>
    void assign(InputIter start, InputIter end)
    {
-      clear();
+      this->clear();
       SmallVectorImpl<char>::append(start, end);
    }
    
    /// Assign from a StringRef.
    void assign(StringRef rhs)
    {
-      clear();
+      this->clear();
       SmallVectorImpl<char>::append(rhs.begin(), rhs.end());
    }
    
    /// Assign from a SmallVector.
    void assign(const SmallVectorImpl<char> &rhs)
    {
-      clear();
+      this->clear();
       SmallVectorImpl<char>::append(rhs.begin(), rhs.end());
    }
    
@@ -298,15 +298,15 @@ public:
    /// Explicit conversion to StringRef.
    StringRef getStr() const
    {
-      return StringRef(begin(), getSize());
+      return StringRef(this->begin(), this->getSize());
    }
    
    // TODO: Make this const, if it's safe...
    const char* getCStr()
    {
-      pushBack(0);
-      popBack();
-      return getData();
+      this->pushBack(0);
+      this->popBack();
+      return this->getData();
    }
    
    /// Implicit conversion to StringRef.
@@ -318,7 +318,7 @@ public:
    // Extra operators.
    const SmallString &operator=(StringRef rhs)
    {
-      clear();
+      this->clear();
       return *this += rhs;
    }
    
@@ -330,7 +330,7 @@ public:
    
    SmallString &operator+=(char character)
    {
-      pushBack(character);
+      this->pushBack(character);
       return *this;
    }
 };

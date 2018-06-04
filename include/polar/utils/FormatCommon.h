@@ -55,8 +55,8 @@ struct FmtAlign
          return;
       }
       
-      size_t padAmount = m_amount - item.size();
-      switch (where) {
+      size_t padAmount = m_amount - item.getSize();
+      switch (m_where) {
       case AlignStyle::Left:
          stream << item;
          fill(stream, padAmount);

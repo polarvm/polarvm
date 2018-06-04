@@ -45,8 +45,8 @@ struct ReplacementItem
    
    ReplacementItem(StringRef spec, size_t index, size_t align, AlignStyle where,
                    char pad, StringRef options)
-      : m_type(ReplacementType::Format), m_spec(StringRef), m_index(index), m_align(align),
-        m_where(where), m_pad(pad), Options(options)
+      : m_type(ReplacementType::Format), m_spec(spec), m_index(index), m_align(align),
+        m_where(where), m_pad(pad), m_options(options)
    {}
    
    ReplacementType m_type = ReplacementType::Empty;
@@ -246,7 +246,7 @@ public:
 //   1. If the parameter is of class type, and inherits from format_adapter,
 //      Then format() is invoked on it to produce the formatted output.  The
 //      implementation should write the formatted text into `Stream`.
-//   2. If there is a suitable template specialization of format_provider<>
+//   2. If there is a suitable template specialization of FormatProvider<>
 //      for type T containing a method whose signature is:
 //      void format(const T &Obj, raw_ostream &Stream, StringRef Options)
 //      Then this method is invoked as described in Step 1.
@@ -273,7 +273,7 @@ inline auto formatv(const char *fmt, Ts &&... values) -> FormatvObject<decltype(
 }
 
 // Allow a FormatvObject to be formatted (no options supported).
-template <typename T> struct format_provider<FormatvObject<T>>
+template <typename T> struct FormatProvider<FormatvObject<T>>
 {
    static void format(const FormatvObject<T> &value, RawOutStream &outStream, StringRef)
    {

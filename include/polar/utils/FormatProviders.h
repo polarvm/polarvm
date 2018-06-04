@@ -9,8 +9,8 @@
 // 
 // Created by softboy on 2018/06/03.
 
-#ifndef POLAR_UTILS_FormatProviderS_H
-#define POLAR_UTILS_FormatProviderS_H
+#ifndef POLAR_UTILS_FORMAT_PROVIDERS_H
+#define POLAR_UTILS_FORMAT_PROVIDERS_H
 
 #include "polar/basic/adt/StlExtras.h"
 #include "polar/basic/adt/StringSwitch.h"
@@ -31,7 +31,7 @@ namespace internal {
 template <typename T>
 struct UseIntegralFormatter
       : public std::integral_constant<
-      bool, is_one_of<T, uint8_t, int16_t, uint16_t, int32_t, uint32_t,
+      bool, polar::basic::is_one_of<T, uint8_t, int16_t, uint16_t, int32_t, uint32_t,
       int64_t, uint64_t, int, unsigned, long, unsigned long,
       long long, unsigned long long>::value>
 {};
@@ -160,7 +160,7 @@ public:
       }
       style.consumeInteger(10, digits);
       assert(style.empty() && "Invalid integral format style!");
-      write_integer(stream, value, digits, IS);
+      write_integer(stream, value, digits, is);
    }
 };
 
@@ -203,7 +203,7 @@ public:
 };
 
 /// Implementation of FormatProvider<T> for c-style strings and string
-/// objects such as std::string and llvm::StringRef.
+/// objects such as std::string and polar::basic::StringRef.
 ///
 /// The options string of a string type has the grammar:
 ///
@@ -228,7 +228,7 @@ struct FormatProvider<
    }
 };
 
-/// Implementation of FormatProvider<T> for llvm::Twine.
+/// Implementation of FormatProvider<T> for polar::basic::Twine.
 ///
 /// This follows the same rules as the string formatter.
 
@@ -411,8 +411,8 @@ template <typename IterT> class FormatProvider<polar::basic::IteratorRange<IterT
             assert(false && "Missing range option end delimeter!");
             return defaultValue;
          }
-         StringRef result = style.slice(1, End);
-         style = style.dropFront(End + 1);
+         StringRef result = style.slice(1, end);
+         style = style.dropFront(end + 1);
          return result;
       }
       assert(false && "Invalid range style!");
@@ -456,5 +456,4 @@ public:
 } // utils
 } // polar
 
-
-#endif // POLAR_UTILS_FormatProviderS_H
+#endif // POLAR_UTILS_FORMAT_PROVIDERS_H
