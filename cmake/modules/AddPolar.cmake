@@ -640,7 +640,7 @@ function(polar_install_library_symlink name dest type)
       COMPONENT ${component})
    
    if (NOT CMAKE_CONFIGURATION_TYPES AND NOT ARG_ALWAYS_GENERATE)
-      add_POLAR_install_targets(install-${name}
+      add_polar_install_targets(install-${name}
          DEPENDS ${name} ${dest} install-${dest}
          COMPONENT ${name})
    endif()

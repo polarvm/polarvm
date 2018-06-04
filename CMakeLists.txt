@@ -242,13 +242,17 @@ polar_configure_components()
 # subdirectories.
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+# They are not referenced. See set_output_directory().
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${POLAR_BINARY_DIR}/bin )
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${POLAR_BINARY_DIR}/lib${POLAR_LIBDIR_SUFFIX} )
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${POLAR_BINARY_DIR}/lib${LLVM_LIBDIR_SUFFIX} )
+
 # We'll need this once we have generated headers
 include_directories(BEFORE
    ${POLAR_MAIN_INCLUDE_DIR}
    ${POLAR_INCLUDE_DIR}
    )
 
-message(${POLAR_INCLUDE_DIR})
 
 # Xcode: use libc++ and c++11 using proper build settings.
 if(XCODE)
@@ -296,6 +300,7 @@ configure_file(
 configure_file(
   ${POLAR_MAIN_INCLUDE_DIR}/polar/global/AbiBreaking.h.cmake
   ${POLAR_INCLUDE_DIR}/polar/global/AbiBreaking.h)
+
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND POLAR_INCLUDE_TESTS)
    set(PPOLAR_FOUND_NATIVE_GTEST OFF)
