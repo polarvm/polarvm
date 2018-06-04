@@ -259,7 +259,7 @@ protected:
                     "Must pass the derived type to this template!");
    }
    
-   const WrappedIteratorT &wrapped() const
+   const WrappedIteratorT &getWrapped() const
    {
       return m_iter;
    }
@@ -359,14 +359,14 @@ struct PointeeIterator
    }
 };
 
-template <typename RangeT, typename WrappedIteratorT =
-          decltype(std::begin(std::declval<RangeT>()))>
+template <typename RangeType, typename WrappedIteratorT =
+          decltype(std::begin(std::declval<RangeType>()))>
 IteratorRange<PointeeIterator<WrappedIteratorT>>
-make_pointee_range(RangeT &&range)
+make_pointee_range(RangeType &&range)
 {
    using PointeeIteratorT = PointeeIterator<WrappedIteratorT>;
-   return make_range(PointeeIteratorT(std::begin(std::forward<RangeT>(range))),
-                     PointeeIteratorT(std::end(std::forward<RangeT>(range))));
+   return make_range(PointeeIteratorT(std::begin(std::forward<RangeType>(range))),
+                     PointeeIteratorT(std::end(std::forward<RangeType>(range))));
 }
 
 template <typename WrappedIteratorT,
@@ -395,14 +395,14 @@ public:
    }
 };
 
-template <typename RangeT, typename WrappedIteratorT =
-          decltype(std::begin(std::declval<RangeT>()))>
+template <typename RangeType, typename WrappedIteratorT =
+          decltype(std::begin(std::declval<RangeType>()))>
 IteratorRange<PointerIterator<WrappedIteratorT>>
-make_pointer_range(RangeT &&range)
+make_pointer_range(RangeType &&range)
 {
    using PointerIteratorT = PointerIterator<WrappedIteratorT>;
-   return make_range(PointerIteratorT(std::begin(std::forward<RangeT>(range))),
-                     PointerIteratorT(std::end(std::forward<RangeT>(range))));
+   return make_range(PointerIteratorT(std::begin(std::forward<RangeType>(range))),
+                     PointerIteratorT(std::end(std::forward<RangeType>(range))));
 }
 
 } // basic
