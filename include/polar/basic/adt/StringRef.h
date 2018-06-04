@@ -134,7 +134,7 @@ public:
       return reinterpret_cast<const unsigned char *>(end());
    }
    
-   IteratorRange<const unsigned char *> bytes() const
+   IteratorRange<const unsigned char *> getBytes() const
    {
       return make_range(getBytesBegin(), getBytesEnd());
    }
