@@ -13,6 +13,7 @@
 #define POLAR_BASIC_ADT_INTRUSIVE_LIST_ITERATOR_H
 
 #include "polar/basic/adt/IntrusiveListNode.h"
+
 #include <cassert>
 #include <cstddef>
 #include <iterator>
