@@ -32,7 +32,7 @@ bool convert_utf8_to_wide(unsigned wideCharWidth, StringRef source,
    if (wideCharWidth == 1) {
       const Utf8 *pos = reinterpret_cast<const Utf8*>(source.begin());
       if (!is_legal_utf8_string(&pos, reinterpret_cast<const Utf8*>(source.end()))) {
-         result = sourceIllegal;
+         result = ConversionResult::SourceIllegal;
          errorPtr = pos;
       } else {
          memcpy(resultPtr, source.getData(), source.getSize());
@@ -43,7 +43,7 @@ bool convert_utf8_to_wide(unsigned wideCharWidth, StringRef source,
       // FIXME: Make the type of the result buffer correct instead of
       // using reinterpret_cast.
       Utf16 *targetStart = reinterpret_cast<Utf16*>(resultPtr);
-      ConversionFlags flags = strictConversion;
+      ConversionFlags flags = ConversionFlags::StrictConversion;
       result = convert_utf8_to_utf16(
                &sourceStart, sourceStart + source.getSize(),
                &targetStart, targetStart + source.getSize(), flags);
@@ -72,11 +72,11 @@ bool convert_utf8_to_wide(unsigned wideCharWidth, StringRef source,
    return result == ConversionResult::ConversionOK;
 }
 
-bool convert_code_point_to_utf8(unsigned source, char *&resultPtr)
+bool convert_code_point_to_utf8(char32_t source, char *&resultPtr)
 {
    const Utf32 *sourceStart = &source;
    const Utf32 *sourceEnd = sourceStart + 1;
-   Utf8 *targetStart = reinterpret_cast<UTF8 *>(resultPtr);
+   Utf8 *targetStart = reinterpret_cast<Utf8 *>(resultPtr);
    Utf8 *targetEnd = targetStart + 4;
    ConversionResult result = convert_utf32_to_utf8(&sourceStart, sourceEnd,
                                                    &targetStart, targetEnd,
@@ -127,12 +127,12 @@ bool convert_utf16_to_utf8_string(ArrayRef<char> srcBytes, std::string &out)
    }
    // Just allocate enough space up front.  We'll shrink it later.  Allocate
    // enough that we can fit a null terminator without reallocating.
-   out.resize(srcBytes.size() * UNI_MAX_UTF8_BYTES_PER_CODE_POINT + 1);
+   out.resize(srcBytes.getSize() * UNI_MAX_UTF8_BYTES_PER_CODE_POINT + 1);
    Utf8 *dest = reinterpret_cast<Utf8 *>(&out[0]);
    Utf8 *destEnd = dest + out.size();
    
    ConversionResult result =
-         convert_utf16_to_utf8(&src, srcEnd, &dest, destEnd, strictConversion);
+         convert_utf16_to_utf8(&src, srcEnd, &dest, destEnd, ConversionFlags::StrictConversion);
    assert(result != ConversionResult::TargetExhausted);
    
    if (result != ConversionResult::ConversionOK) {
@@ -203,7 +203,7 @@ static inline bool convert_utf8_to_wide_internal(StringRef source,
    // Even in the case of UTF-16, the number of bytes in a UTF-8 string is
    // at least as large as the number of elements in the resulting wide
    // string, because surrogate pairs take at least 4 bytes in UTF-8.
-   result.resize(source.size() + 1);
+   result.resize(source.getSize() + 1);
    char *resultPtr = reinterpret_cast<char *>(&result[0]);
    const Utf8 *errorPtr;
    if (!convert_utf8_to_wide(sizeof(wchar_t), source, resultPtr, errorPtr)) {
@@ -248,13 +248,13 @@ bool convert_wide_to_utf8(const std::wstring &source, std::string &result)
    } else if (sizeof(wchar_t) == 4) {
       const Utf32 *start = reinterpret_cast<const Utf32 *>(source.data());
       const Utf32 *end =
-            reinterpret_cast<const UTF32 *>(source.data() + source.size());
+            reinterpret_cast<const Utf32 *>(source.data() + source.size());
       result.resize(UNI_MAX_UTF8_BYTES_PER_CODE_POINT * source.size());
       Utf8 *resultPtr = reinterpret_cast<Utf8 *>(&result[0]);
       Utf8 *resultEnd = reinterpret_cast<Utf8 *>(&result[0] + result.size());
       if (convert_utf32_to_utf8(&start, end, &resultPtr, resultEnd,
                                 ConversionFlags::StrictConversion) == ConversionResult::ConversionOK) {
-         result.resize(reinterpret_cast<char *>(resultPtr) - &Result[0]);
+         result.resize(reinterpret_cast<char *>(resultPtr) - &result[0]);
          return true;
       } else {
          result.clear();

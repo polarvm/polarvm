@@ -513,15 +513,15 @@ public:
    {
       if (size < this->getSize()) {
          this->destroyRange(this->begin() + size, this->end());
-         setEnd(this->begin() + size);
+         this->setEnd(this->begin() + size);
       } else if (size > this->getSize()) {
          if (this->getCapacity() < size) {
-            grow(size);
+            this->grow(size);
          }
          for (auto iter = this->end(), end = this->begin() + size; iter != end; ++iter) {
             new (&*iter) T();
          }
-         setEnd(this->begin() + size);
+         this->setEnd(this->begin() + size);
       }
    }
    

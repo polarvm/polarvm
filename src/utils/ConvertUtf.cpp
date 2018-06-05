@@ -374,7 +374,8 @@ ConversionResult convert_utf32_to_utf8 (
       target += bytesToWrite;
       if (target > targetEnd) {
          --source; /* Back up source pointer! */
-         target -= bytesToWrite; result = targetExhausted; break;
+         target -= bytesToWrite;
+         result = ConversionResult::TargetExhausted; break;
       }
       switch (bytesToWrite) { /* note: everything falls through. */
       case 4: *--target = (Utf8)((ch | byteMark) & byteMask); ch >>= 6;
@@ -571,7 +572,7 @@ ConversionResult convert_utf8_to_utf16 (
       const Utf8 **sourceStart, const Utf8 *sourceEnd, 
       Utf16 **targetStart, Utf16 *targetEnd, ConversionFlags flags)
 {
-   ConversionResult result = conversionOK;
+   ConversionResult result = ConversionResult::ConversionOK;
    const Utf8 *source = *sourceStart;
    Utf16 *target = *targetStart;
    while (source < sourceEnd) {

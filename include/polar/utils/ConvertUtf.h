@@ -271,7 +271,7 @@ inline ConversionResult convert_utf8_sequence(const Utf8 **source,
  * Returns true if a blob of text starts with a UTF-16 big or little endian byte
  * order mark.
  */
-bool has_utf16_byteorder_mark(ArrayRef<char> srcBytes);
+bool has_utf16_byte_order_mark(ArrayRef<char> srcBytes);
 
 /**
  * Converts a stream of raw bytes assumed to be UTF16 into a Utf8 std::string.
