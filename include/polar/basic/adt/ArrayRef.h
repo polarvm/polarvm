@@ -68,13 +68,14 @@ public:
    {}
    
    /// Construct an ArrayRef from a single element.
-   /*implicit*/ ArrayRef(const T &OneElt)
-      : Data(&OneElt), Length(1)
+   /*implicit*/ ArrayRef(const T &oneElt)
+      : m_data(&oneElt), m_length(1)
    {}
    
    /// Construct an ArrayRef from a pointer and length.
    /*implicit*/ ArrayRef(const T *data, size_t length)
-      : m_data(data), m_length(length) {}
+      : m_data(data), m_length(length)
+   {}
    
    /// Construct an ArrayRef from a range.
    ArrayRef(const T *begin, const T *end)
@@ -86,7 +87,7 @@ public:
    /// copy-construct an ArrayRef.
    template<typename U>
    /*implicit*/ ArrayRef(const SmallVectorTemplateCommon<T, U> &vector)
-      : m_data(vector.getData()), Length(vector.getSize())
+      : m_data(vector.getData()), m_length(vector.getSize())
    {}
    
    /// Construct an ArrayRef from a std::vector.
@@ -193,7 +194,7 @@ public:
    const T &getBack() const
    {
       assert(!empty());
-      return m_data[Length-1];
+      return m_data[m_length - 1];
    }
    
    const T &front() const
@@ -256,7 +257,7 @@ public:
    /// given predicate removed.
    template <class PredicateT> ArrayRef<T> dropWhile(PredicateT pred) const
    {
-      return ArrayRef<T>(Utils::find_last_set(*this, pred), end());
+      return ArrayRef<T>(utils::find_last_set(*this, pred), end());
    }
    
    /// \brief Return a copy of *this with the first N elements not satisfying
@@ -416,7 +417,7 @@ public:
    
    iterator end() const
    {
-      return getData() + getSize();
+      return getData() + this->getSize();
    }
    
    reverse_iterator rbegin() const
@@ -432,42 +433,42 @@ public:
    /// front - Get the first element.
    T &front() const
    {
-      assert(!empty());
+      assert(!this->empty());
       return getData()[0];
    }
    
    /// back - Get the last element.
    T &back() const
    {
-      assert(!empty());
-      return getData()[getSize() - 1];
+      assert(!this->empty());
+      return getData()[this->getSize() - 1];
    }
    
    /// slice(n, m) - Chop off the first N elements of the array, and keep M
    /// elements in the array.
    MutableArrayRef<T> slice(size_t start, size_t size) const
    {
-      assert(start + size <= getSize() && "Invalid specifier");
+      assert(start + size <= this->getSize() && "Invalid specifier");
       return MutableArrayRef<T>(getData() + start, size);
    }
    
    /// slice(n) - Chop off the first N elements of the array.
    MutableArrayRef<T> slice(size_t size) const
    {
-      return slice(size, getSize() - size);
+      return slice(size, this->getSize() - size);
    }
    
    /// \brief Drop the first \p N elements of the array.
    MutableArrayRef<T> dropFront(size_t size = 1) const
    {
-      assert(getSize() >= size && "Dropping more elements than exist");
-      return slice(size, getSize() - size);
+      assert(this->getSize() >= size && "Dropping more elements than exist");
+      return slice(size, this->getSize() - size);
    }
    
    MutableArrayRef<T> dropBack(size_t size = 1) const
    {
-      assert(getSize() >= size && "Dropping more elements than exist");
-      return slice(0, getSize - size);
+      assert(this->getSize() >= size && "Dropping more elements than exist");
+      return slice(0, this->getSize - size);
    }
    
    /// \brief Return a copy of *this with the first N elements satisfying the
@@ -489,19 +490,19 @@ public:
    /// \brief Return a copy of *this with only the first \p N elements.
    MutableArrayRef<T> takeFront(size_t size = 1) const
    {
-      if (size >= getSize()) {
+      if (size >= this->getSize()) {
          return *this;
       }
-      return dropBack(getSize() - size);
+      return dropBack(this->getSize() - size);
    }
    
    /// \brief Return a copy of *this with only the last \p N elements.
    MutableArrayRef<T> takeBack(size_t size = 1) const
    {
-      if (size >= getSize()) {
+      if (size >= this->getSize()) {
          return *this;
       }
-      return drop_front(getSize() - size);
+      return dropFront(this->getSize() - size);
    }
    
    /// \brief Return the first N elements of this Array that satisfy the given
@@ -525,7 +526,7 @@ public:
    /// @{
    T &operator[](size_t index) const
    {
-      assert(index < getSize() && "Invalid index!");
+      assert(index < this->getSize() && "Invalid index!");
       return getData()[index];
    }
 };
@@ -542,7 +543,7 @@ public:
    OwningArrayRef(ArrayRef<T> data)
       : MutableArrayRef<T>(new T[data.getSize()], data.getSize())
    {
-      std::copy(data.begin(), data.end(), begin());
+      std::copy(data.begin(), data.end(), this->begin());
    }
    
    OwningArrayRef(OwningArrayRef &&other)
@@ -552,7 +553,7 @@ public:
    
    OwningArrayRef &operator=(OwningArrayRef &&other)
    {
-      delete[] getData();
+      delete[] this->getData();
       MutableArrayRef<T>::operator=(other);
       other.MutableArrayRef<T>::operator=(MutableArrayRef<T>());
       return *this;
@@ -560,7 +561,7 @@ public:
    
    ~OwningArrayRef()
    {
-      delete[] getData();
+      delete[] this->getData();
    }
 };
 
@@ -666,15 +667,15 @@ namespace utils {
 
 // ArrayRefs can be treated like a POD type.
 template <typename T> struct is_pod_like;
-template <typename T> struct is_pod_like<ArrayRef<T>>
+template <typename T> struct is_pod_like<polar::basic::ArrayRef<T>>
 {
    static const bool value = true;
 };
 
 template <typename T>
-HashCode hash_value(ArrayRef<T> array)
+polar::basic::HashCode hash_value(polar::basic::ArrayRef<T> array)
 {
-   return hash_combine_range(array.begin(), array.end());
+   return polar::basic::hash_combine_range(array.begin(), array.end());
 }
 
 } // utils

@@ -32,29 +32,29 @@
  */
 
 /* ---------------------------------------------------------------------
-
+  
     Conversions between Utf32, UTF-16, and UTF-8.  Header file.
-
+    
     Several funtions are included here, forming a complete set of
     conversions between the three formats.  UTF-7 is not included
     here, but is handled in a separate source file.
-
+    
     Each of these routines takes pointers to input buffers and output
     buffers.  The input buffers are const.
-
+    
     Each routine converts the text between *sourceStart and sourceEnd,
     putting the result into the buffer between *targetStart and
     targetEnd. Note: the end pointers are *after* the last item: e.g.
     *(sourceEnd - 1) is the last item.
-
+    
     The return result indicates whether the conversion was successful,
     and if not, whether the problem was in the source or target buffers.
     (Only the first encountered problem is indicated.)
-
+    
     After the conversion, *sourceStart and *targetStart are both
     updated to point to the end of last text successfully converted in
     the respective buffers.
-
+    
     Input parameters:
         sourceStart - pointer to a pointer to the source buffer.
                 The contents of this are modified on return so that
@@ -62,28 +62,28 @@
         targetStart - similarly, pointer to pointer to the target buffer.
         sourceEnd, targetEnd - respectively pointers to the ends of the
                 two buffers, for overflow checking only.
-
+                
     These conversion functions take a ConversionFlags argument. When this
     flag is set to strict, both irregular sequences and isolated surrogates
     will cause an error.  When the flag is set to lenient, both irregular
     sequences and isolated surrogates are converted.
-
+    
     Whether the flag is strict or lenient, all illegal sequences will cause
     an error return. This includes sequences such as: <F4 90 80 80>, <C0 80>,
     or <A0> in UTF-8, and values above 0x10FFFF in UTF-32. Conformant code
     must check for illegal sequences.
-
+    
     When the flag is set to lenient, characters over 0x10FFFF are converted
     to the replacement character; otherwise (when the flag is set to strict)
     they constitute an error.
-
+    
     Output parameters:
         The value "sourceIllegal" is returned from some routines if the input
         sequence is malformed.  When "sourceIllegal" is returned, the source
         value will point to the illegal value that caused the problem. E.g.,
         in UTF-8 when a sequence is malformed, it points to the start of the
         malformed sequence.
-
+        
     Author: Mark E. Davis, 1994.
     Rev History: Rick McGowan, fixes & updates May 2001.
          Fixes & updates, Sept 2001.
@@ -137,16 +137,16 @@ using Boolean = unsigned char; /* 0 or 1 */
 
 enum class ConversionResult
 {
-   conversionOK,           /* conversion successful */
-   sourceExhausted,        /* partial character in source, but hit end */
-   targetExhausted,        /* insuff. room in target for conversion */
-   sourceIllegal           /* source sequence is illegal/malformed */
+   ConversionOK,           /* conversion successful */
+   SourceExhausted,        /* partial character in source, but hit end */
+   TargetExhausted,        /* insuff. room in target for conversion */
+   SourceIllegal           /* source sequence is illegal/malformed */
 };
 
 enum class ConversionFlags
 {
-   strictConversion = 0,
-   lenientConversion
+   StrictConversion = 0,
+   LenientConversion
 };
 
 ConversionResult convert_utf8_to_utf16 (
@@ -169,13 +169,13 @@ ConversionResult convert_utf8_to_utf32(
       const Utf8 **sourceStart, const Utf8 * sourceEnd,
       Utf32 **targetStart, Utf32* targetEnd, ConversionFlags flags);
 
-ConversionResult convert_utf16_to_Utf8 (
+ConversionResult convert_utf16_to_utf8 (
       const Utf16 **sourceStart, const Utf16 *sourceEnd,
-      UTF8** targetStart, UTF8* targetEnd, ConversionFlags flags);
+      Utf8 **targetStart, Utf8 *targetEnd, ConversionFlags flags);
 
-ConversionResult convert_utf32_to_Utf8 (
+ConversionResult convert_utf32_to_utf8 (
       const Utf32 **sourceStart, const Utf32* sourceEnd,
-      UTF8** targetStart, UTF8* targetEnd, ConversionFlags flags);
+      Utf8 **targetStart, Utf8 *targetEnd, ConversionFlags flags);
 
 ConversionResult convert_utf16_to_utf32 (
       const Utf16 **sourceStart, const Utf16 *sourceEnd,
@@ -258,11 +258,11 @@ inline ConversionResult convert_utf8_sequence(const Utf8 **source,
                                               ConversionFlags flags)
 {
    if (*source == sourceEnd) {
-      return sourceExhausted;
+      return ConversionResult::SourceExhausted;
    }
    unsigned size = get_num_bytes_for_utf8(**source);
    if ((ptrdiff_t)size > sourceEnd - *source) {
-      return sourceExhausted;
+      return ConversionResult::SourceExhausted;
    }
    return convert_utf8_to_utf32(source, *source + size, &target, target + 1, flags);
 }
@@ -280,7 +280,7 @@ bool has_utf16_byteorder_mark(ArrayRef<char> srcBytes);
  * \param [out] Out Converted UTF-8 is stored here on success.
  * \returns true on success
  */
-bool convert_utf16_to_utf8String(ArrayRef<char> srcBytes, std::string &outStr);
+bool convert_utf16_to_utf8_string(ArrayRef<char> srcBytes, std::string &outStr);
 
 /**
 * Converts a UTF16 string into a Utf8 std::string.
@@ -289,15 +289,15 @@ bool convert_utf16_to_utf8String(ArrayRef<char> srcBytes, std::string &outStr);
 * \param [out] Out Converted UTF-8 is stored here on success.
 * \returns true on success
 */
-bool convert_utf16_to_utf8String(ArrayRef<Utf16> srcStr, std::string &outStr);
+bool convert_utf16_to_utf8_string(ArrayRef<Utf16> srcStr, std::string &outStr);
 
 /**
  * Converts a UTF-8 string into a UTF-16 string with native endianness.
  *
  * \returns true on success
  */
-bool convert_utf8_to_utf16String(StringRef srcStr,
-                                 SmallVectorImpl<Utf16> &destStr);
+bool convert_utf8_to_utf16_string(StringRef srcStr,
+                                  SmallVectorImpl<Utf16> &destStr);
 
 } // utils
 } //polar
