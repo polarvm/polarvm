@@ -35,23 +35,23 @@ using polar::basic::SmallVectorImpl;
 /// This base class both documents the full public interface exposed by all
 /// LLVM-style allocators, and redirects all of the overloads to a single core
 /// set of methods which the derived class must define.
-template <typename DerivedT>
+template <typename DerivedType>
 class AllocatorBase
 {
 public:
    /// \brief Allocate \a Size bytes of \a Alignment aligned memory. This method
-   /// must be implemented by \c DerivedT.
+   /// must be implemented by \c DerivedType.
    void *allocate(size_t size, size_t alignment)
    {
 #ifdef __clang__
       static_assert(static_cast<void *(AllocatorBase::*)(size_t, size_t)>(
                        &AllocatorBase::allocate) !=
-            static_cast<void *(DerivedT::*)(size_t, size_t)>(
-               &DerivedT::Allocate),
+            static_cast<void *(DerivedType::*)(size_t, size_t)>(
+               &DerivedType::allocate),
                     "Class derives from AllocatorBase without implementing the "
                     "core Allocate(size_t, size_t) overload!");
 #endif
-      return static_cast<DerivedT *>(this)->allocate(size, alignment);
+      return static_cast<DerivedType *>(this)->allocate(size, alignment);
    }
    
    /// \brief Deallocate \a Ptr to \a Size bytes of memory allocated by this
@@ -61,19 +61,20 @@ public:
 #ifdef __clang__
       static_assert(static_cast<void (AllocatorBase::*)(const void *, size_t)>(
                        &AllocatorBase::deallocate) !=
-            static_cast<void (DerivedT::*)(const void *, size_t)>(
-               &DerivedT::Deallocate),
+            static_cast<void (DerivedType::*)(const void *, size_t)>(
+               &DerivedType::Deallocate),
                     "Class derives from AllocatorBase without implementing the "
                     "core Deallocate(void *) overload!");
 #endif
-      return static_cast<DerivedT *>(this)->deallocate(ptr, size);
+      return static_cast<DerivedType *>(this)->deallocate(ptr, size);
    }
    
    // The rest of these methods are helpers that redirect to one of the above
    // core methods.
    
    /// \brief Allocate space for a sequence of objects without constructing them.
-   template <typename T> T *allocate(size_t num = 1)
+   template <typename T> T *
+   allocate(size_t num = 1)
    {
       return static_cast<T *>(allocate(num * sizeof(T), alignof(T)));
    }
@@ -137,11 +138,11 @@ void print_bump_ptr_allocator_stats(unsigned numSlabs, size_t bytesAllocated,
 /// The BumpPtrAllocatorImpl template defaults to using a MallocAllocator
 /// object, which wraps malloc, to allocate memory, but it can be changed to
 /// use a custom allocator.
-template <typename AllocatorT = MallocAllocator, size_t SlabSize = 4096,
+template <typename AllocatorType = MallocAllocator, size_t SlabSize = 4096,
           size_t SizeThreshold = SlabSize>
 class BumpPtrAllocatorImpl
       : public AllocatorBase<
-      BumpPtrAllocatorImpl<AllocatorT, SlabSize, SizeThreshold>> {
+      BumpPtrAllocatorImpl<AllocatorType, SlabSize, SizeThreshold>> {
 public:
    static_assert(SizeThreshold <= SlabSize,
                  "The SizeThreshold must be at most the SlabSize to ensure "
@@ -350,7 +351,7 @@ private:
    size_t m_redZoneSize = 1;
    
    /// \brief The allocator instance we use to get slabs of memory.
-   AllocatorT m_allocator;
+   AllocatorType m_allocator;
    
    static size_t computeSlabSize(unsigned slabIdx)
    {
@@ -515,9 +516,9 @@ inline void *safe_realloc(void *ptr, size_t size)
 } // utils
 } // polar
 
-template <typename AllocatorT, size_t SlabSize, size_t SizeThreshold>
+template <typename AllocatorType, size_t SlabSize, size_t SizeThreshold>
 void *operator new(size_t size,
-                   polar::utils::BumpPtrAllocatorImpl<AllocatorT, SlabSize,
+                   polar::utils::BumpPtrAllocatorImpl<AllocatorType, SlabSize,
                    SizeThreshold> &allocator)
 {
    struct S
@@ -534,9 +535,9 @@ void *operator new(size_t size,
             size, std::min((size_t)polar::utils::next_power_of_two(size), offsetof(S, x)));
 }
 
-template <typename AllocatorT, size_t SlabSize, size_t SizeThreshold>
+template <typename AllocatorType, size_t SlabSize, size_t SizeThreshold>
 void operator delete(
-      void *, polar::utils::BumpPtrAllocatorImpl<AllocatorT, SlabSize, SizeThreshold> &)
+      void *, polar::utils::BumpPtrAllocatorImpl<AllocatorType, SlabSize, SizeThreshold> &)
 {}
 
 #endif // POLAR_UTILS_ALLOCATOR_H

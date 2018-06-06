@@ -209,9 +209,10 @@ public:
    }
    
    // copy - Allocate copy in Allocator and return ArrayRef<T> to it.
-   template <typename Allocator> ArrayRef<T> copy(Allocator &allocator)
+   template <typename Allocator>
+   ArrayRef<T> copy(Allocator &allocator)
    {
-      T *buffer = allocator.template Allocate<T>(m_length);
+      T *buffer = allocator.template allocate<T>(m_length);
       std::uninitialized_copy(begin(), end(), buffer);
       return ArrayRef<T>(buffer, m_length);
    }
@@ -255,14 +256,16 @@ public:
    
    /// \brief Return a copy of *this with the first N elements satisfying the
    /// given predicate removed.
-   template <class PredicateT> ArrayRef<T> dropWhile(PredicateT pred) const
+   template <class PredicateType> 
+   ArrayRef<T> dropWhile(PredicateType pred) const
    {
-      return ArrayRef<T>(utils::find_last_set(*this, pred), end());
+      return ArrayRef<T>(basic::find_if_not(*this, pred), end());
    }
    
    /// \brief Return a copy of *this with the first N elements not satisfying
    /// the given predicate removed.
-   template <class PredicateT> ArrayRef<T> dropUntil(PredicateT pred) const
+   template <class PredicateType>
+   ArrayRef<T> dropUntil(PredicateType pred) const
    {
       return ArrayRef<T>(find_if(*this, pred), end());
    }
@@ -287,15 +290,16 @@ public:
    
    /// \brief Return the first N elements of this Array that satisfy the given
    /// predicate.
-   template <class PredicateT>
-   ArrayRef<T> takeWhile(PredicateT pred) const
+   template <class PredicateType>
+   ArrayRef<T> takeWhile(PredicateType pred) const
    {
       return ArrayRef<T>(begin(), find_if_not(*this, pred));
    }
    
    /// \brief Return the first N elements of this Array that don't satisfy the
    /// given predicate.
-   template <class PredicateT> ArrayRef<T> takeUntil(PredicateT pred) const
+   template <class PredicateType>
+   ArrayRef<T> takeUntil(PredicateType pred) const
    {
       return ArrayRef<T>(begin(), find_if(*this, pred));
    }
@@ -473,16 +477,16 @@ public:
    
    /// \brief Return a copy of *this with the first N elements satisfying the
    /// given predicate removed.
-   template <class PredicateT>
-   MutableArrayRef<T> dropWhile(PredicateT pred) const
+   template <class PredicateType>
+   MutableArrayRef<T> dropWhile(PredicateType pred) const
    {
       return MutableArrayRef<T>(find_if_not(*this, pred), end());
    }
    
    /// \brief Return a copy of *this with the first N elements not satisfying
    /// the given predicate removed.
-   template <class PredicateT>
-   MutableArrayRef<T> dropUntil(PredicateT pred) const
+   template <class PredicateType>
+   MutableArrayRef<T> dropUntil(PredicateType pred) const
    {
       return MutableArrayRef<T>(find_if(*this, pred), end());
    }
@@ -507,16 +511,16 @@ public:
    
    /// \brief Return the first N elements of this Array that satisfy the given
    /// predicate.
-   template <class PredicateT>
-   MutableArrayRef<T> takeWhile(PredicateT pred) const
+   template <class PredicateType>
+   MutableArrayRef<T> takeWhile(PredicateType pred) const
    {
       return MutableArrayRef<T>(begin(), find_if_not(*this, pred));
    }
    
    /// \brief Return the first N elements of this Array that don't satisfy the
    /// given predicate.
-   template <class PredicateT>
-   MutableArrayRef<T> takeUntil(PredicateT pred) const
+   template <class PredicateType>
+   MutableArrayRef<T> takeUntil(PredicateType pred) const
    {
       return MutableArrayRef<T>(begin(), find_if(*this, pred));
    }
