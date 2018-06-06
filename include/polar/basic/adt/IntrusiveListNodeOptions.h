@@ -60,7 +60,7 @@ using IsImplicit = Explicitness<false>;
 /// \li define the option, ilist_foo<Bar>, above;
 /// \li add new parameters for Bar to \a ilist_detail::NodeOptions;
 /// \li add an extraction meta-function, ilist_detail::extract_foo;
-/// \li call extract_foo from \a ilist_detail::compute_NodeOptions and pass it
+/// \li call extract_foo from \a ilist_detail::ComputeNodeOptions and pass it
 /// into \a ilist_detail::NodeOptions; and
 /// \li specialize \c IsValidOption<ilist_foo<Bar>> to inherit from \c
 /// std::true_type to get static assertions passing in \a simple_ilist and \a
@@ -134,7 +134,7 @@ struct CheckOptions<Option1, Options...>
 
 /// Traits for options for \a ilist_node.
 ///
-/// This is usually computed via \a compute_NodeOptions.
+/// This is usually computed via \a ComputeNodeOptions.
 template <class T, bool EnableSentinelTracking, bool IsSentinelTrackingExplicit,
           class TagType>
 struct NodeOptions
@@ -153,7 +153,7 @@ struct NodeOptions
    using ListBaseType = IntrusiveListBase<sm_enableSentinelSracking>;
 };
 
-template <class T, class... Options> struct compute_NodeOptions
+template <class T, class... Options> struct ComputeNodeOptions
 {
    using type = NodeOptions<T, ExtractSentinelTracking<Options...>::value,
    ExtractSentinelTracking<Options...>::IsExplicit,
