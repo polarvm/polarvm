@@ -49,7 +49,7 @@ public:
    {
       NodeBaseType *prev = first.getPrev();
       NodeBaseType *final = last.getPrev();
-      last.setPrev(Prev);
+      last.setPrev(prev);
       prev->setNext(&last);
       
       // Not strictly necessary, but helps catch a class of bugs.

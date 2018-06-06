@@ -38,7 +38,7 @@ struct PointerIntPairInfo;
 ///   PointerIntPair<PointerIntPair<void*, 1, bool>, 1, bool>
 /// ... and the two bools will land in different bits.
 template <typename PointerTypeype, unsigned IntBits, typename IntType = unsigned,
-          typename PtrTraits = PointerLikeTypeTraits<PointerTypeype>,
+          typename PtrTraits = polar::utils::PointerLikeTypeTraits<PointerTypeype>,
           typename Info = PointerIntPairInfo<PointerTypeype, IntBits, PtrTraits>>
 class PointerIntPair
 {
@@ -85,7 +85,7 @@ public:
    void setPointerAndInt(PointerTypeype ptrVal, IntType intVal)
    {
       m_value = Info::updateInt(Info::updatePointer(0, ptrVal),
-                              static_cast<intptr_t>(intVal));
+                                static_cast<intptr_t>(intVal));
    }
    
    PointerTypeype const *getAddrOfPointer() const
@@ -228,14 +228,14 @@ struct DenseMapInfo<PointerIntPair<PointerTypeype, IntBits, IntType>>
    static Ty getEmptyKey()
    {
       uintptr_t Val = static_cast<uintptr_t>(-1);
-      Val <<= PointerLikeTypeTraits<Ty>::NumLowBitsAvailable;
+      Val <<= polar::utils::PointerLikeTypeTraits<Ty>::NumLowBitsAvailable;
       return Ty::getFromOpaqueValue(reinterpret_cast<void *>(Val));
    }
    
    static Ty getTombstoneKey()
    {
       uintptr_t Val = static_cast<uintptr_t>(-2);
-      Val <<= PointerLikeTypeTraits<PointerTypeype>::NumLowBitsAvailable;
+      Val <<= polar::utils::PointerLikeTypeTraits<PointerTypeype>::NumLowBitsAvailable;
       return Ty::getFromOpaqueValue(reinterpret_cast<void *>(Val));
    }
    
@@ -250,6 +250,12 @@ struct DenseMapInfo<PointerIntPair<PointerTypeype, IntBits, IntType>>
       return lhs == rhs;
    }
 };
+
+} // basic
+
+namespace utils {
+
+using polar::basic::PointerIntPair;
 
 // Teach SmallPtrSet that PointerIntPair is "basically a pointer".
 template <typename PointerTypeype, unsigned IntBits, typename IntType,
@@ -278,7 +284,8 @@ struct PointerLikeTypeTraits<
    enum { NumLowBitsAvailable = PtrTraits::NumLowBitsAvailable - IntBits };
 };
 
-} // basic
+} // utils
+
 } // polar
 
 #endif // POLAR_BASIC_ADT_POINTER_INT_PAIR_H
