@@ -350,7 +350,7 @@ elseif(POLAR_COMPILER_IS_GCC_COMPATIBLE)
          polar_append_flag("-std=c++17" CMAKE_CXX_FLAGS)
       endif()
    else()
-      message(FATAL_ERROR "POLAR requires C++11 support but the '-std=c++11' flag isn't supported.")
+      message(FATAL_ERROR "POLAR requires C++17 support but the '-std=c++17' flag isn't supported.")
    endif()
    
    if (POLAR_ENABLE_MODULES)
