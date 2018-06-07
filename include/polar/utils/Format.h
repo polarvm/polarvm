@@ -130,7 +130,7 @@ public:
 
    int snprint(char *buffer, unsigned bufferSize) const override
    {
-      return snprint_tuple(buffer, bufferSize, polar::basic::index_sequence_for<Ts...>());
+      return snprintTuple(buffer, bufferSize, polar::basic::index_sequence_for<Ts...>());
    }
 };
 
@@ -208,12 +208,12 @@ class FormattedNumber
 public:
    FormattedNumber(uint64_t hexValue, int64_t decValue, unsigned width, bool isHex, bool isUpper,
                    bool isPrefix)
-      : m_hexValue(HV),
+      : m_hexValue(hexValue),
         m_decValue(decValue),
         m_width(width),
         m_hex(isHex),
         m_upper(isUpper),
-        HexPrefix(Prefix)
+        m_hexPrefix(isPrefix)
    {}
 };
 
@@ -276,7 +276,7 @@ public:
         m_indentLevel(indentLevel),
         m_numPerLine(numPerLine),
         m_byteGroupSize(byteGroupSize),
-        isupper(isUpper),
+        m_isUpper(isUpper),
         m_ascii(ascii)
    {
 
