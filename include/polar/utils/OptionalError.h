@@ -233,7 +233,7 @@ private:
       } else {
          // Get other's error.
          m_hasError = true;
-         new (getErrorStorage()) std::error_code(Other.getError());
+         new (getErrorStorage()) std::error_code(other.getError());
       }
    }
    
@@ -262,7 +262,7 @@ private:
    template <class OtherType>
    void moveConstruct(OptionalError<OtherType> &&other)
    {
-      if (!Other.m_hasError) {
+      if (!other.m_hasError) {
          // Get the other value.
          m_hasError = false;
          new (getStorage()) storage_type(std::move(*other.getStorage()));

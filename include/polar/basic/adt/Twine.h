@@ -20,10 +20,17 @@
 #include <string>
 
 namespace polar {
-namespace basic {
 
+// forward declare class with namespace
+namespace utils {
 class FormatvObjectBase;
 class RawOutStream;
+} // utils
+
+namespace basic {
+
+using polar::utils::FormatvObjectBase;
+using polar::utils::RawOutStream;
 
 /// Twine - A lightweight data structure for efficiently representing the
 /// concatenation of temporary values as strings.

@@ -48,7 +48,7 @@ public:
    virtual ~ErrorInfoBase() = default;
    
    /// Print an error message to an output stream.
-   virtual void log(raw_ostream &OS) const = 0;
+   virtual void log(RawOutStream &OS) const = 0;
    
    /// Return the error message as a string.
    virtual std::string message() const
@@ -72,7 +72,7 @@ public:
    }
    
    // Returns the class ID for the dynamic type of this ErrorInfoBase instance.
-   virtual const void *dynamicClassID() const = 0;
+   virtual const void *getDynamicClassId() const = 0;
    
    // Check whether this instance is a subclass of the class identified by
    // ClassID.
@@ -512,7 +512,7 @@ public:
       , m_unchecked(true)
    #endif
    {
-      new (getStorage()) storage_type(std::forward<OtherTypeype>(value));
+      new (getStorage()) storage_type(std::forward<OtherType>(value));
    }
    
    /// Move construct an Expected<T> value.
@@ -596,7 +596,7 @@ public:
 #if POLAR_ENABLE_ABI_BREAKING_CHECKS
       m_unchecked = false;
 #endif
-      return m_hasError ? Error(std::move(*getErrorStorage())) : Error::success();
+      return m_hasError ? Error(std::move(*getErrorStorage())) : Error::getSuccess();
    }
    
    /// \brief Returns a pointer to the stored T value.
@@ -651,7 +651,7 @@ private:
       if (!m_hasError) {
          new (getStorage()) storage_type(std::move(*other.getStorage()));
       } else {
-         new (getErrorStorage()) error_type(std::move(*Other.getErrorStorage()));
+         new (getErrorStorage()) error_type(std::move(*other.getErrorStorage()));
       }
    }
    
@@ -830,7 +830,7 @@ T& cant_fail(Expected<T&> valueOrError, const char *msg = nullptr)
       if (!msg) {
          msg = "Failure value returned from cant_fail wrapped call";
       }
-      polar_unreachable(Msg);
+      polar_unreachable(msg);
    }
 }
 
@@ -875,7 +875,7 @@ class ErrorHandlerTraits<void (&)(ErrorType &)>
    {
       assert(appliesTo(*errorInfo) && "Applying incorrect handler");
       handler(static_cast<ErrorType &>(*errorInfo));
-      return Error::success();
+      return Error::getSuccess();
    }
 };
 
@@ -914,7 +914,7 @@ class ErrorHandlerTraits<void (&)(std::unique_ptr<ErrorType>)>
       assert(appliesTo(*errorInfo) && "Applying incorrect handler");
       std::unique_ptr<ErrorType> subE(static_cast<ErrorType *>(errorInfo.release()));
       handler(std::move(subE));
-      return Error::success();
+      return Error::getSuccess();
    }
 };
 
@@ -967,7 +967,7 @@ Error handle_error_impl(std::unique_ptr<ErrorInfoBase> payload,
 {
    if (ErrorHandlerTraits<HandlerType>::appliesTo(*payload))
       return ErrorHandlerTraits<HandlerType>::apply(std::forward<HandlerType>(handler),
-                                                    std::move(Payload));
+                                                    std::move(payload));
    return handle_error_impl(std::move(payload),
                             std::forward<HandlerTs>(handlers)...);
 }
@@ -1069,7 +1069,7 @@ inline std::string to_string(Error error)
    handle_all_errors(std::move(error), [&errors](const ErrorInfoBase &errorInfo) {
       errors.push_back(errorInfo.message());
    });
-   return join(errors.begin(), errors.end(), "\n");
+   return polar::basic::join(errors.begin(), errors.end(), "\n");
 }
 
 /// Consume a Error without doing anything. This method should be used
@@ -1162,7 +1162,7 @@ private:
 /// std::error_codes.
 class ECError : public ErrorInfo<ECError>
 {
-   friend Error error_code_to_error(std::error_code);
+   friend Error errorcode_to_error(std::error_code);
    
 public:
    void setErrorCode(std::error_code errorCode)

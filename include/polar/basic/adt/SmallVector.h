@@ -338,7 +338,7 @@ public:
          this->grow();
       }
       ::new ((void*) this->end()) T(::std::move(element));
-      setEnd(this->end() + 1);
+      this->setEnd(this->end() + 1);
    }
    
    inline void push_back(T &&element)
