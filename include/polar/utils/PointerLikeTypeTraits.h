@@ -9,8 +9,8 @@
 // 
 // Created by softboy on 2018/05/31.
 
-#ifndef POLAR_UTILS_ERROR_POINTER_LIKE_TYPE_TRAITS_H
-#define POLAR_UTILS_ERROR_POINTER_LIKE_TYPE_TRAITS_H
+#ifndef POLAR_UTILS_POINTER_LIKE_TYPE_TRAITS_H
+#define POLAR_UTILS_POINTER_LIKE_TYPE_TRAITS_H
 
 #include "polar/global/DataTypes.h"
 #include <type_traits>
@@ -161,4 +161,4 @@ struct PointerLikeTypeTraits<uintptr_t>
 } // utils
 } // polar
 
-#endif // POLAR_UTILS_ERROR_POINTER_LIKE_TYPE_TRAITS_H
+#endif // POLAR_UTILS_POINTER_LIKE_TYPE_TRAITS_H
