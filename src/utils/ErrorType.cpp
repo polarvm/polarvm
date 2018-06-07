@@ -144,17 +144,18 @@ void report_fatal_error(Error error, bool genCrashDiag)
    report_fatal_error(errMsg);
 }
 
+} // utils
+
 #ifndef _MSC_VER
 // One of these two variables will be referenced by a symbol defined in
 // llvm-config.h. We provide a link-time (or load time for DSO) failure when
 // there is a mismatch in the build configuration of the API client and LLVM.
 #if POLAR_ENABLE_ABI_BREAKING_CHECKS
-int sg_enableABIBreakingChecks;
+int g_enableABIBreakingChecks;
 #else
-int sg_disableABIBreakingChecks;
+int g_disableABIBreakingChecks;
 #endif
 
 #endif
 
-} // utils
 } // polar
