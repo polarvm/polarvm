@@ -33,7 +33,7 @@ namespace utils {
 template<std::size_t Alignment, std::size_t Size>
 struct AlignedCharArray
 {
-   alignas(Alignment) char buffer[Size];
+   alignas(Alignment) char m_buffer[Size];
 };
 
 #else // POLAR_CC_MSVC

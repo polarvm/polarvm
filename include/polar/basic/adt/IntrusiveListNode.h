@@ -296,58 +296,58 @@ public:
 
 /// An ilist node that can access its parent list.
 ///
-/// Requires \c NodeTy to have \a getParent() to find the parent node, and the
-/// \c ParentTy to have \a getSublistAccess() to get a reference to the list.
-template <typename NodeTy, typename ParentTy, class... Options>
-class IntrusiveListNode_with_parent : public IntrusiveListNode<NodeTy, Options...>
+/// Requires \c NodeType to have \a getParent() to find the parent node, and the
+/// \c ParentType to have \a getSublistAccess() to get a reference to the list.
+template <typename NodeType, typename ParentType, class... Options>
+class IntrusiveListNodeWithParent : public IntrusiveListNode<NodeType, Options...>
 {
 protected:
-   IntrusiveListNode_with_parent() = default;
+   IntrusiveListNodeWithParent() = default;
    
 private:
-   /// Forward to NodeTy::getParent().
+   /// Forward to NodeType::getParent().
    ///
    /// Note: do not use the name "getParent()".  We want a compile error
    /// (instead of recursion) when the subclass fails to implement \a
    /// getParent().
-   const ParentTy *getNodeParent() const
+   const ParentType *getNodeParent() const
    {
-      return static_cast<const NodeTy *>(this)->getParent();
+      return static_cast<const NodeType *>(this)->getParent();
    }
    
 public:
    /// @name Adjacent Node Accessors
    /// @{
    /// \brief Get the previous node, or \c nullptr for the list head.
-   NodeTy *getPrevNode()
+   NodeType *getPrevNode()
    {
       // Should be separated to a reused function, but then we couldn't use auto
       // (and would need the type of the list).
       const auto &list =
-            getNodeParent()->*(ParentTy::getSublistAccess((NodeTy *)nullptr));
-      return list.getPrevNode(*static_cast<NodeTy *>(this));
+            getNodeParent()->*(ParentType::getSublistAccess((NodeType *)nullptr));
+      return list.getPrevNode(*static_cast<NodeType *>(this));
    }
    
    /// \brief Get the previous node, or \c nullptr for the list head.
-   const NodeTy *getPrevNode() const
+   const NodeType *getPrevNode() const
    {
-      return const_cast<IntrusiveListNode_with_parent *>(this)->getPrevNode();
+      return const_cast<IntrusiveListNodeWithParent *>(this)->getPrevNode();
    }
    
    /// \brief Get the next node, or \c nullptr for the list tail.
-   NodeTy *getNextNode()
+   NodeType *getNextNode()
    {
       // Should be separated to a reused function, but then we couldn't use auto
       // (and would need the type of the list).
       const auto &list =
-            getNodeParent()->*(ParentTy::getSublistAccess((NodeTy *)nullptr));
-      return list.getNextNode(*static_cast<NodeTy *>(this));
+            getNodeParent()->*(ParentType::getSublistAccess((NodeType *)nullptr));
+      return list.getNextNode(*static_cast<NodeType *>(this));
    }
    
    /// \brief Get the next node, or \c nullptr for the list tail.
-   const NodeTy *getNextNode() const
+   const NodeType *getNextNode() const
    {
-      return const_cast<IntrusiveListNode_with_parent *>(this)->getNextNode();
+      return const_cast<IntrusiveListNodeWithParent *>(this)->getNextNode();
    }
    /// @}
 };

@@ -48,7 +48,7 @@ namespace ilist_internal {
 template <bool IsExplicit>
 struct Explicitness
 {
-   static const bool IsExplicit = IsExplicit;
+   static const bool isExplicit = IsExplicit;
 };
 
 using IsExplicit = Explicitness<true>;
@@ -153,12 +153,14 @@ struct NodeOptions
    using ListBaseType = IntrusiveListBase<sm_enableSentinelSracking>;
 };
 
-template <class T, class... Options> struct ComputeNodeOptions
+template <class T, class... Options>
+struct ComputeNodeOptions
 {
    using type = NodeOptions<T, ExtractSentinelTracking<Options...>::value,
-   ExtractSentinelTracking<Options...>::IsExplicit,
+   ExtractSentinelTracking<Options...>::isExplicit,
    typename ExtractTag<Options...>::type>;
 };
+} // ilist_internal
 
 } // basic
 } // polar
