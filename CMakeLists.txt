@@ -331,11 +331,10 @@ if(XCODE)
    file(GLOB POLAR_TOPLEVEL_HEADERS
       ${CMAKE_CURRENT_SOURCE_DIR}/include/polar${dir}/*.h
       ${CMAKE_CURRENT_SOURCE_DIR}/include/polar${dir}/*.def)
-   
+
    add_custom_target(Miscellaneous
       SOURCES ${POLAR_TOPLEVEL_HEADERS})
 endif()
 
 add_subdirectory(include)
 add_subdirectory(src)
-

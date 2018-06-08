@@ -6,14 +6,14 @@
 //
 // See http://polarphp.org/LICENSE.txt for license information
 // See http://polarphp.org/CONTRIBUTORS.txt for the list of polarPHP project authors
-// 
+//
 // Created by softboy on 2018/05/31.
 
 #ifndef POLAR_UTILS_ERROR_ERROR_TYPE_H
 #define POLAR_UTILS_ERROR_ERROR_TYPE_H
 
 #include "polar/basic/adt/SmallVector.h"
-#include "polar/basic/adt/STLExtras.h"
+#include "polar/basic/adt/StlExtras.h"
 #include "polar/basic/adt/StringExtras.h"
 #include "polar/basic/adt/Twine.h"
 #include "polar/global/AbiBreaking.h"
@@ -46,10 +46,10 @@ class ErrorInfoBase
 {
 public:
    virtual ~ErrorInfoBase() = default;
-   
+
    /// Print an error message to an output stream.
    virtual void log(RawOutStream &OS) const = 0;
-   
+
    /// Return the error message as a string.
    virtual std::string message() const
    {
@@ -58,38 +58,38 @@ public:
       log(outStream);
       return outStream.getStr();
    }
-   
+
    /// Convert this error to a std::error_code.
    ///
    /// This is a temporary crutch to enable interaction with code still
    /// using std::error_code. It will be removed in the future.
    virtual std::error_code convertToErrorCode() const = 0;
-   
+
    // Returns the class ID for this type.
    static const void *getClassId()
    {
       return &m_id;
    }
-   
+
    // Returns the class ID for the dynamic type of this ErrorInfoBase instance.
    virtual const void *getDynamicClassId() const = 0;
-   
+
    // Check whether this instance is a subclass of the class identified by
    // ClassID.
    virtual bool isA(const void *const classId) const
    {
       return classId == getClassId();
    }
-   
+
    // Check whether this instance is a subclass of ErrorInfoType.
    template <typename ErrorInfoType> bool isA() const
    {
       return isA(ErrorInfoType::getClassId());
    }
-   
+
 private:
    virtual void anchor();
-   
+
    static char m_id;
 };
 
@@ -163,15 +163,15 @@ class POLAR_NODISCARD Error
    // ErrorList needs to be able to yank ErrorInfoBase pointers out of this
    // class to add to the error list.
    friend class ErrorList;
-   
+
    // handle_errors needs to be able to set the Checked flag.
    template <typename... HandlerTs>
    friend Error handle_errors(Error error, HandlerTs &&... handlers);
-   
+
    // Expected<T> needs to be able to steal the payload when constructed from an
    // error.
    template <typename T> friend class Expected;
-   
+
 protected:
    /// Create a success value. Prefer using 'Error::success()' for readability
    Error()
@@ -179,14 +179,14 @@ protected:
       setPtr(nullptr);
       setChecked(false);
    }
-   
+
 public:
    /// Create a success value.
    static ErrorSuccess getSuccess();
-   
+
    // Errors are not copy-constructable.
    Error(const Error &other) = delete;
-   
+
    /// Move-construct an error value. The newly constructed error is considered
    /// unchecked, even if the source error had been checked. The original error
    /// becomes a checked Success value, regardless of its original state.
@@ -195,7 +195,7 @@ public:
       setChecked(true);
       *this = std::move(other);
    }
-   
+
    /// Create an error value. Prefer using the 'make_error' function, but
    /// this constructor can be useful when "re-throwing" errors from handlers.
    Error(std::unique_ptr<ErrorInfoBase> payload)
@@ -203,10 +203,10 @@ public:
       setPtr(payload.release());
       setChecked(false);
    }
-   
+
    // Errors are not copy-assignable.
    Error &operator=(const Error &other) = delete;
-   
+
    /// Move-assign an error value. The current error must represent success, you
    /// you cannot overwrite an unhandled error. The current error is then
    /// considered unchecked. The source error becomes a checked success value,
@@ -216,17 +216,17 @@ public:
       // Don't allow overwriting of unchecked values.
       assertIsChecked();
       setPtr(other.getPtr());
-      
+
       // This Error is unchecked, even if the source error was checked.
       setChecked(false);
-      
+
       // Null out other's payload and set its checked bit.
       other.setPtr(nullptr);
       other.setChecked(true);
-      
+
       return *this;
    }
-   
+
    /// Destroy a Error. Fails with a call to abort() if the error is
    /// unchecked.
    ~Error()
@@ -234,7 +234,7 @@ public:
       assertIsChecked();
       delete getPtr();
    }
-   
+
    /// Bool conversion. Returns true if this Error is in a failure state,
    /// and false if it is in an accept state. If the error is in a Success state
    /// it will be considered checked.
@@ -243,13 +243,13 @@ public:
       setChecked(getPtr() == nullptr);
       return getPtr() != nullptr;
    }
-   
+
    /// Check whether one error is a subclass of another.
    template <typename ErrorType> bool isA() const
    {
       return getPtr() && getPtr()->isA(ErrorType::getClassId());
    }
-   
+
    /// Returns the dynamic class id of this error, or null if this is a success
    /// value.
    const void* getDynamicClassId() const
@@ -259,7 +259,7 @@ public:
       }
       return getPtr()->getDynamicClassId();
    }
-   
+
 private:
 #if POLAR_ENABLE_ABI_BREAKING_CHECKS
    // assertIsChecked() happens very frequently, but under normal circumstances
@@ -270,7 +270,7 @@ private:
    POLAR_ATTRIBUTE_NORETURN
    void fatalUncheckedError() const;
 #endif
-   
+
    void assertIsChecked()
    {
 #if POLAR_ENABLE_ABI_BREAKING_CHECKS
@@ -279,14 +279,14 @@ private:
       }
 #endif
    }
-   
+
    ErrorInfoBase *getPtr() const
    {
       return reinterpret_cast<ErrorInfoBase*>(
                reinterpret_cast<uintptr_t>(m_payload) &
                ~static_cast<uintptr_t>(0x1));
    }
-   
+
    void setPtr(ErrorInfoBase *errorInfo)
    {
 #if POLAR_ENABLE_ABI_BREAKING_CHECKS
@@ -298,7 +298,7 @@ private:
       m_payload = errorInfo;
 #endif
    }
-   
+
    bool getChecked() const
    {
 #if POLAR_ENABLE_ABI_BREAKING_CHECKS
@@ -307,7 +307,7 @@ private:
       return true;
 #endif
    }
-   
+
    void setChecked(bool value)
    {
       m_payload = reinterpret_cast<ErrorInfoBase*>(
@@ -315,7 +315,7 @@ private:
                 ~static_cast<uintptr_t>(0x1)) |
                (value ? 0 : 1));
    }
-   
+
    std::unique_ptr<ErrorInfoBase> takePayload()
    {
       std::unique_ptr<ErrorInfoBase> temp(getPtr());
@@ -323,7 +323,7 @@ private:
       setChecked(true);
       return temp;
    }
-   
+
    ErrorInfoBase *m_payload = nullptr;
 };
 
@@ -363,12 +363,12 @@ public:
    {
       return &ThisErrorType::m_id;
    }
-   
+
    const void *getDynamicClassId() const override
    {
       return &ThisErrorType::m_id;
    }
-   
+
    bool isA(const void *const classId) const override
    {
       return classId == getClassId() || ParentErrorType::isA(classId);
@@ -383,10 +383,10 @@ class ErrorList final : public ErrorInfo<ErrorList>
    // ErrorList.
    template <typename... HandlerTs>
    friend Error handle_errors(Error error, HandlerTs &&... handlers);
-   
+
    // joinErrors is implemented in terms of join.
    friend Error joinErrors(Error, Error);
-   
+
 public:
    void log(RawOutStream &outStream) const override
    {
@@ -396,12 +396,12 @@ public:
          outStream << "\n";
       }
    }
-   
+
    std::error_code convertToErrorCode() const override;
-   
+
    // Used by ErrorInfo::classId.
    static char m_id;
-   
+
 private:
    ErrorList(std::unique_ptr<ErrorInfoBase> payload1,
              std::unique_ptr<ErrorInfoBase> payload2)
@@ -411,17 +411,17 @@ private:
       m_payloads.push_back(std::move(payload1));
       m_payloads.push_back(std::move(payload2));
    }
-   
+
    static Error join(Error error1, Error error2)
    {
       if (!error1) {
          return error2;
       }
-      
+
       if (!error2) {
          return error1;
       }
-      
+
       if (error1.isA<ErrorList>()) {
          auto &e1List = static_cast<ErrorList &>(*error1.getPtr());
          if (error2.isA<ErrorList>()) {
@@ -443,7 +443,7 @@ private:
       return Error(std::unique_ptr<ErrorList>(
                       new ErrorList(error1.takePayload(), error2.takePayload())));
    }
-   
+
    std::vector<std::unique_ptr<ErrorInfoBase>> m_payloads;
 };
 
@@ -465,23 +465,23 @@ template <class T> class POLAR_NODISCARD Expected
 {
    template <class T1> friend class ExpectedAsOutParameter;
    template <class OtherType> friend class Expected;
-   
+
    static const bool isRef = std::is_reference<T>::value;
-   
+
    using wrap = ReferenceStorage<typename std::remove_reference<T>::type>;
-   
+
    using error_type = std::unique_ptr<ErrorInfoBase>;
-   
+
 public:
    using storage_type = typename std::conditional<isRef, wrap, T>::type;
    using value_type = T;
-   
+
 private:
    using reference = typename std::remove_reference<T>::type &;
    using const_reference = const typename std::remove_reference<T>::type &;
    using pointer = typename std::remove_reference<T>::type *;
    using const_pointer = const typename std::remove_reference<T>::type *;
-   
+
 public:
    /// Create an Expected<T> error value from the given Error.
    Expected(Error error)
@@ -494,12 +494,12 @@ public:
       assert(error && "Cannot create Expected<T> from Error success value.");
       new (getErrorStorage()) error_type(error.takePayload());
    }
-   
+
    /// Forbid to convert from Error::success() implicitly, this avoids having
    /// Expected<T> foo() { return Error::success(); } which compiles otherwise
    /// but triggers the assertion above.
    Expected(ErrorSuccess) = delete;
-   
+
    /// Create an Expected<T> success value from the given OtherType value, which
    /// must be convertible to T.
    template <typename OtherType>
@@ -514,10 +514,10 @@ public:
    {
       new (getStorage()) storage_type(std::forward<OtherType>(value));
    }
-   
+
    /// Move construct an Expected<T> value.
    Expected(Expected &&other) { moveConstruct(std::move(other)); }
-   
+
    /// Move construct an Expected<T> value from an Expected<OtherType>, where OtherType
    /// must be convertible to T.
    template <class OtherType>
@@ -527,7 +527,7 @@ public:
    {
       moveConstruct(std::move(other));
    }
-   
+
    /// Move construct an Expected<T> value from an Expected<OtherType>, where OtherType
    /// isn't convertible to T.
    template <class OtherType>
@@ -538,14 +538,14 @@ public:
    {
       moveConstruct(std::move(other));
    }
-   
+
    /// Move-assign from another Expected<T>.
    Expected &operator=(Expected &&other)
    {
       moveAssign(std::move(other));
       return *this;
    }
-   
+
    /// Destroy an Expected<T>.
    ~Expected()
    {
@@ -556,7 +556,7 @@ public:
          getErrorStorage()->~error_type();
       }
    }
-   
+
    /// \brief Return false if there is an error.
    explicit operator bool()
    {
@@ -565,28 +565,28 @@ public:
 #endif
       return !m_hasError;
    }
-   
+
    /// \brief Returns a reference to the stored T value.
    reference get()
    {
       assertIsChecked();
       return *getStorage();
    }
-   
+
    /// \brief Returns a const reference to the stored T value.
    const_reference get() const
    {
       assertIsChecked();
       return const_cast<Expected<T> *>(this)->get();
    }
-   
+
    /// \brief Check that this Expected<T> is an error of type ErrorType.
    template <typename ErrorType>
    bool errorIsA() const
    {
       return m_hasError && (*getErrorStorage())->template isA<ErrorType>();
    }
-   
+
    /// \brief Take ownership of the stored error.
    /// After calling this the Expected<T> is in an indeterminate state that can
    /// only be safely destructed. No further calls (beside the destructor) should
@@ -598,48 +598,48 @@ public:
 #endif
       return m_hasError ? Error(std::move(*getErrorStorage())) : Error::getSuccess();
    }
-   
+
    /// \brief Returns a pointer to the stored T value.
    pointer operator->()
    {
       assertIsChecked();
       return toPointer(getStorage());
    }
-   
+
    /// \brief Returns a const pointer to the stored T value.
    const_pointer operator->() const
    {
       assertIsChecked();
       return toPointer(getStorage());
    }
-   
+
    /// \brief Returns a reference to the stored T value.
    reference operator*()
    {
       assertIsChecked();
       return *getStorage();
    }
-   
+
    /// \brief Returns a const reference to the stored T value.
    const_reference operator*() const
    {
       assertIsChecked();
       return *getStorage();
    }
-   
+
 private:
    template <class T1>
    static bool compareThisIfSameType(const T1 &lhs, const T1 &rhs)
    {
       return &lhs == &rhs;
    }
-   
+
    template <class T1, class T2>
    static bool compareThisIfSameType(const T1 &lhs, const T2 &rhs)
    {
       return false;
    }
-   
+
    template <class OtherType> void moveConstruct(Expected<OtherType> &&other)
    {
       m_hasError = other.m_hasError;
@@ -647,14 +647,14 @@ private:
       m_unchecked = true;
       other.m_unchecked = false;
 #endif
-      
+
       if (!m_hasError) {
          new (getStorage()) storage_type(std::move(*other.getStorage()));
       } else {
          new (getErrorStorage()) error_type(std::move(*other.getErrorStorage()));
       }
    }
-   
+
    template <class OtherType> void moveAssign(Expected<OtherType> &&other)
    {
       assertIsChecked();
@@ -664,51 +664,51 @@ private:
       this->~Expected();
       new (this) Expected(std::move(other));
    }
-   
+
    pointer toPointer(pointer value)
    {
       return value;
    }
-   
+
    const_pointer toPointer(const_pointer value) const
    {
       return value;
    }
-   
+
    pointer toPointer(wrap *value)
    {
       return &value->get();
    }
-   
+
    const_pointer toPointer(const wrap *value) const
    {
       return &value->get();
    }
-   
+
    storage_type *getStorage()
    {
       assert(!m_hasError && "Cannot get value when an error exists!");
       return reinterpret_cast<storage_type *>(m_tstorage.m_buffer);
    }
-   
+
    const storage_type *getStorage() const
    {
       assert(!m_hasError && "Cannot get value when an error exists!");
       return reinterpret_cast<const storage_type *>(m_tstorage.m_buffer);
    }
-   
+
    error_type *getErrorStorage()
    {
       assert(m_hasError && "Cannot get error when a value exists!");
       return reinterpret_cast<error_type *>(m_errorStorage.m_buffer);
    }
-   
+
    const error_type *getErrorStorage() const
    {
       assert(m_hasError && "Cannot get error when a value exists!");
       return reinterpret_cast<const error_type *>(m_errorStorage.m_buffer);
    }
-   
+
    // Used by ExpectedAsOutParameter to reset the checked flag.
    void setUnchecked()
    {
@@ -716,7 +716,7 @@ private:
       m_unchecked = true;
 #endif
    }
-   
+
 #if POLAR_ENABLE_ABI_BREAKING_CHECKS
    POLAR_ATTRIBUTE_NORETURN
    POLAR_ATTRIBUTE_NOINLINE
@@ -734,16 +734,16 @@ private:
       abort();
    }
 #endif
-   
+
    void assertIsChecked()
    {
 #if POLAR_ENABLE_ABI_BREAKING_CHECKS
       if (POLAR_UNLIKELY(m_unchecked)) {
          fatalUncheckedExpected();
-      }         
+      }
 #endif
    }
-   
+
    union {
       AlignedCharArrayUnion<storage_type> m_tstorage;
       AlignedCharArrayUnion<error_type> m_errorStorage;
@@ -777,7 +777,7 @@ inline void cant_fail(Error error, const char *msg = nullptr)
    if (error) {
       if (!msg) {
          msg = "Failure value returned from cant_fail wrapped call";
-      } 
+      }
       polar_unreachable(msg);
    }
 }
@@ -839,7 +839,7 @@ T& cant_fail(Expected<T&> valueOrError, const char *msg = nullptr)
 template <typename HandlerType>
 class ErrorHandlerTraits
       : public ErrorHandlerTraits<decltype(
-      &std::remove_reference<HandlerType>::type::operator())> 
+      &std::remove_reference<HandlerType>::type::operator())>
 {};
 
 // Specialization functions of the form 'Error (const ErrorType&)'.
@@ -851,7 +851,7 @@ class ErrorHandlerTraits<Error (&)(ErrorType &)>
    {
       return errorInfo.template isA<ErrorType>();
    }
-   
+
    template <typename HandlerType>
    static Error apply(HandlerType &&handler, std::unique_ptr<ErrorInfoBase> errorInfo)
    {
@@ -869,7 +869,7 @@ class ErrorHandlerTraits<void (&)(ErrorType &)>
    {
       return errorInfo.template isA<ErrorType>();
    }
-   
+
    template <typename HandlerType>
    static Error apply(HandlerType &&handler, std::unique_ptr<ErrorInfoBase> errorInfo)
    {
@@ -888,7 +888,7 @@ class ErrorHandlerTraits<Error (&)(std::unique_ptr<ErrorType>)>
    {
       return errorInfo.template isA<ErrorType>();
    }
-   
+
    template <typename HandlerType>
    static Error apply(HandlerType &&handler, std::unique_ptr<ErrorInfoBase> errorInfo)
    {
@@ -907,7 +907,7 @@ class ErrorHandlerTraits<void (&)(std::unique_ptr<ErrorType>)>
    {
       return errorInfo.template isA<ErrorType>();
    }
-   
+
    template <typename HandlerType>
    static Error apply(HandlerType &&handler, std::unique_ptr<ErrorInfoBase> errorInfo)
    {
@@ -995,7 +995,7 @@ Error handle_errors(Error error, HandlerTs &&... handles)
       }
       return ret;
    }
-   
+
    return handle_error_impl(std::move(payload), std::forward<HandlerTs>(handles)...);
 }
 
@@ -1118,7 +1118,7 @@ public:
          (void)!!*error;
       }
    }
-   
+
    ~ErrorAsOutParameter()
    {
       // Clear the checked bit.
@@ -1126,7 +1126,7 @@ public:
          *m_error = Error::getSuccess();
       }
    }
-   
+
 private:
    Error *m_error;
 };
@@ -1142,15 +1142,15 @@ public:
       : m_valueOrError(valueOrError) {
       if (m_valueOrError) {
          (void)!!*m_valueOrError;
-      } 
+      }
    }
-   
+
    ~ExpectedAsOutParameter() {
       if (m_valueOrError) {
          m_valueOrError->setUnchecked();
       }
    }
-   
+
 private:
    Expected<T> *m_valueOrError;
 };
@@ -1163,31 +1163,31 @@ private:
 class ECError : public ErrorInfo<ECError>
 {
    friend Error errorcode_to_error(std::error_code);
-   
+
 public:
    void setErrorCode(std::error_code errorCode)
    {
       this->m_errorCode = errorCode;
    }
-   
+
    std::error_code convertToErrorCode() const override
    {
       return m_errorCode;
    }
-   
+
    void log(RawOutStream &outStream) const override
    {
       outStream << m_errorCode.message();
    }
-   
+
    // Used by ErrorInfo::m_classId.
    static char m_id;
-   
+
 protected:
    ECError() = default;
    ECError(std::error_code errorCode) : m_errorCode(errorCode)
    {}
-   
+
    std::error_code m_errorCode;
 };
 
@@ -1237,17 +1237,17 @@ class StringError : public ErrorInfo<StringError>
 {
 public:
    static char m_id;
-   
+
    StringError(const Twine &twine, std::error_code errorCode);
-   
+
    void log(RawOutStream &outStream) const override;
    std::error_code convertToErrorCode() const override;
-   
+
    const std::string &getMessage() const
    {
       return m_msg;
    }
-   
+
 private:
    std::string m_msg;
    std::error_code m_errorCode;
@@ -1265,25 +1265,25 @@ public:
       : m_banner(std::move(banner)),
         m_getExitCode([=](const Error &) { return defaultErrorExitCode; })
    {}
-   
+
    /// Set the m_banner string for any errors caught by operator().
    void setBanner(std::string banner)
    {
       this->m_banner = std::move(banner);
    }
-   
+
    /// Set the exit-code mapper function.
    void setExitCodeMapper(std::function<int(const Error &)> getExitCode)
    {
       this->m_getExitCode = std::move(getExitCode);
    }
-   
+
    /// Check Err. If it's in a failure state log the error(s) and exit.
    void operator()(Error error) const
    {
       checkError(std::move(error));
    }
-   
+
    /// Check E. If it's in a success state then return the contained value. If
    /// it's in a failure state log the error(s) and exit.
    template <typename T>
@@ -1292,7 +1292,7 @@ public:
       checkError(expected.takeError());
       return std::move(*expected);
    }
-   
+
    /// Check E. If it's in a success state then return the contained reference. If
    /// it's in a failure state log the error(s) and exit.
    template <typename T>
@@ -1301,7 +1301,7 @@ public:
       checkError(expected.takeError());
       return *expected;
    }
-   
+
 private:
    void checkError(Error error) const
    {
@@ -1311,7 +1311,7 @@ private:
          exit(exitCode);
       }
    }
-   
+
    std::string m_banner;
    std::function<int(const Error &)> m_getExitCode;
 };
