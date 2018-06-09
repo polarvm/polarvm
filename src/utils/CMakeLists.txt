@@ -31,6 +31,11 @@ polar_collect_files(
    DIR ${CMAKE_CURRENT_SOURCE_DIR}
    OUTPUT_VAR POLAR_UTILS_SOURCES)
 
+if(UNIX)
+   list(APPEND POLAR_UTILS_SOURCES _platform/ProgramUnix.cpp)
+   list(APPEND POLAR_UTILS_SOURCES _platform/ProcessUnix.cpp)
+endif()
+
 polar_add_library(PolarUtils
    ${POLAR_UTILS_SOURCES} $<TARGET_OBJECTS:PolarBasic> $<TARGET_OBJECTS:PolarGlobal>
    ADDITIONAL_HEADER_DIRS

@@ -184,14 +184,14 @@ check_symbol_exists(strerror_s string.h HAVE_DECL_STRERROR_S)
 check_symbol_exists(setenv stdlib.h HAVE_SETENV)
 if( PURE_WINDOWS )
    check_symbol_exists(_chsize_s io.h HAVE__CHSIZE_S)
-   
+
    check_function_exists(_alloca HAVE__ALLOCA)
    check_function_exists(__alloca HAVE___ALLOCA)
    check_function_exists(__chkstk HAVE___CHKSTK)
    check_function_exists(__chkstk_ms HAVE___CHKSTK_MS)
    check_function_exists(___chkstk HAVE____CHKSTK)
    check_function_exists(___chkstk_ms HAVE____CHKSTK_MS)
-   
+
    check_function_exists(__ashldi3 HAVE___ASHLDI3)
    check_function_exists(__ashrdi3 HAVE___ASHRDI3)
    check_function_exists(__divdi3 HAVE___DIVDI3)
@@ -202,7 +202,7 @@ if( PURE_WINDOWS )
    check_function_exists(__moddi3 HAVE___MODDI3)
    check_function_exists(__udivdi3 HAVE___UDIVDI3)
    check_function_exists(__umoddi3 HAVE___UMODDI3)
-   
+
    check_function_exists(__main HAVE___MAIN)
    check_function_exists(__cmpdi2 HAVE___CMPDI2)
 endif()
@@ -252,7 +252,7 @@ polar_check_type_exists(u_int64_t "${headers}" HAVE_U_INT64_T)
 function(polar_find_program name)
    string(TOUPPER ${name} NAME)
    string(REGEX REPLACE "\\." "_" NAME ${NAME})
-   
+
    find_program(POLAR_PATH_${NAME} NAMES ${ARGV})
    mark_as_advanced(POLAR_PATH_${NAME})
    if(POLAR_PATH_${NAME})
@@ -302,8 +302,6 @@ string(TOLOWER "${POLAR_TARGET_ARCH}" POLAR_NATIVE_ARCH)
 if(POLAR_NATIVE_ARCH STREQUAL "host" )
    string(REGEX MATCH "^[^-]*" POLAR_NATIVE_ARCH ${POLAR_HOST_TRIPLE})
 endif ()
-
-message(${POLAR_NATIVE_ARCH})
 
 if (POLAR_NATIVE_ARCH MATCHES "i[2-6]86")
    set(POLAR_NATIVE_ARCH X86)
@@ -369,7 +367,7 @@ if(CMAKE_HOST_APPLE AND APPLE)
    else()
       find_program(LD64_EXECUTABLE NAMES ld DOC "The ld64 linker")
    endif()
-   
+
    if(LD64_EXECUTABLE)
       set(LD64_EXECUTABLE ${LD64_EXECUTABLE} CACHE PATH "ld64 executable")
       message(STATUS "Found ld64 - ${LD64_EXECUTABLE}")

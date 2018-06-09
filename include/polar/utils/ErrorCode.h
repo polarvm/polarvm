@@ -6,7 +6,7 @@
 //
 // See http://polarphp.org/LICENSE.txt for license information
 // See http://polarphp.org/CONTRIBUTORS.txt for the list of polarPHP project authors
-// 
+//
 // Created by softboy on 2018/05/31.
 
 //===----------------------------------------------------------------------===//
@@ -27,7 +27,7 @@
 //   the intersection of all the ones we support.
 //
 // * std::errc is just marked with is_error_condition_enum. This means that
-//   common patters like AnErrorCode == errc::no_such_file_or_directory take
+//   common patters like AnErrorCode == ErrorCode::no_such_file_or_directory take
 //   4 virtual calls instead of two comparisons.
 //===----------------------------------------------------------------------===//
 
@@ -38,7 +38,7 @@
 
 namespace polar {
 
-enum class errc {
+enum class ErrorCode {
    argument_list_too_long = int(std::errc::argument_list_too_long),
    argument_out_of_domain = int(std::errc::argument_out_of_domain),
    bad_address = int(std::errc::bad_address),
@@ -80,7 +80,7 @@ enum class errc {
    too_many_links = int(std::errc::too_many_links)
 };
 
-inline std::error_code make_error_code(errc error)
+inline std::error_code make_error_code(ErrorCode error)
 {
    return std::error_code(static_cast<int>(error), std::generic_category());
 }
@@ -90,7 +90,7 @@ inline std::error_code make_error_code(errc error)
 namespace std
 {
 
-template <> struct is_error_code_enum<polar::errc> : std::true_type
+template <> struct is_error_code_enum<polar::ErrorCode> : std::true_type
 {};
 
 } // std

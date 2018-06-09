@@ -6,7 +6,7 @@
 //
 // See http://polarphp.org/LICENSE.txt for license information
 // See http://polarphp.org/CONTRIBUTORS.txt for the list of polarPHP project authors
-// 
+//
 // Created by softboy on 2018/05/27.
 
 #ifndef POLAR_GLOBAL_SYSTEMDETECTION_H
@@ -14,7 +14,7 @@
 
 /*
    The operating system, must be one of: (POLAR_OS_x)
-   
+
      DARWIN   - Any Darwin system (macOS, iOS, watchOS, tvOS)
      MACOS    - macOS
      IOS      - iOS
@@ -51,7 +51,7 @@
      UNIX     - Any UNIX BSD/SYSV system
      ANDROID  - Android platform
      HAIKU    - Haiku
-     
+
    The following operating systems have variants:
      LINUX    - both POLAR_OS_LINUX and POLAR_OS_ANDROID are defined when building for Android
               - only POLAR_OS_LINUX is defined if building for other Linux systems
@@ -74,7 +74,7 @@
 #               define POLAR_OS_WATCHOS
 #           elif defined(TARGET_OS_TV) && TARGET_OS_TV
 #               define POLAR_OS_TVOS
-#           else 
+#           else
 #               define POLAR_OS_IOS
 #           endif
 #       else
