@@ -469,7 +469,7 @@ std::error_code copy_file(const Twine &From, const Twine &To);
 /// @param Size Size to resize to.
 /// @returns errc::success if \a path has been resized to \a size, otherwise a
 ///          platform-specific error_code.
-std::error_code resize_file(int FD, uint64_t Size);
+std::error_code resize_file(int fd, uint64_t size);
 
 /// Compute an MD5 hash of a file's contents.
 ///
@@ -964,7 +964,7 @@ OptionalError<SpaceInfo> disk_space(const Twine &path);
 /// boost::iostreams::mapped_file.
 class MappedFileRegion {
 public:
-   enum mapmode {
+   enum MapMode {
       readonly, ///< May only access map via const_data as read only.
       readwrite, ///< May access map via data and modify it. Written to path.
       priv ///< May modify via data, but changes are lost on destruction.
@@ -972,12 +972,12 @@ public:
 
 private:
    /// Platform-specific mapping state.
-   size_t Size;
-   void *Mapping;
-   int FD;
-   mapmode Mode;
+   size_t m_size;
+   void *m_mapping;
+   int m_fd;
+   MapMode m_mode;
 
-   std::error_code init(int fd, uint64_t offset, mapmode mode);
+   std::error_code init(int fd, uint64_t offset, MapMode mode);
 
 public:
    MappedFileRegion() = delete;
@@ -987,7 +987,7 @@ public:
    /// \param fd An open file descriptor to map. MappedFileRegion takes
    ///   ownership if closefd is true. It must have been opended in the correct
    ///   mode.
-   MappedFileRegion(int fd, mapmode mode, size_t length, uint64_t offset,
+   MappedFileRegion(int fd, MapMode mode, size_t length, uint64_t offset,
                     std::error_code &errorCode);
 
    ~MappedFileRegion();
@@ -1066,7 +1066,7 @@ namespace internal {
 struct DirIterState;
 
 std::error_code directory_iterator_construct(DirIterState &, StringRef, bool);
-std::error_code directory_iterator_incrementnstruct(DirIterState &);
+std::error_code directory_iterator_increment(DirIterState &);
 std::error_code DirectoryIterator_destruct(DirIterState &);
 
 /// Keeps state for the DirectoryIterator.
@@ -1117,7 +1117,7 @@ public:
    // No operator++ because we need error_code.
    DirectoryIterator &increment(std::error_code &errorCode)
    {
-      errorCode = internal::directory_iterator_incrementnstruct(*m_state);
+      errorCode = internal::directory_iterator_increment(*m_state);
       updateErrorCodeForCurrentEntry(errorCode);
       return *this;
    }

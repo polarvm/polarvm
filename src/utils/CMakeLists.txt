@@ -34,6 +34,7 @@ polar_collect_files(
 if(UNIX)
    list(APPEND POLAR_UTILS_SOURCES _platform/ProgramUnix.cpp)
    list(APPEND POLAR_UTILS_SOURCES _platform/ProcessUnix.cpp)
+   list(APPEND POLAR_UTILS_SOURCES _platform/PathUnix.cpp)
 endif()
 
 polar_add_library(PolarUtils

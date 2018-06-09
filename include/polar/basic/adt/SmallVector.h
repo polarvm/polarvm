@@ -542,7 +542,7 @@ public:
    void reserve(size_type size)
    {
       if (this->getCapacity() < size) {
-         grow(size);
+         this->grow(size);
       }
    }
 
@@ -812,9 +812,9 @@ public:
 
       // Move over the elements that we're about to overwrite.
       T *oldEnd = this->end();
-      setEnd(this->end() + numToInsert);
+      this->setEnd(this->end() + numToInsert);
       size_t numOverwritten = oldEnd - iter;
-      uninitializedMove(iter, oldEnd, this->end() - numOverwritten);
+      this->uninitializedMove(iter, oldEnd, this->end() - numOverwritten);
 
       // Replace the overwritten part.
       for (T *targetIter = iter; numOverwritten > 0; --numOverwritten) {
@@ -824,7 +824,7 @@ public:
       }
 
       // Insert the non-overwritten middle part.
-      uninitializedCopy(from, to, oldEnd);
+      this->uninitializedCopy(from, to, oldEnd);
       return iter;
    }
 
@@ -884,7 +884,7 @@ public:
    void setSize(size_type size)
    {
       assert(size <= this->getCapacity());
-      setEnd(this->begin() + size);
+      this->setEnd(this->begin() + size);
    }
 };
 
