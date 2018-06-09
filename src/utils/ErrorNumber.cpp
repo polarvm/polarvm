@@ -21,13 +21,6 @@
 namespace polar {
 namespace utils {
 
-#if HAVE_ERRNO_H
-std::string str_error()
-{
-   return str_error(errno);
-}
-#endif  // HAVE_ERRNO_H
-
 std::string str_error(int errnum)
 {
    std::string str;
@@ -38,14 +31,14 @@ std::string str_error(int errnum)
    const int maxErrStrLen = 2000;
    char buffer[maxErrStrLen];
    buffer[0] = '\0';
-#endif  
-   
+#endif
+
 #ifdef HAVE_STRERROR_R
    // strerror_r is thread-safe.
 #if defined(__GLIBC__) && defined(_GNU_SOURCE)
    // glibc defines its own incompatible version of strerror_r
    // which may not use the buffer supplied.
-   str = strerror_r(errnum, buffer, MaxErrStrLen - 1);
+   str = strerror_r(errnum, buffer, maxErrStrLen - 1);
 #else
    strerror_r(errnum, buffer, MaxErrStrLen - 1);
    str = buffer;
@@ -67,6 +60,14 @@ std::string str_error(int errnum)
 #endif
    return str;
 }
+
+
+#if HAVE_ERRNO_H
+std::string str_error()
+{
+   return str_error(errno);
+}
+#endif  // HAVE_ERRNO_H
 
 } // utils
 } // polar
