@@ -96,7 +96,6 @@ public:
       {
          // Our Md5 implementation returns the result in little endian, so the low
          // word is first.
-         using namespace support;
          return endian::read<uint64_t, Endianness::Little, UNALIGNED>(m_bytes.data());
       }
 

@@ -77,11 +77,11 @@
 // SET reads 4 input bytes in little-endian byte order and stores them
 // in a properly aligned word in host byte order.
 #define SET(n)                                                                 \
-   (block[(n)] =                                                                \
+   (m_block[(n)] =                                                                \
    (Md5U32PlusType) ptr[(n) * 4] | ((Md5U32PlusType) ptr[(n) * 4 + 1] << 8) |    \
    ((Md5U32PlusType) ptr[(n) * 4 + 2] << 16) |                                \
    ((Md5U32PlusType) ptr[(n) * 4 + 3] << 24))
-#define GET(n) (block[(n)])
+#define GET(n) (m_block[(n)])
 
 namespace polar {
 namespace utils {
@@ -228,7 +228,7 @@ void Md5::update(ArrayRef<uint8_t> data)
       size &= 0x3f;
    }
 
-   memcpy(buffer, ptr, size);
+   memcpy(m_buffer, ptr, size);
 }
 
 /// Add the bytes in the StringRef \p Str to the hash.

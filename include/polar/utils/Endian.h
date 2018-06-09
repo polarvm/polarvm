@@ -31,7 +31,7 @@ enum class Endianness
 };
 
 // These are named values for common alignments.
-static const int ALIGINED = 0;
+static const int ALIGNED = 0;
 static const int UNALIGNED = 1;
 
 namespace internal {
@@ -229,17 +229,20 @@ struct PackedEndianSpecificIntegral
 {
    PackedEndianSpecificIntegral() = default;
 
-   explicit PackedEndianSpecificIntegral(value_type val) { *this = val; }
+   explicit PackedEndianSpecificIntegral(value_type value)
+   {
+      *this = value;
+   }
 
    operator value_type() const {
       return endian::read<value_type, endian, alignment>(
-               (const void*)Value.buffer);
+               (const void*)m_value.m_buffer);
    }
 
    void operator=(value_type newValue)
    {
       endian::write<value_type, endian, alignment>(
-               (void*)Value.buffer, newValue);
+               (void*)m_value.m_buffer, newValue);
    }
 
    PackedEndianSpecificIntegral &operator+=(value_type newValue)
@@ -283,7 +286,7 @@ public:
 
       void operator=(value_type newValue)
       {
-         endian::write<value_type, endian, alignment>(ptr, newValue);
+         endian::write<value_type, endian, alignment>(m_ptr, newValue);
       }
 
    private:
