@@ -28,9 +28,9 @@ using polar::basic::StringRef;
 /// This is the OS-specific separator for PATH like environment variables:
 // a colon on Unix or a semicolon on Windows.
 #if defined(POLAR_ON_UNIX)
-const char EnvPathSeparator = ':';
+const char g_envPathSeparator = ':';
 #elif defined (_WIN32)
-const char EnvPathSeparator = ';';
+const char g_envPathSeparator = ';';
 #endif
 
 /// This struct encapsulates information about a process.

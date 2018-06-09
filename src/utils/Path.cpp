@@ -253,7 +253,6 @@ retry_random_path:
    polar_unreachable("Invalid Type");
 }
 
-
 } // end unnamed namespace
 
 } // path
