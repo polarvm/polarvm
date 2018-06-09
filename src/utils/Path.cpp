@@ -180,10 +180,10 @@ size_t parent_path_end(StringRef path, Style style)
    return endPos;
 }
 
-std::error_code createUniqueEntity(const Twine &model, int &resultFD,
-                                   SmallVectorImpl<char> &resultPath, bool makeAbsolute,
-                                   unsigned mode, FSEntity type,
-                                   polar::fs::OpenFlags flags = polar::fs::F_None) {
+std::error_code create_unique_entity(const Twine &model, int &resultFD,
+                                     SmallVectorImpl<char> &resultPath, bool makeAbsolute,
+                                     unsigned mode, FSEntity type,
+                                     polar::fs::OpenFlags flags = polar::fs::F_None) {
    SmallString<128> modelStorage;
    model.toVector(modelStorage);
 
@@ -241,7 +241,7 @@ retry_random_path:
 
    case FS_Dir: {
       if (std::error_code errorCode =
-         fs::create_directory(resultPath.begin(), false)) {
+          fs::create_directory(resultPath.begin(), false)) {
          if (errorCode == ErrorCode::file_exists) {
             goto retry_random_path;
          }
@@ -254,6 +254,8 @@ retry_random_path:
 }
 
 } // end unnamed namespace
+
+
 
 } // path
 } // fs
