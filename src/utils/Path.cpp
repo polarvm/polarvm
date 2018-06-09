@@ -35,6 +35,7 @@ using namespace polar::utils::endian;
 using polar::basic::StringRef;
 using polar::fs::path::is_separator;
 using polar::fs::path::Style;
+using polar::utils::Process;
 
 enum FSEntity
 {
@@ -183,75 +184,77 @@ std::error_code createUniqueEntity(const Twine &model, int &resultFD,
                                    SmallVectorImpl<char> &resultPath, bool makeAbsolute,
                                    unsigned mode, FSEntity type,
                                    polar::fs::OpenFlags flags = polar::fs::F_None) {
-   SmallString<128> ModelStorage;
-   Model.toVector(ModelStorage);
+   SmallString<128> modelStorage;
+   model.toVector(modelStorage);
 
-   if (MakeAbsolute) {
+   if (makeAbsolute) {
       // Make model absolute by prepending a temp directory if it's not already.
-      if (!sys::path::is_absolute(Twine(ModelStorage))) {
-         SmallString<128> TDir;
-         sys::path::system_temp_directory(true, TDir);
-         sys::path::append(TDir, Twine(ModelStorage));
-         ModelStorage.swap(TDir);
+      if (!path::is_absolute(Twine(modelStorage))) {
+         SmallString<128> tdir;
+         path::system_temp_directory(true, tdir);
+         path::append(tdir, Twine(modelStorage));
+         modelStorage.swap(tdir);
       }
    }
 
    // From here on, DO NOT modify model. It may be needed if the randomly chosen
    // path already exists.
-   ResultPath = ModelStorage;
+   resultPath = modelStorage;
    // Null terminate.
-   ResultPath.push_back(0);
-   ResultPath.pop_back();
+   resultPath.push_back(0);
+   resultPath.pop_back();
 
 retry_random_path:
    // Replace '%' with random chars.
-   for (unsigned i = 0, e = ModelStorage.size(); i != e; ++i) {
-      if (ModelStorage[i] == '%')
-         ResultPath[i] = "0123456789abcdef"[sys::Process::GetRandomNumber() & 15];
+   for (unsigned i = 0, e = modelStorage.getSize(); i != e; ++i) {
+      if (modelStorage[i] == '%') {
+         resultPath[i] = "0123456789abcdef"[Process::getRandomNumber() & 15];
+      }
    }
 
    // Try to open + create the file.
-   switch (Type) {
+   switch (type) {
    case FS_File: {
-      if (std::error_code EC =
-          sys::fs::openFileForWrite(Twine(ResultPath.begin()), ResultFD,
-                                    Flags | sys::fs::F_Excl, Mode)) {
-         if (EC == errc::file_exists)
+      if (std::error_code errorCode =
+          fs::open_file_for_write(Twine(resultPath.begin()), resultFD,
+                                  flags | fs::F_Excl, mode)) {
+         if (errorCode == ErrorCode::file_exists)
             goto retry_random_path;
-         return EC;
+         return errorCode;
       }
 
       return std::error_code();
    }
 
    case FS_Name: {
-      std::error_code EC =
-            sys::fs::access(ResultPath.begin(), sys::fs::AccessMode::Exist);
-      if (EC == errc::no_such_file_or_directory)
+      std::error_code errorCode =
+            fs::access(resultPath.begin(), fs::AccessMode::Exist);
+      if (errorCode == ErrorCode::no_such_file_or_directory) {
          return std::error_code();
-      if (EC)
-         return EC;
+      }
+      if (errorCode) {
+         return errorCode;
+      }
+
       goto retry_random_path;
    }
 
    case FS_Dir: {
-      if (std::error_code EC =
-          sys::fs::create_directory(ResultPath.begin(), false)) {
-         if (EC == errc::file_exists)
+      if (std::error_code errorCode =
+         fs::create_directory(resultPath.begin(), false)) {
+         if (errorCode == ErrorCode::file_exists) {
             goto retry_random_path;
-         return EC;
+         }
+         return errorCode;
       }
       return std::error_code();
    }
    }
-   llvm_unreachable("Invalid Type");
+   polar_unreachable("Invalid Type");
 }
 
 
 } // end unnamed namespace
-
-
-
 
 } // path
 } // fs

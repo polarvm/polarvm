@@ -65,6 +65,7 @@ using polar::utils::TimePoint;
 using polar::basic::StringRef;
 using polar::utils::Expected;
 using polar::utils::Error;
+using polar::utils::Md5;
 
 /// An enumeration for the file system's view of the type.
 enum class FileType
@@ -154,7 +155,7 @@ class UniqueId
 public:
    UniqueId() = default;
    UniqueId(uint64_t device, uint64_t file)
-      : m_device(Device), m_file(File)
+      : m_device(device), m_file(file)
    {}
 
    bool operator==(const UniqueId &other) const
@@ -216,7 +217,7 @@ public:
    BasicFileStatus(FileType type, Permission perms, time_t atime, time_t mtime,
                    uid_t uid, gid_t gid, off_t size)
       : m_fsStatusAtime(atime), m_fsStatusMtime(mtime), m_fsStatusUid(uid), m_fsStatusGid(gid),
-        m_fsStatusSize(size), Type(type), m_permissions(perms)
+        m_fsStatusSize(size), m_type(type), m_permissions(perms)
    {}
 #elif defined(_WIN32)
    BasicFileStatus(FileType type, Permisson perms, uint32_t lastAccessTimeHigh,
@@ -475,10 +476,10 @@ std::error_code resize_file(int FD, uint64_t Size);
 /// @param FD Input file descriptor.
 /// @returns An MD5Result with the hash computed, if successful, otherwise a
 ///          std::error_code.
-ErrorOr<MD5::MD5Result> md5_contents(int fd);
+OptionalError<Md5::Md5Result> md5_contents(int fd);
 
 /// Version of compute_md5 that doesn't require an open file descriptor.
-ErrorOr<MD5::MD5Result> md5_contents(const Twine &path);
+OptionalError<Md5::Md5Result> md5_contents(const Twine &path);
 
 /// @}
 /// @name Physical Observers
@@ -638,7 +639,7 @@ inline bool is_regular_file(const Twine &path)
       return false;
    }
 
-   return Result;
+   return result;
 }
 
 /// Does status represent a symlink file?
@@ -664,7 +665,7 @@ inline bool is_symlink_file(const Twine &path)
    if (is_symlink_file(path, result)) {
       return false;
    }
-   return Result;
+   return result;
 }
 
 /// Does this status represent something that exists but is not a
@@ -717,7 +718,7 @@ std::error_code set_permissions(const Twine &path, Permission permissions);
 /// @note On Windows, if the file does not have the FILE_ATTRIBUTE_READONLY
 ///       attribute, all_all will be returned. Otherwise, all_read | all_exe
 ///       will be returned.
-OptionalError<perms> get_permissions(const Twine &path);
+OptionalError<Permission> get_permissions(const Twine &path);
 
 /// Get file size.
 ///
@@ -727,12 +728,12 @@ OptionalError<perms> get_permissions(const Twine &path);
 ///          platform-specific error_code.
 inline std::error_code file_size(const Twine &path, uint64_t &result)
 {
-   FileStatus status;
-   std::error_code errorCode = status(path, status);
+   FileStatus fileStatus;
+   std::error_code errorCode = status(path, fileStatus);
    if (errorCode) {
       return errorCode;
    }
-   result = status.getSize();
+   result = fileStatus.getSize();
    return std::error_code();
 }
 
@@ -1219,12 +1220,12 @@ public:
                ++m_state->m_level;
                return *this;
             }
-            m_state->m_state.pop();
+            m_state->m_stack.pop();
          }
       }
 
       while (!m_state->m_stack.empty()
-             && m_state->m_stack.top().increment(ec) == endIter) {
+             && m_state->m_stack.top().increment(errorCode) == endIter) {
          m_state->m_stack.pop();
          --m_state->m_level;
       }
@@ -1276,7 +1277,7 @@ public:
          m_state->m_stack.pop();
          --m_state->m_level;
       } while (!m_state->m_stack.empty()
-               && m_state->m_stack.top().increment(ec) == endIter);
+               && m_state->m_stack.top().increment(errorCode) == endIter);
 
       // Check if we are done. If so, create an end iterator.
       if (m_state->m_stack.empty()) {
