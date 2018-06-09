@@ -19,9 +19,9 @@
 #endif
 
 namespace polar {
-namespace utils {
+namespace sys {
 
-std::string str_error(int errnum)
+std::string get_error_str(int errnum)
 {
    std::string str;
    if (errnum == 0) {
@@ -61,13 +61,12 @@ std::string str_error(int errnum)
    return str;
 }
 
-
 #if HAVE_ERRNO_H
-std::string str_error()
+std::string get_error_str()
 {
-   return str_error(errno);
+   return get_error_str(errno);
 }
 #endif  // HAVE_ERRNO_H
 
-} // utils
+} // sys
 } // polar

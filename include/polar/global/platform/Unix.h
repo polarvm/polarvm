@@ -52,4 +52,61 @@
 # include <fcntl.h>
 #endif
 
+namespace polar {
+
+using utils::TimePoint;
+
+/// This function builds an error message into \p ErrMsg using the \p prefix
+/// string and the Unix error number given by \p errnum. If errnum is -1, the
+/// default then the value of errno is used.
+/// Make an error message
+///
+/// If the error number can be converted to a string, it will be
+/// separated from prefix by ": ".
+namespace {
+inline bool make_error_msg(
+      std::string* errorMsg, const std::string& prefix, int errnum = -1)
+{
+   if (!errorMsg) {
+      return true;
+   }
+   if (errnum == -1) {
+      errnum = errno;
+   }
+   *errorMsg = prefix + ": " + polar::sys::get_error_str(errnum);
+   return true;
+}
+} // anonymous namespace
+
+/// Convert a struct timeval to a duration. Note that timeval can be used both
+/// as a time point and a duration. Be sure to check what the input represents.
+inline std::chrono::microseconds to_duration(const struct timeval &tv)
+{
+   return std::chrono::seconds(tv.tv_sec) +
+         std::chrono::microseconds(tv.tv_usec);
+}
+
+/// Convert a time point to struct timespec.
+inline struct timespec to_time_spec(TimePoint<> timePoint)
+{
+   using namespace std::chrono;
+   struct timespec retVal;
+   retVal.tv_sec = utils::to_time_t(timePoint);
+   retVal.tv_nsec = (timePoint.time_since_epoch() % seconds(1)).count();
+   return retVal;
+}
+
+/// Convert a time point to struct timeval.
+inline struct timeval to_time_val(TimePoint<std::chrono::microseconds> timePoint)
+{
+   using namespace std::chrono;
+
+   struct timeval retVal;
+   retVal.tv_sec = utils::to_time_t(timePoint);
+   retVal.tv_usec = (timePoint.time_since_epoch() % seconds(1)).count();
+   return retVal;
+}
+
+} // polar
+
 #endif // POLAR_GLOBAL_PLATFORM_UNIX_H
