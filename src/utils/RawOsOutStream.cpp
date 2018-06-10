@@ -8,3 +8,34 @@
 // See http://polarphp.org/CONTRIBUTORS.txt for the list of polarPHP project authors
 //
 // Created by softboy on 2018/06/07.
+
+//===----------------------------------------------------------------------===//
+//
+// This implements support adapting RawOutStream to std::ostream.
+//
+//===----------------------------------------------------------------------===//
+
+#include "polar/utils/RawOsOutStream.h"
+#include <ostream>
+
+namespace polar {
+namespace utils {
+
+
+RawOsOutStream::~RawOsOutStream()
+{
+   flush();
+}
+
+void RawOsOutStream::writeImpl(const char *ptr, size_t size)
+{
+   m_outStream.write(ptr, size);
+}
+
+uint64_t RawOsOutStream::getCurrentPos() const
+{
+   return m_outStream.tellp();
+}
+
+} // utils
+} // polar

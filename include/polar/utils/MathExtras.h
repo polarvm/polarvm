@@ -6,7 +6,7 @@
 //
 // See http://polarphp.org/LICENSE.txt for license information
 // See http://polarphp.org/CONTRIBUTORS.txt for the list of polarPHP project authors
-// 
+//
 // Created by softboy on 2018/05/28.
 
 #ifndef POLAR_UTILS_MATH_EXTRAS_H
@@ -29,7 +29,7 @@ namespace polar {
 namespace utils {
 
 /// \brief The behavior an operation has on an input of 0.
-enum class ZeroBehavior 
+enum class ZeroBehavior
 {
    /// \brief The returned value is undefined.
    Undefined,
@@ -47,7 +47,7 @@ struct TrailingZerosCounter
    static std::size_t count(T value, ZeroBehavior) {
       if (!value) {
          return std::numeric_limits<T>::digits;
-      } 
+      }
       if (value & 0x1) {
          return 0;
       }
@@ -227,7 +227,7 @@ T mask_trailing_ones(unsigned size)
 /// \brief Create a bitmask with the N left-most bits set to 1, and all other
 /// bits set to 0.  Only unsigned types are allowed.
 template <typename T>
-T mask_leading_ones(unsigned size) 
+T mask_leading_ones(unsigned size)
 {
    return ~mask_trailing_ones<T>(CHAR_BIT * sizeof(T) - size);
 }
@@ -586,7 +586,7 @@ inline unsigned count_population(T value)
 }
 
 /// Return the log base 2 of the specified value.
-inline double Log2(double value)
+inline double log2(double value)
 {
 #if defined(__ANDROID_API__) && __ANDROID_API__ < 18
    return __builtin_log(value) / __builtin_log(2.0);
@@ -875,7 +875,7 @@ saturating_add(T lhs, T rhs, bool *resultOverflowed = nullptr)
       return std::numeric_limits<T>::max();
    } else {
       return ret;
-   } 
+   }
 }
 
 /// Multiply two unsigned integers, X and Y, of type T.  Clamp the result to the
@@ -887,17 +887,17 @@ saturating_multiply(T lhs, T rhs, bool *resultOverflowed = nullptr)
 {
    bool dummy;
    bool &overflowed = resultOverflowed ? *resultOverflowed : dummy;
-   
+
    // Hacker's Delight, p. 30 has a different algorithm, but we don't use that
    // because it fails for uint16_t (where multiplication can have undefined
    // behavior due to promotion to int), and requires a division in addition
    // to the multiplication.
-   
+
    overflowed = false;
-   
-   // Log2(Z) would be either Log2Z or Log2Z + 1.
-   // Special case: if X or Y is 0, log2 gives -1, and Log2Z
-   // will necessarily be less than Log2Max as desired.
+
+   // log2(Z) would be either log2Z or log2Z + 1.
+   // Special case: if X or Y is 0, log2 gives -1, and log2Z
+   // will necessarily be less than log2Max as desired.
    int log2Z = log2(lhs) + log2(rhs);
    const T max = std::numeric_limits<T>::max();
    int log2Max = log2(max);
@@ -908,7 +908,7 @@ saturating_multiply(T lhs, T rhs, bool *resultOverflowed = nullptr)
       overflowed = true;
       return max;
    }
-   
+
    // We're going to use the top bit, and maybe overflow one
    // bit past it. Multiply all but the bottom bit then add
    // that on at the end.

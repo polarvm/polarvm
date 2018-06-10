@@ -6,7 +6,7 @@
 //
 // See http://polarphp.org/LICENSE.txt for license information
 // See http://polarphp.org/CONTRIBUTORS.txt for the list of polarPHP project authors
-// 
+//
 // Created by softboy on 2018/05/27.
 
 #ifndef POLAR_GLOBAL_GLOBAL_H
@@ -100,7 +100,7 @@
 
 #ifndef __ASSEMBLER__
 #  ifdef __cplusplus
-namespace polar 
+namespace polar
 {
 
 using longlong = std::int64_t;
@@ -118,13 +118,13 @@ using uint = unsigned int;
 using ulong = unsigned long;
 
 #  ifdef __cplusplus
-namespace polar 
+namespace polar
 {
 
 //#ifndef POLAR_CC_MSVC
 //POLAR_NORETURN
 //#endif
-POLAR_CORE_EXPORT void polar_assert(const char *assertion, const char *file, 
+POLAR_CORE_EXPORT void polar_assert(const char *assertion, const char *file,
                                     int line) noexcept;
 
 #if !defined(POLAR_ASSERT)
@@ -137,13 +137,13 @@ POLAR_CORE_EXPORT void polar_assert(const char *assertion, const char *file,
 
 /*
   uintptr and ptrdiff is guaranteed to be the same size as a pointer, i.e.
-  
+
       sizeof(void *) == sizeof(uintptr)
       && sizeof(void *) == sizeof(ptrdiff)
 */
 template <int> struct IntegerForSize;
 
-template <> 
+template <>
 struct IntegerForSize<1>
 {
    using Unsigned = std::uint8_t;
@@ -243,7 +243,7 @@ static inline T *get_ptr_helper(const std::unique_ptr<T> &p)
 //#ifndef POLAR_CC_MSVC
 //POLAR_NORETURN
 //#endif
-POLAR_CORE_EXPORT void polar_assert_x(const char *where, const char *what, 
+POLAR_CORE_EXPORT void polar_assert_x(const char *where, const char *what,
                                       const char *file, int line) noexcept;
 
 #if !defined(POLAR_ASSERT_X)
@@ -279,6 +279,13 @@ void as_const(const T &&) = delete;
 
 #  endif // __cplusplus
 #endif // __ASSEMBLER__
+
+template <typename Enumeration>
+constexpr auto as_integer(Enumeration const value)
+-> typename std::underlying_type<Enumeration>::type
+{
+   return static_cast<typename std::underlying_type<Enumeration>::type>(value);
+}
 
 } // polar
 
