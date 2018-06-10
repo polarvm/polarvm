@@ -255,8 +255,6 @@ retry_random_path:
 
 } // end unnamed namespace
 
-
-
 } // path
 } // fs
 } // polar
