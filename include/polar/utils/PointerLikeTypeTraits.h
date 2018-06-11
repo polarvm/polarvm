@@ -6,7 +6,7 @@
 //
 // See http://polarphp.org/LICENSE.txt for license information
 // See http://polarphp.org/CONTRIBUTORS.txt for the list of polarPHP project authors
-// 
+//
 // Created by softboy on 2018/05/31.
 
 #ifndef POLAR_UTILS_POINTER_LIKE_TYPE_TRAITS_H
@@ -62,13 +62,13 @@ struct PointerLikeTypeTraits<T *>
    {
       return pointer;
    }
-   
+
    static inline T *getFromVoidPointer(void *pointer)
    {
       return static_cast<T *>(pointer);
    }
-   
-   enum 
+
+   enum
    {
       NumLowBitsAvailable = internal::ConstantLog2<alignof(T)>::value
    };
@@ -81,12 +81,12 @@ struct PointerLikeTypeTraits<void *>
    {
       return pointer;
    }
-   
+
    static inline void *getFromVoidPointer(void *pointer)
    {
       return pointer;
    }
-   
+
    /// Note, we assume here that void* is related to raw malloc'ed memory and
    /// that malloc returns objects at least 4-byte aligned. However, this may be
    /// wrong, or pointers may be from something other than malloc. In this case,
@@ -102,17 +102,17 @@ struct PointerLikeTypeTraits<void *>
 // Provide PointerLikeTypeTraits for const things.
 template <typename T> struct PointerLikeTypeTraits<const T>
 {
-   using NonConst = PointerLikeTypeTraits<T>;   
+   using NonConst = PointerLikeTypeTraits<T>;
    static inline const void *getAsVoidPointer(const T pointer)
    {
       return NonConst::getAsVoidPointer(pointer);
    }
-   
+
    static inline const T getFromVoidPointer(const void *pointer)
    {
       return NonConst::getFromVoidPointer(const_cast<void *>(pointer));
    }
-   
+
    enum {
       NumLowBitsAvailable = NonConst::NumLowBitsAvailable
    };
@@ -123,12 +123,12 @@ template <typename T>
 struct PointerLikeTypeTraits<const T *>
 {
    using NonConst = PointerLikeTypeTraits<T *>;
-   
+
    static inline const void *getAsVoidPointer(const T *pointer)
    {
       return NonConst::getAsVoidPointer(const_cast<T *>(pointer));
    }
-   
+
    static inline const T *getFromVoidPointer(const void *pointer)
    {
       return NonConst::getFromVoidPointer(const_cast<void *>(pointer));
@@ -146,7 +146,7 @@ struct PointerLikeTypeTraits<uintptr_t>
    {
       return reinterpret_cast<void *>(pointer);
    }
-   
+
    static inline uintptr_t getFromVoidPointer(void *pointer)
    {
       return reinterpret_cast<uintptr_t>(pointer);
@@ -156,7 +156,6 @@ struct PointerLikeTypeTraits<uintptr_t>
       NumLowBitsAvailable = 0
    };
 };
-
 
 } // utils
 } // polar
