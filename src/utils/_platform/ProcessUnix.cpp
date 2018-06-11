@@ -65,7 +65,7 @@
 #include <mutex>
 
 namespace polar {
-namespace utils {
+namespace sys {
 
 extern bool sg_coreFilesPrevented;
 extern char sg_colorcodes[2][2][8][10];
@@ -502,5 +502,5 @@ unsigned Process::getRandomNumber()
 #endif
 }
 
-} // utils
+} // sys
 } // polar

@@ -54,7 +54,7 @@ extern char **environ;
 #endif
 
 namespace polar {
-namespace utils {
+namespace sys {
 
 ProcessInfo::ProcessInfo()
    : m_pid(0), m_returnCode(0)
@@ -320,5 +320,65 @@ bool execute(ProcessInfo &processInfo, StringRef program, const char **args,
 
 } // anonymous namespace
 
-} // utils
+std::error_code change_stdin_to_binary()
+{
+   // Do nothing, as Unix doesn't differentiate between text and binary.
+   return std::error_code();
+}
+
+std::error_code change_stdout_to_binary()
+{
+   // Do nothing, as Unix doesn't differentiate between text and binary.
+   return std::error_code();
+}
+
+std::error_code
+write_file_with_encoding(StringRef fileName, StringRef contents,
+                         WindowsEncodingMethod encoding /*unused*/)
+{
+   std::error_code errorCode;
+   polar::utils::RawFdOutStream outStream(fileName, errorCode, fs::OpenFlags::F_Text);
+
+   if (errorCode) {
+      return errorCode;
+   }
+   outStream << Contents;
+   if (outStream.hasError()) {
+      return make_error_code(ErrorCode::io_error);
+   }
+   return errorCode;
+}
+
+bool command_line_fits_within_system_limits(StringRef program,
+                                            ArrayRef<const char *> args) {
+   static long ArgMax = sysconf(_SC_ARG_MAX);
+
+   // System says no practical limit.
+   if (argMax == -1) {
+      return true;
+   }
+   // Conservatively account for space required by environment variables.
+   long halfArgMax = argMax / 2;
+
+   size_t argLength = program.size() + 1;
+   for (const char* arg : args) {
+      size_t length = strlen(arg);
+
+      // Ensure that we do not exceed the MAX_ARG_STRLEN constant on Linux, which
+      // does not have a constant unlike what the man pages would have you
+      // believe. Since this limit is pretty high, perform the check
+      // unconditionally rather than trying to be aggressive and limiting it to
+      // Linux only.
+      if (length >= (32 * 4096)) {
+         return false;
+      }
+      argLength += length + 1;
+      if (argLength > size_t(halfArgMax)) {
+         return false;
+      }
+   }
+   return true;
+}
+
+} // sys
 } // polar

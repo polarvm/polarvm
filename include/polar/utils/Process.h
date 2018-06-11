@@ -27,7 +27,7 @@ class ArrayRef;
 class StringRef;
 } // basic
 
-namespace utils {
+namespace sys {
 
 using polar::basic::ArrayRef;
 using polar::basic::StringRef;
@@ -180,7 +180,7 @@ public:
    static unsigned getRandomNumber();
 };
 
-} // utils
+} // sys
 } // polar
 
 #endif // POLAR_UTILS_PROCESS_H

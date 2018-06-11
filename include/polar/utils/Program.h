@@ -20,7 +20,7 @@
 #include <optional>
 
 namespace polar {
-namespace utils {
+namespace sys {
 
 using polar::basic::ArrayRef;
 using polar::basic::StringRef;
@@ -196,7 +196,7 @@ ProcessInfo wait(
       ///< program.
       );
 
-} // utils
+} // sys
 } // polar
 
 #endif // POLAR_UTILS_PROGRAM_H
