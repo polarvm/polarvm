@@ -102,7 +102,7 @@
 namespace polar {
 namespace fs {
 
-using polar::utils::Process;
+using polar::sys::Process;
 
 namespace {
 #if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) ||     \

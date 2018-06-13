@@ -35,7 +35,7 @@ using namespace polar::utils::endian;
 using polar::basic::StringRef;
 using polar::fs::path::is_separator;
 using polar::fs::path::Style;
-using polar::utils::Process;
+using polar::sys::Process;
 
 enum FSEntity
 {

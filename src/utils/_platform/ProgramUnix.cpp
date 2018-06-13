@@ -56,6 +56,9 @@ extern char **environ;
 namespace polar {
 namespace sys {
 
+using polar::basic::SmallVector;
+using polar::basic::SmallString;
+
 ProcessInfo::ProcessInfo()
    : m_pid(0), m_returnCode(0)
 {}
@@ -342,7 +345,7 @@ write_file_with_encoding(StringRef fileName, StringRef contents,
    if (errorCode) {
       return errorCode;
    }
-   outStream << Contents;
+   outStream << contents;
    if (outStream.hasError()) {
       return make_error_code(ErrorCode::io_error);
    }
@@ -351,7 +354,7 @@ write_file_with_encoding(StringRef fileName, StringRef contents,
 
 bool command_line_fits_within_system_limits(StringRef program,
                                             ArrayRef<const char *> args) {
-   static long ArgMax = sysconf(_SC_ARG_MAX);
+   static long argMax = sysconf(_SC_ARG_MAX);
 
    // System says no practical limit.
    if (argMax == -1) {
@@ -360,7 +363,7 @@ bool command_line_fits_within_system_limits(StringRef program,
    // Conservatively account for space required by environment variables.
    long halfArgMax = argMax / 2;
 
-   size_t argLength = program.size() + 1;
+   size_t argLength = program.getSize() + 1;
    for (const char* arg : args) {
       size_t length = strlen(arg);
 
