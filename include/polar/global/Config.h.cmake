@@ -17,6 +17,9 @@
 /* Bug report URL. */
 #define POLAR_BUG_REPORT_URL "${POLAR_BUG_REPORT_URL}"
 
+/* Define as the return type of signal handlers (`int' or `void'). */
+#cmakedefine RETSIGTYPE ${RETSIGTYPE}
+
 /* Define to 1 if you have the `backtrace' function. */
 #cmakedefine HAVE_BACKTRACE ${HAVE_BACKTRACE}
 

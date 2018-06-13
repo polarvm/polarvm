@@ -354,6 +354,9 @@ else ()
    message(FATAL_ERROR "Unknown architecture ${POLAR_NATIVE_ARCH}")
 endif ()
 
+# FIXME: Signal handler return type, currently hardcoded to 'void'
+set(RETSIGTYPE void)
+
 if(MINGW)
    set(HAVE_LIBPSAPI 1)
    set(HAVE_LIBSHELL32 1)
