@@ -36,7 +36,7 @@ public:
    StringRef save(StringRef str);
    StringRef save(const Twine &str)
    {
-      return save(StringRef(str.str()));
+      return save(StringRef(str.getStr()));
    }
 
    StringRef save(const std::string &str)
