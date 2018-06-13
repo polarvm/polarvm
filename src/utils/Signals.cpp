@@ -45,17 +45,18 @@ using polar::utils::StringSaver;
 using polar::utils::FormattedNumber;
 using polar::utils::BumpPtrAllocator;
 using polar::utils::RawFdOutStream;
-using polar::utils::FileRemover;
 using polar::utils::MemoryBuffer;
 using polar::basic::SmallString;
 using polar::basic::SmallVector;
+
+using polar::fs::FileRemover;
 
 // Use explicit storage to avoid accessing cl::opt in a signal handler.
 static bool sg_disableSymbolicationFlag = false;
 static cmd::Opt<bool, true>
 sg_disableSymbolication("disable-symbolication",
                         cmd::Desc("Disable symbolizing crash backtraces."),
-                        cmd::location(DisableSymbolicationFlag), cmd::Hidden);
+                        cmd::location(sg_disableSymbolicationFlag), cmd::Hidden);
 
 // Callbacks to run in signal handler must be lock-free because a signal handler
 // could be running as we add new callbacks. We don't add unbounded numbers of
@@ -167,8 +168,8 @@ bool print_symbolized_stack_trace(StringRef argv0, void **stackTrace,
    StringSaver strPool(allocator);
    std::vector<const char *> modules(depth, nullptr);
    std::vector<intptr_t> offsets(depth, 0);
-   if (!findModulesAndOffsets(stackTrace, depth, modules.data(), offsets.data(),
-                              mainExecutableName.c_str(), strPool)) {
+   if (!find_modules_and_offsets(stackTrace, depth, modules.data(), offsets.data(),
+                                 mainExecutableName.c_str(), strPool)) {
       return false;
    }
    int inputFD;
@@ -176,11 +177,11 @@ bool print_symbolized_stack_trace(StringRef argv0, void **stackTrace,
    SmallString<32> outputFile;
    polar::fs::create_temporary_file("symbolizer-input", "", inputFD, inputFile);
    polar::fs::create_temporary_file("symbolizer-output", "", outputFile);
-   FileRemover inputRemover(inputFile.c_str());
-   FileRemover outputRemover(outputFile.c_str());
+   FileRemover inputRemover(inputFile.getCStr());
+   FileRemover outputRemover(outputFile.getCStr());
 
    {
-      RawFdOutStream innput(inputFD, true);
+      RawFdOutStream input(inputFD, true);
       for (int i = 0; i < depth; i++) {
          if (modules[i]) {
             input << modules[i] << " " << (void*)offsets[i] << "\n";
@@ -188,7 +189,7 @@ bool print_symbolized_stack_trace(StringRef argv0, void **stackTrace,
       }
    }
 
-   std::optional<StringRef> redirects[] = {inputFile.str(), outputFile.str(), std::nullopt};
+   std::optional<StringRef> redirects[] = {inputFile.getStr(), outputFile.getStr(), std::nullopt};
    const char *args[] = {"polar-symbolizer", "--functions=linkage", "--inlining",
                       #ifdef _WIN32
                          // Pass --relative-address on Windows so that we don't
@@ -204,7 +205,7 @@ bool print_symbolized_stack_trace(StringRef argv0, void **stackTrace,
 
    // This report format is based on the sanitizer stack trace printer.  See
    // sanitizer_stacktrace_printer.cc in compiler-rt.
-   auto outputBuf = MemoryBuffer::getFile(outputFile.c_str());
+   auto outputBuf = MemoryBuffer::getFile(outputFile.getCStr());
    if (!outputBuf) {
       return false;
    }
@@ -229,7 +230,7 @@ bool print_symbolized_stack_trace(StringRef argv0, void **stackTrace,
             break;
          }
          outstream << '#' << frameno++ << ' ' << format_ptr(stackTrace[i]) << ' ';
-         if (!functionName.startswith("??")) {
+         if (!functionName.startsWith("??")) {
             outstream << functionName << ' ';
          }
          if (curLine == lines.end()) {
@@ -239,7 +240,7 @@ bool print_symbolized_stack_trace(StringRef argv0, void **stackTrace,
          if (!fileLineInfo.startsWith("??")) {
             outstream << fileLineInfo;
          } else {
-            outstream << "(" << modules[i] << '+' << format_hex(offsets[i], 0) << ")";
+            outstream << "(" << modules[i] << '+' << polar::utils::format_hex(offsets[i], 0) << ")";
          }
          outstream << "\n";
       }
