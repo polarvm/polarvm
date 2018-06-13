@@ -6,7 +6,7 @@
 //
 // See http://polarphp.org/LICENSE.txt for license information
 // See http://polarphp.org/CONTRIBUTORS.txt for the list of polarPHP project authors
-// 
+//
 // Created by softboy on 2018/06/04.
 
 #ifndef POLAR_UTILS_CIRCULAR_RAW_OUT_STREAM_H
@@ -29,45 +29,45 @@ public:
    /// issues, etc.
    ///
    static const bool TAKE_OWNERSHIP = true;
-   
+
    /// REFERENCE_ONLY - Tell this stream it should not manage the
    /// held stream.
    ///
    static const bool REFERENCE_ONLY = false;
-   
+
 private:
    /// m_theStream - The real stream we output to. We set it to be
    /// unbuffered, since we're already doing our own buffering.
    ///
    RawOutStream *m_theStream;
-   
+
    /// m_ownsStream - Are we responsible for managing the underlying
    /// stream?
    ///
    bool m_ownsStream;
-   
+
    /// m_bufferSize - The size of the buffer in bytes.
    ///
    size_t m_bufferSize;
-   
+
    /// m_bufferArray - The actual buffer storage.
    ///
    char *m_bufferArray;
-   
+
    /// m_cur - Pointer to the current output point in m_bufferArray.
    ///
    char *m_cur;
-   
+
    /// m_filled - Indicate whether the buffer has been completely
    /// filled.  This helps avoid garbage output.
    ///
    bool m_filled;
-   
+
    /// Banner - A pointer to a banner to print before dumping the
    /// log.
    ///
    const char *m_banner;
-   
+
    /// flushBuffer - Dump the contents of the buffer to Stream.
    ///
    void getFlushBuffer()
@@ -75,25 +75,25 @@ private:
       if (m_filled) {
          // Write the older portion of the buffer.
          m_theStream->write(m_cur, m_bufferArray + m_bufferSize - m_cur);
-      }   
+      }
       // Write the newer portion of the buffer.
       m_theStream->write(m_bufferArray, m_cur - m_bufferArray);
       m_cur = m_bufferArray;
       m_filled = false;
    }
-   
+
    void writeImpl(const char *ptr, size_t size) override;
-   
+
    /// current_pos - Return the current position within the stream,
    /// not counting the bytes currently in the buffer.
    ///
-   uint64_t currentPos() const override
+   uint64_t getCurrentPos() const override
    {
       // This has the same effect as calling m_theStream.current_pos(),
       // but that interface is private.
       return m_theStream->tell() - m_theStream->getNumBytesInBuffer();
    }
-   
+
 public:
    /// CircularRawOutStream - Construct an optionally
    /// circular-buffered stream, handing it an underlying stream to
@@ -120,7 +120,7 @@ public:
       m_cur = m_bufferArray;
       setStream(stream, owns);
    }
-   
+
    ~CircularRawOutStream() override
    {
       flush();
@@ -128,7 +128,7 @@ public:
       releaseStream();
       delete[] m_bufferArray;
    }
-   
+
    /// setStream - Tell the CircularRawOutStream to output a
    /// different stream.  "Owns" tells CircularRawOutStream whether
    /// it should take responsibility for managing the underlying
@@ -140,12 +140,12 @@ public:
       m_theStream = &stream;
       m_ownsStream = owns;
    }
-   
+
    /// flushBufferWithBanner - Force output of the buffer along with
    /// a small header.
    ///
    void flushBufferWithBanner();
-   
+
 private:
    /// releaseStream - Delete the held stream if needed. Otherwise,
    /// transfer the buffer settings from this CircularRawOutStream

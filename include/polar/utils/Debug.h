@@ -6,7 +6,7 @@
 //
 // See http://polarphp.org/LICENSE.txt for license information
 // See http://polarphp.org/CONTRIBUTORS.txt for the list of polarPHP project authors
-// 
+//
 // Created by softboy on 2018/06/04.
 
 #ifndef POLAR_UTILS_DEBUG_H
@@ -88,6 +88,17 @@ extern bool g_verifyLoopInfo;
 ///
 extern bool g_enableDebugBuffering;
 
+///\}
+
+/// EnableDebugBuffering - This defaults to false.  If true, the debug
+/// stream will install signal handlers to dump any buffered debug
+/// output.  It allows clients to selectively allow the debug stream
+/// to install signal handlers if they are certain there will be no
+/// conflict.
+///
+extern bool sg_enableDebugBuffering;
+
+
 /// debug_stream() - This returns a reference to a raw_ostream for debugging
 /// messages.  If debugging is disabled it returns errs().  Use it
 /// like: debug_stream() << "foo" << "bar";
@@ -100,7 +111,7 @@ RawOutStream &debug_stream();
 //
 // DEBUG(debug_stream() << "Bitset contains: " << Bitset << "\n");
 //
-#define DEBUG(X) DEBUG_WITH_TYPE(DEBUG_TYPE, X)
+#define POLAR_DEBUG(X) DEBUG_WITH_TYPE(DEBUG_TYPE, X)
 
 } // utils
 } // polar

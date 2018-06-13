@@ -167,7 +167,7 @@ void install_out_of_memory_new_handler()
 {
 }
 
-void polar_unreachable_internal(const char *msg, const char *file,
+void unreachable_internal(const char *msg, const char *file,
                                 unsigned line) {
    // This code intentionally doesn't call the ErrorHandler callback, because
    // polar_unreachable is intended to be used to indicate "impossible"
@@ -256,7 +256,6 @@ std::error_code map_windows_error(unsigned errorValue)
 }
 
 #endif
-
 
 } // utils
 } // polar
