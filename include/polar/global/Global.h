@@ -82,8 +82,8 @@
 
 #define POLAR_TERMINATE_ON_EXCEPTION(expr) do { expr; } while (false)
 
-#if !defined(POLAR_NO_DEBUG) && !defined(POLAR_DEBUG)
-#  define POLAR_DEBUG
+#if !defined(POLAR_NO_DEBUG) && !defined(POLAR_DEBUG_MODE)
+#  define POLAR_DEBUG_MODE
 #endif
 
 #if defined(POLAR_CC_GNU) && !defined(__INSURE__)

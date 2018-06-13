@@ -24,6 +24,7 @@ namespace sys {
 
 using polar::basic::ArrayRef;
 using polar::basic::StringRef;
+using polar::utils::OptionalError;
 
 /// This is the OS-specific separator for PATH like environment variables:
 // a colon on Unix or a semicolon on Windows.

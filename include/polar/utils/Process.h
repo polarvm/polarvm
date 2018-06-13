@@ -31,6 +31,7 @@ namespace sys {
 
 using polar::basic::ArrayRef;
 using polar::basic::StringRef;
+using polar::utils::TimePoint;
 
 /// A collection of legacy interfaces for querying information about the
 /// current executing process.

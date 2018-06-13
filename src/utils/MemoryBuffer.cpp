@@ -45,6 +45,8 @@
 namespace polar {
 namespace utils {
 
+using polar::sys::Process;
+
 MemoryBuffer::~MemoryBuffer()
 {}
 
@@ -114,15 +116,21 @@ public:
 
 } // anonymous namespace
 
-void *operator new(size_t size, const NamedBufferAlloc &alloc)
+} // utils
+} // polar
+
+void *operator new(size_t size, const polar::utils::NamedBufferAlloc &alloc)
 {
-   SmallString<256> nameBuf;
-   StringRef nameRef = alloc.m_name.toStringRef(nameBuf);
+   polar::basic::SmallString<256> nameBuf;
+   polar::basic::StringRef nameRef = alloc.m_name.toStringRef(nameBuf);
 
    char *mem = static_cast<char *>(operator new(size + nameRef.getSize() + 1));
-   copy_string_ref(mem + size, nameRef);
+   polar::utils::copy_string_ref(mem + size, nameRef);
    return mem;
 }
+
+namespace polar {
+namespace utils {
 
 namespace {
 
@@ -149,8 +157,8 @@ MemoryBuffer::getMemBuffer(MemoryBufferRef ref, bool requiresNullTerminator)
                                            ref.getBuffer(), ref.getBufferIdentifier(), requiresNullTerminator));
 }
 
-static OptionalError<std::unique_ptr<WritableMemoryBuffer>>
-getMemBufferCopyImpl(StringRef inputData, const Twine &bufferName)
+OptionalError<std::unique_ptr<WritableMemoryBuffer>>
+get_mem_buffer_copy_impl(StringRef inputData, const Twine &bufferName)
 {
    auto buf = WritableMemoryBuffer::getNewUninitMemBuffer(inputData.getSize(), bufferName);
    if (!buf) {
@@ -163,7 +171,7 @@ getMemBufferCopyImpl(StringRef inputData, const Twine &bufferName)
 std::unique_ptr<MemoryBuffer>
 MemoryBuffer::getMemBufferCopy(StringRef inputData, const Twine &bufferName)
 {
-   auto buf = getMemBufferCopyImpl(inputData, bufferName);
+   auto buf = get_mem_buffer_copy_impl(inputData, bufferName);
    if (buf) {
       return std::move(*buf);
    }
@@ -220,14 +228,14 @@ class MemoryBufferMMapFile : public MemoryBufferType
    }
 
 public:
-   MemoryBufferMMapFile(bool RequiresNullTerminator, int fd, uint64_t len,
-                        uint64_t Offset, std::error_code &errorCode)
-      : m_mfr(fd, MemoryBufferType::MapMode, getLegalMapSize(len, Offset),
-              getLegalMapOffset(Offset), errorCode)
+   MemoryBufferMMapFile(bool requiresNullTerminator, int fd, uint64_t len,
+                        uint64_t offset, std::error_code &errorCode)
+      : m_mfr(fd, MemoryBufferType::MapMode, getLegalMapSize(len, offset),
+              getLegalMapOffset(offset), errorCode)
    {
       if (!errorCode) {
          const char *start = getStart(len, offset);
-         MemoryBuffer::init(start, start + len, RequiresNullTerminator);
+         MemoryBuffer::init(start, start + len, requiresNullTerminator);
       }
    }
 
@@ -254,7 +262,7 @@ public:
 namespace {
 
 OptionalError<std::unique_ptr<WritableMemoryBuffer>>
-getMemoryBufferForStream(int fd, const Twine &bufferName)
+get_memory_buffer_for_stream(int fd, const Twine &bufferName)
 {
    const ssize_t chunkSize = 4096*4;
    SmallString<chunkSize> buffer;
@@ -266,10 +274,10 @@ getMemoryBufferForStream(int fd, const Twine &bufferName)
       if (readBytes == -1) {
          return std::error_code(errno, std::generic_category());
       }
-      buffer.set_size(buffer.getSize() + readBytes);
+      buffer.setSize(buffer.getSize() + readBytes);
    } while (readBytes != 0);
 
-   return getMemBufferCopyImpl(buffer, bufferName);
+   return get_mem_buffer_copy_impl(buffer, bufferName);
 }
 
 
@@ -288,7 +296,7 @@ get_file_aux(const Twine &filename, int64_t fileSize, uint64_t mapSize,
    std::error_code errorCode = fs::open_file_for_read(filename, fd);
 
    if (errorCode) {
-      return MemoryBufferType;
+      return errorCode;
    }
    auto ret = getOpenFileImpl<MemoryBufferType>(fd, filename, fileSize, mapSize, offset,
                                                 requiresNullTerminator, isVolatile);
@@ -333,8 +341,8 @@ WritableMemoryBuffer::getNewUninitMemBuffer(size_t size, const Twine &bufferName
    // TODO: Is 16-byte alignment enough?  We copy small object files with large
    // alignment expectations into this buffer.
    SmallString<256> nameBuf;
-   StringRef nameRef = BufferName.toStringRef(nameBuf);
-   size_t alignedStringLen = align_to(sizeof(MemBuffer) + nameRef.size() + 1, 16);
+   StringRef nameRef = bufferName.toStringRef(nameBuf);
+   size_t alignedStringLen = align_to(sizeof(MemBuffer) + nameRef.getSize() + 1, 16);
    size_t realLen = alignedStringLen + size + 1;
    char *mem = static_cast<char*>(operator new(realLen, std::nothrow));
    if (!mem) {
@@ -510,9 +518,9 @@ getOpenFileImpl(int fd, const Twine &filename, uint64_t fileSize,
          fs::FileType type = status.getType();
          if (type != fs::FileType::regular_file &&
              type != fs::FileType::block_file) {
-            return getMemoryBufferForStream(fd, filename);
+            return get_memory_buffer_for_stream(fd, filename);
          }
-         fileSize = Status.getSize();
+         fileSize = status.getSize();
       }
       mapSize = fileSize;
    }
@@ -592,19 +600,19 @@ OptionalError<std::unique_ptr<MemoryBuffer>> MemoryBuffer::getStdIn()
    // FIXME: That isn't necessarily true, we should try to mmap stdin and
    // fallback if it fails.
    polar::sys::change_stdin_to_binary();
-   return getMemoryBufferForStream(0, "<stdin>");
+   return get_memory_buffer_for_stream(0, "<stdin>");
 }
 
 OptionalError<std::unique_ptr<MemoryBuffer>>
 MemoryBuffer::getFileAsStream(const Twine &filename)
 {
    int fd;
-   std::error_code errorCode = sys::fs::openFileForRead(filename, fd);
+   std::error_code errorCode = fs::open_file_for_read(filename, fd);
    if (errorCode) {
       return errorCode;
    }
    OptionalError<std::unique_ptr<MemoryBuffer>> ret =
-         getMemoryBufferForStream(fd, filename);
+         get_memory_buffer_for_stream(fd, filename);
    close(fd);
    return ret;
 }

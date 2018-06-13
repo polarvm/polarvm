@@ -29,6 +29,10 @@
 #include <utility>
 
 namespace polar {
+namespace basic {
+
+using polar::utils::should_reverse_iterate;
+using polar::utils::AlignedCharArrayUnion;
 
 namespace internal {
 
@@ -58,11 +62,6 @@ struct DenseMapPair : public std::pair<KeyType, ValueType>
 };
 
 } // end namespace internal
-
-namespace basic {
-
-using polar::utils::should_reverse_iterate;
-using polar::utils::AlignedCharArrayUnion;
 
 template <
       typename KeyType, typename ValueType, typename KeyInfoType = DenseMapInfo<KeyType>,
@@ -280,7 +279,7 @@ public:
    std::pair<iterator, bool> tryEmplace(const KeyType &key, Ts &&... args)
    {
       BucketType *theBucket;
-      if (lookupBucketFor(Key, theBucket))
+      if (lookupBucketFor(key, theBucket))
          return std::make_pair(
                   makeIterator(theBucket, getBucketsEnd(), *this, true),
                   false); // Already in map.
@@ -350,7 +349,7 @@ public:
    value_type &findAndConstruct(const KeyType &key)
    {
       BucketType *theBucket;
-      if (lookupBucketFor(Key, theBucket)) {
+      if (lookupBucketFor(key, theBucket)) {
          return *theBucket;
       }
       return *insertIntoBucket(theBucket, key);
@@ -522,10 +521,10 @@ private:
    }
 
    const_iterator makeConstIterator(const BucketType *bucketIter, const BucketType *end,
-                                    const DebugEpochBase &Epoch,
+                                    const DebugEpochBase &epoch,
                                     const bool noAdvance=false) const
    {
-      if (shouldReverseIterate<KeyType>()) {
+      if (should_reverse_iterate<KeyType>()) {
          const BucketType *bucket = bucketIter == getBucketsEnd() ? getBuckets() : bucketIter + 1;
          return const_iterator(bucket, end, epoch, noAdvance);
       }
@@ -1042,8 +1041,8 @@ public:
       // move construct the keys and values into their new locations, but there
       // is no need to re-hash things.
       for (unsigned index = 0, end = inlineBuckets; index != end; ++index) {
-         BucketType *newB = &largeSide.getInlineBuckets()[i],
-               *oldB = &smallSide.getInlineBuckets()[i];
+         BucketType *newB = &largeSide.getInlineBuckets()[index],
+               *oldB = &smallSide.getInlineBuckets()[index];
          ::new (&newB->getFirst()) KeyType(std::move(oldB->getFirst()));
          oldB->getFirst().~KeyType();
          if (!KeyInfoType::isEqual(newB->getFirst(), emptyKey) &&
@@ -1108,7 +1107,7 @@ public:
             return; // Nothing to do.
          }
          // First move the inline buckets into a temporary storage.
-         AlignedCharArrayUnion<BucketType[InlineBuckets]> tmpStorage;
+         AlignedCharArrayUnion<BucketType[inlineBuckets]> tmpStorage;
          BucketType *tmpBegin = reinterpret_cast<BucketType *>(tmpStorage.m_buffer);
          BucketType *tmpEnd = tmpBegin;
 

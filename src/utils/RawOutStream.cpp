@@ -69,6 +69,9 @@
 namespace polar {
 namespace utils {
 
+using polar::sys::change_stdout_to_binary;
+using polar::sys::Process;
+
 RawOutStream::~RawOutStream()
 {
    // RawOutStream's subclasses should take care to flush the buffer

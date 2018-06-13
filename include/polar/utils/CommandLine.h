@@ -119,7 +119,7 @@ class Option;
 ///
 /// Literal options are used by some Parsers to register special option values.
 /// This is how the PassNameParser registers pass names for opt.
-void addLiteralOption(Option &opt, StringRef name);
+void add_literal_option(Option &option, StringRef name);
 
 //===----------------------------------------------------------------------===//
 // Flags permitted to be passed to command line arguments
@@ -194,14 +194,14 @@ class OptionCategory
 {
 private:
    StringRef const m_name;
-   StringRef const m_Description;
+   StringRef const m_description;
 
    void getRegisterCategory();
 
 public:
    OptionCategory(StringRef const name,
                   StringRef const Description = "")
-      : m_name(name), m_Description(Description)
+      : m_name(name), m_description(Description)
    {
       getRegisterCategory();
    }
@@ -213,7 +213,7 @@ public:
 
    StringRef getDescription() const
    {
-      return m_Description;
+      return m_description;
    }
 };
 
@@ -227,7 +227,7 @@ class SubCommand
 {
 private:
    StringRef m_name;
-   StringRef m_Description;
+   StringRef m_description;
 
 protected:
    void registerSubCommand();
@@ -235,7 +235,7 @@ protected:
 
 public:
    SubCommand(StringRef name, StringRef Description = "")
-      : m_name(name), m_Description(Description)
+      : m_name(name), m_description(Description)
    {
       registerSubCommand();
    }
@@ -252,10 +252,10 @@ public:
 
    StringRef getDescription() const
    {
-      return m_Description;
+      return m_description;
    }
 
-   SmallVector<Option *, 4> m_oositionalOpts;
+   SmallVector<Option *, 4> m_positionalOpts;
    SmallVector<Option *, 4> m_sinkOpts;
    StringMap<Option *> m_optionsMap;
 
@@ -551,7 +551,8 @@ Initializer<Type> init(const Type &value)
 // store the results of the command line argument processing into, if they don't
 // want to store it in the option itself.
 //
-template <typename Type> struct LocationClass
+template <typename Type>
+struct LocationClass
 {
    Type &m_loc;
 
@@ -592,7 +593,7 @@ struct Sub
 {
    SubCommand &m_sub;
 
-   sub(SubCommand &sub) : m_sub(sub)
+   Sub(SubCommand &sub) : m_sub(sub)
    {}
 
    template <typename Opt>
@@ -642,8 +643,8 @@ struct OptionValueBase : public GenericOptionValue
    }
 
    // Some options may take their value from a different data type.
-   template <class DataType>
-   void setValue(const DataType & /*V*/)
+   template <typename OtherDataType>
+   void setValue(const OtherDataType & /*V*/)
    {}
 
    bool compare(const DataType & /*V*/) const
@@ -689,7 +690,7 @@ public:
    void setValue(const DataType &value)
    {
       m_valid = true;
-      m_valid = value;
+      m_value = value;
    }
 
    bool compare(const DataType &value) const
@@ -730,8 +731,8 @@ struct OptionValue final
    OptionValue(const DataType &value) { this->setValue(value); }
 
    // Some options may take their value from a different data type.
-   template <class DataType>
-   OptionValue<DataType> &operator=(const DataType &value)
+   template <typename OtherDataType>
+   OptionValue<DataType> &operator=(const OtherDataType &value)
    {
       this->setValue(value);
       return *this;
@@ -745,6 +746,8 @@ enum class BoolOrDefault
    BOU_TRUE,
    BOU_FALSE
 };
+
+RawOutStream& operator <<(RawOutStream& out, BoolOrDefault);
 
 template <>
 struct OptionValue<cmd::BoolOrDefault> : OptionValueCopy<cmd::BoolOrDefault>
@@ -823,7 +826,7 @@ public:
    template <class Opt>
    void apply(Opt &opt) const
    {
-      for (auto value : values) {
+      for (auto value : m_values) {
          opt.getParser().addLiteralOption(value.m_name, value.m_value,
                                           value.m_description);
       }
@@ -882,7 +885,7 @@ public:
    virtual StringRef getDescription(unsigned num) const = 0;
 
    // Return the width of the option tag for printing...
-   virtual size_t getOptionWidth(const Option &opt) const;
+   virtual size_t getOptionWidth(const Option &option) const;
 
    virtual const GenericOptionValue &getOptionValue(unsigned opt) const = 0;
 
@@ -891,7 +894,7 @@ public:
    //
    virtual void printOptionInfo(const Option &opt, size_t globalWidth) const;
 
-   void printGenericOptionDiff(const Option &opt, const GenericOptionValue &value,
+   void printGenericOptionDiff(const Option &option, const GenericOptionValue &value,
                                const GenericOptionValue &defaultValue,
                                size_t globalWidth) const;
 
@@ -1019,7 +1022,7 @@ public:
 
    /// addLiteralOption - Add an entry to the mapping table.
    ///
-   template <class DataType>
+   template <typename OtherDataType>
    void addLiteralOption(StringRef name, const DataType &value, StringRef helpStr)
    {
       assert(findOption(name) == m_values.getSize() && "Option already exists!");
@@ -1555,7 +1558,7 @@ public:
 
    bool setLocation(Option &option, DataType &location)
    {
-      if (location) {
+      if (m_location) {
          return option.error("cmd::location(x) specified more than once!");
       }
       m_location = &location;
@@ -1729,8 +1732,8 @@ class Opt : public Option,
    void printOptionValue(size_t globalWidth, bool force) const override
    {
       if (force || this->getDefault().compare(this->getValue())) {
-         cmd::printOptionDiff<ParserClass>(*this, m_parser, this->getValue(),
-                                           this->getDefault(), globalWidth);
+         cmd::print_option_diff<ParserClass>(*this, m_parser, this->getValue(),
+                                             this->getDefault(), globalWidth);
       }
    }
 
@@ -2059,9 +2062,9 @@ public:
       Option::setNumAdditionalVals(n);
    }
 
-   template <class... Modes>
-   explicit list(const Modes &... modes)
-      : Option(ZeroOrMore, NotHidden), Parser(*this)
+   template <typename... Modes>
+   explicit List(const Modes &... modes)
+      : Option(ZeroOrMore, NotHidden), m_parser(*this)
    {
       apply(this, modes...);
       done();
@@ -2244,8 +2247,8 @@ public:
       return m_positions[optnum];
    }
 
-   template <class... Modes>
-   explicit bits(const Modes &... modes)
+   template <typename... Modes>
+   explicit Bits(const Modes &... modes)
       : Option(ZeroOrMore, NotHidden), m_parser(*this)
    {
       apply(this, modes...);
@@ -2317,8 +2320,8 @@ public:
       m_aliasFor = &option;
    }
 
-   template <class... Modes>
-   explicit alias(const Modes &... modes)
+   template <typename... Modes>
+   explicit Alias(const Modes &... modes)
       : Option(Optional, Hidden), m_aliasFor(nullptr)
    {
       apply(this, modes...);
@@ -2346,7 +2349,7 @@ struct AliasOpt
 // exit is called.
 struct ExtraHelp
 {
-   StringRef m_morehelp;
+   StringRef m_moreHelp;
 
    explicit ExtraHelp(StringRef help);
 };
@@ -2431,9 +2434,9 @@ get_registered_subcommands();
 /// \param [in] MarkEOLs true if tokenizing a response file and you want end of
 /// lines and end of the response file to be marked with a nullptr string.
 /// \param [out] NewArgv All parsed strings are appended to NewArgv.
-void tokenize_gnu_commandLine(StringRef source, StringSaver &saver,
-                              SmallVectorImpl<const char *> &newArgv,
-                              bool markEOLs = false);
+void tokenize_gnu_command_line(StringRef source, StringSaver &saver,
+                               SmallVectorImpl<const char *> &newArgv,
+                               bool markEOLs = false);
 
 /// Tokenizes a Windows command line which may contain quotes and escaped
 /// quotes.
@@ -2510,7 +2513,7 @@ bool expand_response_files(StringSaver &saver, TokenizerCallback tokenizer,
 /// Some tools (like clang-format) like to be able to hide all options that are
 /// not specific to the tool. This function allows a tool to specify a single
 /// option category to display in the -help output.
-void hide_unrelated_options(cmd::OptionCategory &category,
+void hide_unrelated_options(OptionCategory &category,
                             SubCommand &sub = *sg_topLevelSubCommand);
 
 /// Mark all options not part of the categories as cl::ReallyHidden.
@@ -2520,7 +2523,7 @@ void hide_unrelated_options(cmd::OptionCategory &category,
 /// Some tools (like clang-format) like to be able to hide all options that are
 /// not specific to the tool. This function allows a tool to specify a single
 /// option category to display in the -help output.
-void hide_unrelated_options(ArrayRef<const cmd::OptionCategory *> categories,
+void hide_unrelated_options(ArrayRef<const OptionCategory *> categories,
                             SubCommand &sub = *sg_topLevelSubCommand);
 
 /// Reset all command line options to a state that looks as if they have

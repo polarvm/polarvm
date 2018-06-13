@@ -31,9 +31,12 @@
 //===----------------------------------------------------------------------===//
 
 namespace polar {
-namespace utils {
+namespace sys {
 
 namespace path = fs::path;
+using polar::basic::SmallVector;
+using polar::basic::SmallString;
+using polar::basic::Twine;
 
 std::optional<std::string> Process::findInEnvPath(StringRef envName,
                                                   StringRef fileName)

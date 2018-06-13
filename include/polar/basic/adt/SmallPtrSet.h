@@ -114,7 +114,7 @@ public:
       // If the capacity of the array is huge, and the # elements used is small,
       // shrink the array.
       if (!isSmall()) {
-         if (size() * 4 < m_curArraySize && m_curArraySize > 32) {
+         if (getSize() * 4 < m_curArraySize && m_curArraySize > 32) {
             return shrinkAndClear();
          }
          // Fill the array with empty markers.
@@ -198,7 +198,7 @@ protected:
    /// Returns the raw pointer needed to construct an iterator.  If element not
    /// found, this will be endPointer.  Otherwise, it will be a pointer to the
    /// slot which stores Ptr;
-   const void *const * findImpl(const void * Ptr) const
+   const void *const * findImpl(const void * ptr) const
    {
       if (isSmall()) {
          // Linear search for the item.
@@ -212,7 +212,7 @@ protected:
       }
 
       // Big set case.
-      auto *bucket = FindBucketFor(Ptr);
+      auto *bucket = FindBucketFor(ptr);
       if (*bucket == ptr) {
          return bucket;
       }
@@ -260,10 +260,10 @@ public:
    explicit SmallPtrSetIteratorImpl(const void *const *bucketPtr, const void*const *end)
       : m_bucket(bucketPtr), m_end(end) {
       if (should_reverse_iterate()) {
-         RetreatIfNotValid();
+         retreatIfNotValid();
          return;
       }
-      AdvanceIfNotValid();
+      advanceIfNotValid();
    }
 
    bool operator==(const SmallPtrSetIteratorImpl &other) const
@@ -341,8 +341,8 @@ public:
          retreatIfNotValid();
          return *this;
       }
-      ++Bucket;
-      AdvanceIfNotValid();
+      ++m_bucket;
+      advanceIfNotValid();
       return *this;
    }
 
@@ -430,7 +430,7 @@ public:
    /// true, otherwise return false.
    bool erase(PtrTypepe ptr)
    {
-      return eraseImpl(PtrTraits::getAsVoidPointer(Ptr));
+      return eraseImpl(PtrTraits::getAsVoidPointer(ptr));
    }
    /// count - Return 1 if the specified pointer is in the set, 0 otherwise.
    size_type count(ConstPtrTypepe ptr) const

@@ -6,7 +6,7 @@
 //
 // See http://polarphp.org/LICENSE.txt for license information
 // See http://polarphp.org/CONTRIBUTORS.txt for the list of polarPHP project authors
-// 
+//
 // Created by softboy on 2018/06/04.
 
 #ifndef POLAR_BASIC_ADT_STRING_MAP_H
@@ -40,6 +40,7 @@ template<typename ValueType>
 class StringMapKeyIterator;
 
 using polar::utils::MallocAllocator;
+using polar::utils::PointerLikeTypeTraits;
 
 /// StringMapEntryBase - Shared base class of StringMapEntry instances.
 class StringMapEntryBase
@@ -49,7 +50,7 @@ public:
    explicit StringMapEntryBase(unsigned length)
       : m_strLength(length)
    {}
-   
+
    unsigned getKeyLength() const
    {
       return m_strLength;
@@ -69,7 +70,7 @@ protected:
    unsigned m_numItems = 0;
    unsigned m_numTombstones = 0;
    unsigned m_itemSize;
-   
+
 protected:
    explicit StringMapImpl(unsigned itemSize)
       : m_itemSize(itemSize)
@@ -84,34 +85,34 @@ protected:
       rhs.m_numItems = 0;
       rhs.m_numTombstones = 0;
    }
-   
+
    StringMapImpl(unsigned initSize, unsigned itemSize);
    unsigned rehashTable(unsigned bucketNo = 0);
-   
+
    /// LookupBucketFor - Look up the bucket that the specified string should end
    /// up in.  If it already exists as a key in the map, the Item pointer for the
    /// specified bucket will be non-null.  Otherwise, it will be null.  In either
    /// case, the FullHashValue field of the bucket will be set to the hash value
    /// of the string.
    unsigned lookupBucketFor(StringRef key);
-   
+
    /// FindKey - Look up the bucket that contains the specified key. If it exists
    /// in the map, return the bucket number of the key.  Otherwise return -1.
    /// This does not modify the map.
    int findKey(StringRef key) const;
-   
+
    /// RemoveKey - Remove the specified StringMapEntry from the table, but do not
    /// delete it.  This aborts if the value isn't in the table.
    void removeKey(StringMapEntryBase *value);
-   
+
    /// RemoveKey - Remove the StringMapEntry for the specified key from the
    /// table, returning it.  If the key is not in the table, this returns null.
    StringMapEntryBase *removeKey(StringRef key);
-   
+
    /// Allocate the table with the specified number of buckets and otherwise
    /// setup the map as empty.
    void init(unsigned size);
-   
+
 public:
    static StringMapEntryBase *getTombstoneValue()
    {
@@ -119,27 +120,27 @@ public:
       value <<= PointerLikeTypeTraits<StringMapEntryBase *>::NumLowBitsAvailable;
       return reinterpret_cast<StringMapEntryBase *>(value);
    }
-   
+
    unsigned getNumBuckets() const
    {
       return m_numBuckets;
    }
-   
+
    unsigned getNumItems() const
    {
       return m_numItems;
    }
-   
+
    bool empty() const
    {
       return m_numItems == 0;
    }
-   
+
    unsigned getSize() const
    {
       return m_numItems;
    }
-   
+
    void swap(StringMapImpl &other)
    {
       std::swap(m_theTable, other.m_theTable);
@@ -157,36 +158,36 @@ class StringMapEntry : public StringMapEntryBase
 {
 public:
    ValueType m_second;
-   
+
    explicit StringMapEntry(unsigned strLen)
-      : StringMapEntryBase(strLen), second()
+      : StringMapEntryBase(strLen), m_second()
    {}
-   template <typename... InitTy>
-   StringMapEntry(unsigned strLen, InitTy &&... initVals)
-      : StringMapEntryBase(strLen), m_second(std::forward<InitTy>(initVals)...)
+   template <typename... InitType>
+   StringMapEntry(unsigned strLen, InitType &&... initVals)
+      : StringMapEntryBase(strLen), m_second(std::forward<InitType>(initVals)...)
    {}
    StringMapEntry(StringMapEntry &entry) = delete;
-   
+
    StringRef getKey() const
    {
       return StringRef(getKeyData(), getKeyLength());
    }
-   
+
    const ValueType &getValue() const
    {
       return m_second;
    }
-   
+
    ValueType &getValue()
    {
       return m_second;
    }
-   
+
    void setValue(const ValueType &value)
    {
       m_second = value;
    }
-   
+
    /// getKeyData - Return the start of the string data that is the key for this
    /// value.  The string data is always stored immediately after the
    /// StringMapEntry object.
@@ -194,35 +195,35 @@ public:
    {
       return reinterpret_cast<const char*>(this + 1 );
    }
-   
+
    StringRef first() const
    {
       return StringRef(getKeyData(), getKeyLength());
    }
-   
+
    /// Create a StringMapEntry for the specified key construct the value using
    /// \p InitiVals.
-   template <typename AllocatorType, typename... InitTy>
+   template <typename AllocatorType, typename... InitType>
    static StringMapEntry *create(StringRef key, AllocatorType &allocator,
-                                 InitTy &&... initVals)
+                                 InitType &&... initVals)
    {
-      unsigned keyLength = key.size();
-      
+      unsigned keyLength = key.getSize();
+
       // Allocate a new item with space for the string at the end and a null
       // terminator.
       unsigned allocSize = static_cast<unsigned>(sizeof(StringMapEntry))+
             keyLength+1;
       unsigned Alignment = alignof(StringMapEntry);
-      
+
       StringMapEntry *newItem =
             static_cast<StringMapEntry*>(allocator.allocate(allocSize, Alignment));
-      
+
       if (newItem == nullptr) {
          polar::utils::report_bad_alloc_error("Allocation of StringMap entry failed.");
       }
       // Construct the value.
-      new (newItem) StringMapEntry(keyLength, std::forward<InitTy>(initVals)...);
-      
+      new (newItem) StringMapEntry(keyLength, std::forward<InitType>(initVals)...);
+
       // Copy the string information.
       char *strBuffer = const_cast<char*>(newItem->getKeyData());
       if (keyLength > 0) {
@@ -231,20 +232,20 @@ public:
       strBuffer[keyLength] = 0;  // Null terminate for convenience of clients.
       return newItem;
    }
-   
+
    /// Create - Create a StringMapEntry with normal malloc/free.
-   template <typename... InitType>
-   static StringMapEntry *create(StringRef key, InitType &&... initVal)
+   template <typename... InitTypepe>
+   static StringMapEntry *create(StringRef key, InitTypepe &&... initVal)
    {
       MallocAllocator allocator;
-      return create(key, allocator, std::forward<InitType>(initVal)...);
+      return create(key, allocator, std::forward<InitTypepe>(initVal)...);
    }
-   
+
    static StringMapEntry *create(StringRef key)
    {
       return create(key, ValueType());
    }
-   
+
    /// GetStringMapEntryFromKeyData - Given key data that is known to be embedded
    /// into a StringMapEntry, return the StringMapEntry itself.
    static StringMapEntry &getStringMapEntryFromKeyData(const char *keyData)
@@ -252,7 +253,7 @@ public:
       char *ptr = const_cast<char*>(keyData) - sizeof(StringMapEntry<ValueType>);
       return *reinterpret_cast<StringMapEntry*>(ptr);
    }
-   
+
    /// Destroy - Destroy this StringMapEntry, releasing memory back to the
    /// specified allocator.
    template<typename AllocatorType>
@@ -264,7 +265,7 @@ public:
       this->~StringMapEntry();
       allocator.deallocate(static_cast<void *>(this), allocSize);
    }
-   
+
    /// Destroy this object, releasing memory back to the malloc allocator.
    void destroy()
    {
@@ -281,26 +282,26 @@ template<typename ValueType, typename AllocatorType = MallocAllocator>
 class StringMap : public StringMapImpl
 {
    AllocatorType m_allocator;
-   
+
 public:
    using MapEntryType = StringMapEntry<ValueType>;
-   
+
    StringMap() : StringMapImpl(static_cast<unsigned>(sizeof(MapEntryType)))
    {}
-   
+
    explicit StringMap(unsigned initialSize)
       : StringMapImpl(initialSize, static_cast<unsigned>(sizeof(MapEntryType)))
    {}
-   
+
    explicit StringMap(AllocatorType allocator)
       : StringMapImpl(static_cast<unsigned>(sizeof(MapEntryType))), m_allocator(allocator)
    {}
-   
+
    StringMap(unsigned initialSize, AllocatorType allocator)
       : StringMapImpl(initialSize, static_cast<unsigned>(sizeof(MapEntryType))),
         m_allocator(allocator)
    {}
-   
+
    StringMap(std::initializer_list<std::pair<StringRef, ValueType>> list)
       : StringMapImpl(list.size(), static_cast<unsigned>(sizeof(MapEntryType)))
    {
@@ -308,11 +309,11 @@ public:
          insert(item);
       }
    }
-   
+
    StringMap(StringMap &&rhs)
       : StringMapImpl(std::move(rhs)), m_allocator(std::move(rhs.m_allocator))
    {}
-   
+
    StringMap(const StringMap &rhs) :
       StringMapImpl(static_cast<unsigned>(sizeof(MapEntryType))),
       m_allocator(rhs.m_allocator) {
@@ -324,7 +325,7 @@ public:
       init(rhs.m_numBuckets);
       unsigned *hashTable = (unsigned *)(m_theTable + m_numBuckets + 1),
             *rhsHashTable = (unsigned *)(rhs.m_theTable + m_numBuckets + 1);
-      
+
       m_numItems = rhs.m_numItems;
       m_numTombstones = rhs.m_numTombstones;
       for (unsigned index = 0, end = m_numBuckets; index != end; ++index) {
@@ -333,13 +334,13 @@ public:
             m_theTable[index] = bucket;
             continue;
          }
-         
+
          m_theTable[index] = MapEntryType::create(
                   static_cast<MapEntryType *>(bucket)->getKey(), m_allocator,
                   static_cast<MapEntryType *>(bucket)->getValue());
-         hashTable[index] = rhsHashTable[I];
+         hashTable[index] = rhsHashTable[index];
       }
-      
+
       // Note that here we've copied everything from the RHS into this object,
       // tombstones included. We could, instead, have re-probed for each key to
       // instantiate this new object without any tombstone buckets. The
@@ -347,14 +348,14 @@ public:
       // and so tombstones are rare, so the cost of re-probing for all inputs is
       // not worthwhile.
    }
-   
+
    StringMap &operator=(StringMap rhs)
    {
       StringMapImpl::swap(rhs);
-      std::swap(allocator, rhs.m_allocator);
+      std::swap(m_allocator, rhs.m_allocator);
       return *this;
    }
-   
+
    ~StringMap()
    {
       // Delete all the elements in the map, but don't reset the elements
@@ -370,51 +371,51 @@ public:
       }
       free(m_theTable);
    }
-   
+
    AllocatorType &getAllocator()
    {
       return m_allocator;
    }
-   
+
    const AllocatorType &getAllocator() const
    {
       return m_allocator;
    }
-   
+
    using key_type = const char*;
    using mapped_type = ValueType;
    using value_type = StringMapEntry<ValueType>;
    using size_type = size_t;
-   
+
    using const_iterator = StringMapConstIterator<ValueType>;
    using iterator = StringMapIterator<ValueType>;
-   
+
    iterator begin()
    {
       return iterator(m_theTable, m_numBuckets == 0);
    }
-   
+
    iterator end()
    {
       return iterator(m_theTable + m_numBuckets, true);
    }
-   
+
    const_iterator begin() const
    {
       return const_iterator(m_theTable, m_numBuckets == 0);
    }
-   
+
    const_iterator end() const
    {
       return const_iterator(m_theTable + m_numBuckets, true);
    }
-   
+
    IteratorRange<StringMapKeyIterator<ValueType>> getKeys() const
    {
       return make_range(StringMapKeyIterator<ValueType>(begin()),
                         StringMapKeyIterator<ValueType>(end()));
    }
-   
+
    iterator find(StringRef key)
    {
       int bucket = findKey(key);
@@ -423,7 +424,7 @@ public:
       }
       return iterator(m_theTable + bucket, true);
    }
-   
+
    const_iterator find(StringRef key) const
    {
       int bucket = findKey(key);
@@ -432,10 +433,10 @@ public:
       }
       return const_iterator(m_theTable + bucket, true);
    }
-   
+
    /// lookup - Return the entry for the specified key, or a default
    /// constructed value if no such entry exists.
-   ValueType lookup(StringRef key) const 
+   ValueType lookup(StringRef key) const
    {
       const_iterator iter = find(key);
       if (iter != end()) {
@@ -443,20 +444,20 @@ public:
       }
       return ValueType();
    }
-   
+
    /// Lookup the ValueType for the \p Key, or create a default constructed value
    /// if the key is not in the map.
    ValueType &operator[](StringRef key)
    {
       return tryEmplace(key).first->second;
    }
-   
+
    /// count - Return 1 if the element is in the map, 0 otherwise.
    size_type count(StringRef key) const
    {
       return find(key) == end() ? 0 : 1;
    }
-   
+
    /// insert - Insert the specified key/value pair into the map.  If the key
    /// already exists in the map, return false and ignore the request, otherwise
    /// insert it and return true.
@@ -472,11 +473,11 @@ public:
       bucket = keyValue;
       ++m_numItems;
       assert(m_numItems + m_numTombstones <= m_numBuckets);
-      
-      RehashTable();
+
+      rehashTable();
       return true;
    }
-   
+
    /// insert - Inserts the specified key/value pair into the map if the key
    /// isn't already in the map. The bool component of the returned pair is true
    /// if and only if the insertion takes place, and the iterator component of
@@ -485,7 +486,7 @@ public:
    {
       return tryEmplace(item.first, std::move(item.second));
    }
-   
+
    /// Emplace a new element for the specified key into the map if the key isn't
    /// already in the map. The bool component of the returned pair is true
    /// if and only if the insertion takes place, and the iterator component of
@@ -498,18 +499,18 @@ public:
       if (bucket && bucket != getTombstoneValue())
          return std::make_pair(iterator(m_theTable + bucketNo, false),
                                false); // Already exists in map.
-      
+
       if (bucket == getTombstoneValue()) {
          --m_numTombstones;
       }
       bucket = MapEntryType::create(key, m_allocator, std::forward<ArgsType>(args)...);
       ++m_numItems;
       assert(m_numItems + m_numTombstones <= m_numBuckets);
-      
-      bucketNo = rehashTable(BucketNo);
+
+      bucketNo = rehashTable(bucketNo);
       return std::make_pair(iterator(m_theTable + bucketNo, false), true);
    }
-   
+
    // clear - Empties out the StringMap
    void clear()
    {
@@ -528,21 +529,21 @@ public:
       m_numItems = 0;
       m_numTombstones = 0;
    }
-   
+
    /// remove - Remove the specified key/value pair from the map, but do not
    /// erase it.  This aborts if the key is not in the map.
    void remove(MapEntryType *keyValue)
    {
       removeKey(keyValue);
    }
-   
+
    void erase(iterator iter)
    {
       MapEntryType &value = *iter;
       remove(&value);
       value.destroy(m_allocator);
    }
-   
+
    bool erase(StringRef key)
    {
       iterator iter = find(key);
@@ -561,10 +562,10 @@ class StringMapIterBase
 {
 protected:
    StringMapEntryBase **m_ptr = nullptr;
-   
+
 public:
    StringMapIterBase() = default;
-   
+
    explicit StringMapIterBase(StringMapEntryBase **bucket,
                               bool noAdvance = false)
       : m_ptr(bucket)
@@ -573,32 +574,32 @@ public:
          AdvancePastEmptyBuckets();
       }
    }
-   
+
    DerivedType &operator=(const DerivedType &other)
    {
       m_ptr = other.m_ptr;
       return static_cast<DerivedType &>(*this);
    }
-   
+
    bool operator==(const DerivedType &rhs) const
    {
       return m_ptr == rhs.m_ptr;
    }
-   
+
    DerivedType &operator++()
    { // Preincrement
       ++m_ptr;
       AdvancePastEmptyBuckets();
       return static_cast<DerivedType &>(*this);
    }
-   
+
    DerivedType operator++(int)
    { // Post-increment
       DerivedType temp(m_ptr);
       ++*this;
       return temp;
    }
-   
+
 private:
    void AdvancePastEmptyBuckets()
    {
@@ -615,14 +616,14 @@ class StringMapConstIterator
 {
    using base = StringMapIterBase<StringMapConstIterator<ValueType>,
    const StringMapEntry<ValueType>>;
-   
+
 public:
    StringMapConstIterator() = default;
    explicit StringMapConstIterator(StringMapEntryBase **bucket,
                                    bool noAdvance = false)
       : base(bucket, noAdvance)
    {}
-   
+
    const StringMapEntry<ValueType> &operator*() const
    {
       return *static_cast<const StringMapEntry<ValueType> *>(*this->m_ptr);
@@ -635,19 +636,19 @@ class StringMapIterator : public StringMapIterBase<StringMapIterator<ValueType>,
 {
    using base =
    StringMapIterBase<StringMapIterator<ValueType>, StringMapEntry<ValueType>>;
-   
+
 public:
    StringMapIterator() = default;
    explicit StringMapIterator(StringMapEntryBase **bucket,
                               bool noAdvance = false)
       : base(bucket, noAdvance)
    {}
-   
+
    StringMapEntry<ValueType> &operator*() const
    {
       return *static_cast<StringMapEntry<ValueType> *>(*this->m_ptr);
    }
-   
+
    operator StringMapConstIterator<ValueType>() const
    {
       return StringMapConstIterator<ValueType>(this->m_ptr, true);
@@ -663,19 +664,19 @@ class StringMapKeyIterator
    using base = IteratorAdaptorBase<StringMapKeyIterator<ValueType>,
    StringMapConstIterator<ValueType>,
    std::forward_iterator_tag, StringRef>;
-   
+
 public:
    StringMapKeyIterator() = default;
    explicit StringMapKeyIterator(StringMapConstIterator<ValueType> iter)
       : base(std::move(iter))
    {}
-   
+
    StringRef &operator*()
    {
       m_key = this->getWrapped()->getKey();
       return m_key;
    }
-   
+
 private:
    StringRef m_key;
 };

@@ -577,11 +577,11 @@ public:
    {
       // Grow allocated space if needed.
       if (numInputs > size_type(this->getCapacityPtr() - this->end())) {
-         grow(this->getSize() + numInputs);
+         this->grow(this->getSize() + numInputs);
       }
       // Copy the new elements over.
       std::uninitialized_fill_n(this->end(), numInputs, element);
-      setEnd(this->end() + numInputs);
+      this->setEnd(this->end() + numInputs);
    }
 
    void append(std::initializer_list<T> elements)

@@ -341,8 +341,8 @@ template <> struct DenseMapInfo<StringRef>
 
    static unsigned getHashValue(StringRef value)
    {
-      assert(value.data() != getEmptyKey().getData() && "Cannot hash the empty key!");
-      assert(value.data() != getTombstoneKey().getData() &&
+      assert(value.getData() != getEmptyKey().getData() && "Cannot hash the empty key!");
+      assert(value.getData() != getTombstoneKey().getData() &&
             "Cannot hash the tombstone key!");
       return (unsigned)(hash_value(value));
    }
