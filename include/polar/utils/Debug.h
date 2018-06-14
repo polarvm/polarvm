@@ -47,7 +47,7 @@ void set_current_debug_types(const char **types, unsigned count);
 /// This will emit the debug information if -debug is present, and -debug-only
 /// is not specified, or is specified as "bitset".
 #define DEBUG_WITH_TYPE(TYPE, X)                                        \
-   do { if (::polar::utils::g_debugFlag && ::polar::utils::is_current_debug_type(TYPE)) { X; } \
+   do { if (::polar::utils::sg_debugFlag && ::polar::utils::is_current_debug_type(TYPE)) { X; } \
 } while (false)
 
 #else
@@ -61,7 +61,7 @@ void set_current_debug_types(const char **types, unsigned count);
 /// is specified.  This should probably not be referenced directly, instead, use
 /// the DEBUG macro below.
 ///
-extern bool g_debugFlag;
+extern bool sg_debugFlag;
 
 /// \name Verification flags.
 ///

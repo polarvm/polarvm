@@ -6,8 +6,8 @@
 //
 // See http://polarphp.org/LICENSE.txt for license information
 // See http://polarphp.org/CONTRIBUTORS.txt for the list of polarPHP project authors
-// 
-// Created by softboy on 2018/06/07.
+//
+// Created by softboy on 2018/06/03.
 
 #ifndef POLAR_BASIC_ADT_STRING_EXTRAS_H
 #define POLAR_BASIC_ADT_STRING_EXTRAS_H
@@ -27,15 +27,16 @@
 
 namespace polar {
 
-// forward declare class with namespace
+// forward declare with namespace
 namespace utils {
 class RawOutStream;
-} // utils
+}
 
 namespace basic {
-
 template<typename T>
 class SmallVectorImpl;
+
+using polar::utils::RawOutStream;
 
 /// hexdigit - Return the hexadecimal character for the
 /// given number \p X (which should be less than 16).
@@ -67,95 +68,99 @@ inline ArrayRef<uint8_t> array_ref_from_string_ref(StringRef value)
 /// value.
 ///
 /// If \p C is not a valid hex digit, -1U is returned.
-inline unsigned hex_digit_value(char c)
+inline unsigned hex_digit_value(char character)
 {
-   if (c >= '0' && c <= '9') return c-'0';
-   if (c >= 'a' && c <= 'f') return c-'a'+10U;
-   if (c >= 'A' && c <= 'F') return c-'A'+10U;
+   if (character >= '0' && character <= '9') {
+      return character-'0';
+   }
+   if (character >= 'a' && character <= 'f') {
+      return character-'a'+10U;
+   }
+   if (character >= 'A' && character <= 'F') {
+      return character-'A'+10U;
+   }
    return -1U;
 }
 
 /// Checks if character \p C is one of the 10 decimal digits.
-inline bool is_digit(char c)
+inline bool is_digit(char character)
 {
-   return c >= '0' && c <= '9';
+   return character >= '0' && character <= '9';
 }
 
 /// Checks if character \p C is a hexadecimal numeric character.
-inline bool is_hex_digit(char c)
+inline bool is_hex_digit(char character)
 {
-   return hex_digit_value(c) != -1U;
+   return hex_digit_value(character) != -1U;
 }
 
 /// Checks if character \p C is a valid letter as classified by "C" locale.
-inline bool is_alpha(char c)
+inline bool is_alpha(char character)
 {
-   return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z');
+   return ('a' <= character && character <= 'z') || ('A' <= character && character <= 'Z');
 }
 
 /// Checks whether character \p C is either a decimal digit or an uppercase or
-/// lowerCase letter as classified by "C" locale.
-inline bool is_alpha_num(char c)
+/// lowercase letter as classified by "C" locale.
+inline bool is_alnum(char character)
 {
-   return is_alpha(c) || is_digit(c);
+   return is_alpha(character) || is_digit(character);
 }
 
-/// Returns the corresponding lowerCase character if \p x is uppercase.
-inline char to_lower(char c)
+/// Returns the corresponding lowercase character if \p x is uppercase.
+inline char to_lower(char character)
 {
-   if (c >= 'A' && c <= 'Z') {
-      return c - 'A' + 'a';
+   if (character >= 'A' && character <= 'Z') {
+      return character - 'A' + 'a';
    }
-   return c;
+   return character;
 }
 
-/// Returns the corresponding uppercase character if \p x is lowerCase.
-inline char to_upper(char c)
+/// Returns the corresponding uppercase character if \p x is lowercase.
+inline char to_upper(char character)
 {
-   if (c >= 'a' && c <= 'z') {
-      return c - 'a' + 'A';
+   if (character >= 'a' && character <= 'z') {
+      return character - 'a' + 'A';
    }
-   return c;
+   return character;
 }
 
-inline std::string uto_hexstr(uint64_t value, bool lowerCase = false)
+inline std::string utohexstr(uint64_t value, bool lowerCase = false)
 {
    char buffer[17];
    char *bufPtr = std::end(buffer);
-   
+
    if (value == 0) {
       *--bufPtr = '0';
    }
-   
    while (value) {
       unsigned char mod = static_cast<unsigned char>(value) & 15;
       *--bufPtr = hexdigit(mod, lowerCase);
       value >>= 4;
    }
-   
+
    return std::string(bufPtr, std::end(buffer));
 }
 
 /// Convert buffer \p Input to its hexadecimal representation.
 /// The returned string is double the size of \p Input.
-inline std::string to_hex(StringRef value)
+inline std::string to_hex(StringRef input)
 {
-   static const char *const LUT = "0123456789ABCDEF";
-   size_t length = value.getSize();
-   
+   static const char *const lut = "0123456789ABCDEF";
+   size_t length = input.getSize();
    std::string output;
    output.reserve(2 * length);
    for (size_t i = 0; i < length; ++i) {
-      const unsigned char c = value[i];
-      output.push_back(LUT[c >> 4]);
-      output.push_back(LUT[c & 15]);
+      const unsigned char c = input[i];
+      output.push_back(lut[c >> 4]);
+      output.push_back(lut[c & 15]);
    }
    return output;
 }
 
-inline std::string to_hex(ArrayRef<uint8_t> value)
+inline std::string to_hex(ArrayRef<uint8_t> input)
 {
-   return to_hex(to_string_ref(value));
+   return to_hex(to_string_ref(input));
 }
 
 inline uint8_t hex_from_nibbles(char msb, char lsb)
@@ -167,23 +172,24 @@ inline uint8_t hex_from_nibbles(char msb, char lsb)
 }
 
 /// Convert hexadecimal string \p Input to its binary representation.
-/// The return string is half the size of \p Input.
-inline std::string from_hex(StringRef value) {
-   if (value.empty()) {
+/// The return string is half the size of \p input.
+inline std::string from_hex(StringRef input)
+{
+   if (input.empty()) {
       return std::string();
    }
    std::string output;
-   output.reserve((value.getSize() + 1) / 2);
-   if (value.getSize() % 2 == 1) {
-      output.push_back(hex_from_nibbles('0', value.front()));
-      value = value.dropFront();
+   output.reserve((input.getSize() + 1) / 2);
+   if (input.getSize() % 2 == 1) {
+      output.push_back(hex_from_nibbles('0', input.front()));
+      input = input.dropFront();
    }
-   
-   assert(value.getSize() % 2 == 0);
-   while (!value.empty()) {
-      uint8_t hex = hex_from_nibbles(value[0], value[1]);
-      output.push_back(hex);
-      value = value.dropFront(2);
+
+   assert(input.getSize() % 2 == 0);
+   while (!input.empty()) {
+      uint8_t Hex = hex_from_nibbles(input[0], input[1]);
+      output.push_back(Hex);
+      input = input.dropFront(2);
    }
    return output;
 }
@@ -198,18 +204,19 @@ template <typename N> bool to_integer(StringRef str, N &num, unsigned base = 0)
 
 namespace internal {
 template <typename N>
-inline bool to_float(const Twine &twine, N &num, N (*str_to)(const char *, char **)) {
+inline bool to_float(const Twine &twine, N &num, N (*strToFunc)(const char *, char **))
+{
    SmallString<32> storage;
    StringRef str = twine.toNullTerminatedStringRef(storage);
    char *end;
-   N temp = str_to(str.getData(), &end);
+   N temp = strToFunc(str.getData(), &end);
    if (*end != '\0') {
       return false;
    }
    num = temp;
    return true;
 }
-} // internal
+}
 
 inline bool to_float(const Twine &twine, float &num)
 {
@@ -230,21 +237,24 @@ inline std::string utostr(uint64_t value, bool isNeg = false)
 {
    char buffer[21];
    char *bufPtr = std::end(buffer);
+
    if (value == 0) {
       *--bufPtr = '0';  // Handle special case...
    }
+
    while (value) {
       *--bufPtr = '0' + char(value % 10);
       value /= 10;
    }
-   
+
    if (isNeg) {
       *--bufPtr = '-';   // Add negative sign...
    }
    return std::string(bufPtr, std::end(buffer));
 }
 
-inline std::string itostr(int64_t value) {
+inline std::string itostr(int64_t value)
+{
    if (value < 0) {
       return utostr(static_cast<uint64_t>(-value), true);
    } else {
@@ -252,12 +262,12 @@ inline std::string itostr(int64_t value) {
    }
 }
 
-/// str_in_str_nocase - Portable version of strcasestr.  Locates the first
+/// StrInStrNoCase - Portable version of strcasestr.  Locates the first
 /// occurrence of string 's1' in string 's2', ignoring case.  Returns
 /// the offset of s2 in s1 or npos if s2 cannot be found.
 StringRef::size_type str_in_str_nocase(StringRef s1, StringRef s2);
 
-/// get_token - This function extracts one token from source, ignoring any
+/// getToken - This function extracts one token from source, ignoring any
 /// leading characters that appear in the Delimiters string, and ending the
 /// token at any of the characters that appear in the Delimiters string.  If
 /// there are no tokens in the source string, an empty string is returned.
@@ -266,13 +276,13 @@ StringRef::size_type str_in_str_nocase(StringRef s1, StringRef s2);
 std::pair<StringRef, StringRef> get_token(StringRef source,
                                           StringRef delimiters = " \t\n\v\f\r");
 
-/// split_string - Split up the specified string according to the specified
+/// SplitString - Split up the specified string according to the specified
 /// delimiters, appending the result fragments to the output list.
 void split_string(StringRef source,
                   SmallVectorImpl<StringRef> &outFragments,
                   StringRef delimiters = " \t\n\v\f\r");
 
-/// hash_string - Hash function for strings.
+/// HashString - Hash function for strings.
 ///
 /// This is the Bernstein hash function.
 //
@@ -283,7 +293,7 @@ inline unsigned hash_string(StringRef str, unsigned result = 0)
 {
    for (StringRef::size_type i = 0, e = str.getSize(); i != e; ++i) {
       result = result * 33 + (unsigned char)str[i];
-   }      
+   }
    return result;
 }
 
@@ -307,19 +317,18 @@ inline StringRef get_ordinal_suffix(unsigned value)
    }
 }
 
-/// print_escaped_string - Print each character of the specified string, escaping
+/// PrintEscapedString - Print each character of the specified string, escaping
 /// it if it is not printable or if it is an escape char.
 void print_escaped_string(StringRef name, RawOutStream &out);
 
-/// print_lower_case - Print each character as lowerCase if it is uppercase.
+/// printLowerCase - Print each character as lowercase if it is uppercase.
 void print_lower_case(StringRef string, RawOutStream &out);
 
 namespace internal {
 
 template <typename IteratorType>
 inline std::string join_impl(IteratorType begin, IteratorType end,
-                             StringRef separator, std::input_iterator_tag)
-{
+                             StringRef separator, std::input_iterator_tag) {
    std::string str;
    if (begin == end) {
       return str;
@@ -334,18 +343,16 @@ inline std::string join_impl(IteratorType begin, IteratorType end,
 
 template <typename IteratorType>
 inline std::string join_impl(IteratorType begin, IteratorType end,
-                             StringRef separator, std::forward_iterator_tag)
-{
+                             StringRef separator, std::forward_iterator_tag) {
    std::string str;
    if (begin == end) {
       return str;
    }
-   
-   size_t len = (std::distance(begin, end) - 1) * separator.getSize();
+   size_t length = (std::distance(begin, end) - 1) * separator.getSize();
    for (IteratorType iter = begin; iter != end; ++iter) {
-      len += (*begin).size();
+      length += (*begin).size();
    }
-   str.reserve(len);
+   str.reserve(length);
    str += (*begin);
    while (++begin != end) {
       str += separator;
@@ -366,15 +373,15 @@ inline void join_items_impl(std::string &result, Sep separator,
 }
 
 template <typename Sep, typename Arg1, typename... Args>
-inline void join_items_impl(std::string &result, Sep separator, const Arg1 &arg1,
+inline void join_items_impl(std::string &result, Sep separator, const Arg1 &a1,
                             Args &&... items)
 {
-   result += arg1;
+   result += a1;
    result += separator;
    join_items_impl(result, separator, std::forward<Args>(items)...);
 }
 
-inline size_t join_one_item_size(char c)
+inline size_t join_one_item_size(char character)
 {
    return 1;
 }
@@ -395,21 +402,21 @@ inline size_t join_items_size()
    return 0;
 }
 
-template <typename ArgType>
-inline size_t join_items_size(const ArgType &arg)
+template <typename T>
+inline size_t join_items_size(const T &value)
 {
-   return join_one_item_size(arg);
+   return join_one_item_size(value);
 }
 
-template <typename Arg1, typename... Args>
-inline size_t join_items_size(const Arg1 &arg1, Args &&... items)
+template <typename T, typename... Args>
+inline size_t join_items_size(const T &value, Args &&... items)
 {
-   return join_one_item_size(arg1) + join_items_size(std::forward<Args>(items)...);
+   return join_one_item_size(value) + join_items_size(std::forward<Args>(items)...);
 }
 
 } // end namespace internal
 
-/// Joins the strings in the range [Begin, End), adding Separator between
+/// Joins the strings in the range [begin, end), adding separator between
 /// the elements.
 template <typename IteratorType>
 inline std::string join(IteratorType begin, IteratorType end, StringRef separator)
@@ -418,7 +425,7 @@ inline std::string join(IteratorType begin, IteratorType end, StringRef separato
    return internal::join_impl(begin, end, separator, tag());
 }
 
-/// Joins the strings in the range [R.begin(), R.end()), adding Separator
+/// Joins the strings in the range [R.begin(), R.end()), adding separator
 /// between the elements.
 template <typename Range>
 inline std::string join(Range &&range, StringRef separator)
@@ -426,25 +433,25 @@ inline std::string join(Range &&range, StringRef separator)
    return join(range.begin(), range.end(), separator);
 }
 
-/// Joins the strings in the parameter pack \p Items, adding \p Separator
+/// Joins the strings in the parameter pack \p Items, adding \p separator
 /// between the elements.  All arguments must be implicitly convertible to
 /// std::string, or there should be an overload of std::string::operator+=()
 /// that accepts the argument explicitly.
 template <typename Sep, typename... Args>
-inline std::string join_items(Sep separator, Args &&... args)
+inline std::string join_items(Sep separator, Args &&... items)
 {
    std::string result;
-   if (sizeof...(args) == 0) {
+   if (sizeof...(items) == 0) {
       return result;
    }
    size_t NS = internal::join_one_item_size(separator);
-   size_t NI = internal::join_items_size(std::forward<Args>(args)...);
-   result.reserve(NI + (sizeof...(args) - 1) * NS + 1);
-   internal::join_items_impl(result, separator, std::forward<Args>(args)...);
+   size_t NI = internal::join_items_size(std::forward<Args>(items)...);
+   result.reserve(NI + (sizeof...(items) - 1) * NS + 1);
+   internal::join_items_impl(result, separator, std::forward<Args>(items)...);
    return result;
 }
 
-} // utils
+} // basic
 } // polar
 
 #endif // POLAR_BASIC_ADT_STRING_EXTRAS_H

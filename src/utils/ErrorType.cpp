@@ -33,7 +33,7 @@ public:
    {
       return "Error";
    }
-   
+
    std::string message(int condition) const override
    {
       switch (static_cast<ErrorErrorCode>(condition)) {
@@ -86,7 +86,7 @@ std::error_code inconvertible_error_code()
                           *sg_errorErrorCategory);
 }
 
-Error errorcode_to_error(std::error_code errorCode)
+Error error_code_to_error(std::error_code errorCode)
 {
    if (!errorCode) {
       return Error::getSuccess();
@@ -94,7 +94,7 @@ Error errorcode_to_error(std::error_code errorCode)
    return Error(std::make_unique<ECError>(ECError(errorCode)));
 }
 
-std::error_code error_to_errorcode(Error error) {
+std::error_code error_to_error_code(Error error) {
    std::error_code errorCode;
    handle_all_errors(std::move(error), [&](const ErrorInfoBase &errorInfo) {
       errorCode = errorInfo.convertToErrorCode();

@@ -531,9 +531,9 @@ std::error_code equivalent(const Twine &lhs, const Twine &rhs, bool &result)
 
 namespace {
 
-void expand_tilde_expr(SmallVectorImpl<char> &path)
+void expand_tilde_expr(SmallVectorImpl<char> &pathVector)
 {
-   StringRef pathStr(path.begin(), path.getSize());
+   StringRef pathStr(pathVector.begin(), pathVector.getSize());
    if (pathStr.empty() || !pathStr.startsWith("~")) {
       return;
    }
@@ -549,8 +549,8 @@ void expand_tilde_expr(SmallVectorImpl<char> &path)
          return;
       }
       // Overwrite the first character and insert the rest.
-      path[0] = storage[0];
-      path.insert(path.begin() + 1, storage.begin() + 1, storage.end());
+      pathVector[0] = storage[0];
+      pathVector.insert(pathVector.begin() + 1, storage.begin() + 1, storage.end());
       return;
    }
 
@@ -566,9 +566,9 @@ void expand_tilde_expr(SmallVectorImpl<char> &path)
    }
 
    storage = remainder;
-   path.clear();
-   path.append(entry->pw_dir, entry->pw_dir + strlen(entry->pw_dir));
-   path::append(path, storage);
+   pathVector.clear();
+   pathVector.append(entry->pw_dir, entry->pw_dir + strlen(entry->pw_dir));
+   path::append(pathVector, storage);
 }
 
 std::error_code fill_status(int statRet, const struct stat &status,
@@ -1005,7 +1005,8 @@ bool get_darwin_conf_dir(bool tempDir, SmallVectorImpl<char> &result)
    return false;
 }
 
-bool get_user_cache_dir(SmallVectorImpl<char> &result) {
+bool get_user_cache_dir(SmallVectorImpl<char> &result)
+{
    // First try using XDG_CACHE_HOME env variable,
    // as specified in XDG Base Directory Specification at
    // http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html

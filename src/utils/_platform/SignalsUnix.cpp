@@ -68,6 +68,11 @@ using polar::utils::error_stream;
 
 static RETSIGTYPE signal_handler(int sig);  // defined below.
 
+// see signals.cpp file
+extern void run_signal_handlers();
+extern void insert_signal_handler(sys::SignalHandlerCallback funcPtr,
+                                  void *cookie);
+
 /// The function to call if ctrl-c is pressed.
 using InterruptFunctionType = void (*)();
 static std::atomic<InterruptFunctionType> sg_interruptFunction =
@@ -322,10 +327,10 @@ void remove_fles_to_remove()
    FileToRemoveList::removeAllFiles(sg_filesToRemove);
 }
 
-extern void run_signal_handlers();
+} // anonymous namespace
 
 // The signal handler that runs.
-RETSIGTYPE signal_handler(int sig)
+static RETSIGTYPE signal_handler(int sig)
 {
    // Restore the signal behavior to default, so that the program actually
    // crashes when we return and the signal reissues.  This also ensures that if
@@ -365,9 +370,6 @@ RETSIGTYPE signal_handler(int sig)
 #endif
 }
 
-} // anonymous namespace
-
-
 void run_interrupt_handlers()
 {
    remove_fles_to_remove();
@@ -397,7 +399,7 @@ void dont_remove_file_on_signal(StringRef filename)
 }
 
 extern void insert_signal_handler(sys::SignalHandlerCallback funcPtr,
-                           void *cookie);
+                                  void *cookie);
 
 /// Add a function to be called when a signal is delivered to the process. The
 /// handler can have a cookie passed to it to identify what instance of the

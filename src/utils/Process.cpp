@@ -90,19 +90,19 @@ std::optional<std::string> Process::findInEnvPath(StringRef envName,
    COLOR(FGBG, "7", BOLD)\
 }
 
-static const char sg_colorcodes[2][2][8][10] =
+extern const char sg_colorcodes[2][2][8][10] =
 {
    { ALLCOLORS("3",""), ALLCOLORS("3","1;") },
    { ALLCOLORS("4",""), ALLCOLORS("4","1;") }
 };
 
 // This is set to true when Process::PreventCoreFiles() is called.
-static bool sg_coreFilesPrevented = false;
+bool sg_coreFilesPrevented = false;
 
 bool Process::areCoreFilesPrevented()
 {
    return sg_coreFilesPrevented;
 }
 
-} // utils
-} // ppolar
+} // sys
+} // polar

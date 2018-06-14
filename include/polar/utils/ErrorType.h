@@ -1079,7 +1079,7 @@ inline std::string to_string(Error error)
 /// Uses of this method are potentially indicative of design problems: If it's
 /// legitimate to do nothing while processing an "error", the error-producer
 /// might be more clearly refactored to return an Optional<T>.
-inline void consumeError(Error error)
+inline void consume_error(Error error)
 {
    handle_all_errors(std::move(error), [](const ErrorInfoBase &) {});
 }
@@ -1162,7 +1162,7 @@ private:
 /// std::error_codes.
 class ECError : public ErrorInfo<ECError>
 {
-   friend Error errorcode_to_error(std::error_code);
+   friend Error error_code_to_error(std::error_code);
 
 public:
    void setErrorCode(std::error_code errorCode)

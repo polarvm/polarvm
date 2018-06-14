@@ -68,7 +68,8 @@ namespace polar {
 namespace sys {
 
 extern bool sg_coreFilesPrevented;
-extern char sg_colorcodes[2][2][8][10];
+extern const char sg_colorcodes[][2][8][10];
+
 namespace {
 std::pair<std::chrono::microseconds, std::chrono::microseconds> get_resource_usage_times()
 {

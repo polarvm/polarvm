@@ -391,8 +391,8 @@ bool home_directory(SmallVectorImpl<char> &result);
 /// @param Path2 Second additional path to be appended.
 /// @param Path3 Third additional path to be appended.
 /// @result True if a cache directory path is set, false otherwise.
-bool user_cache_directory(SmallVectorImpl<char> &result, const Twine &rath1,
-                          const Twine &rath2 = "", const Twine &rath3 = "");
+bool user_cache_directory(SmallVectorImpl<char> &result, const Twine &path1,
+                          const Twine &path2 = "", const Twine &path3 = "");
 
 /// Has root name?
 ///
