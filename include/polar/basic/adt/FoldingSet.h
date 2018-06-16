@@ -287,7 +287,7 @@ struct FoldingSetTrait : public DefaultFoldingSetTrait<T>
 /// for ContextualFoldingSets.
 template<typename T, typename Ctx>
 struct DefaultContextualFoldingSetTrait {
-   static void profile(T &X, FoldingSetNodeId &id, Ctx context)
+   static void profile(T &x, FoldingSetNodeId &id, Ctx context)
    {
       x.profile(id, context);
    }
@@ -360,23 +360,22 @@ class FoldingSetNodeId
 public:
    FoldingSetNodeId() = default;
 
-   FoldingSetNodeId(FoldingSetNodeIdRef ref)
-      : m_bits(ref.getData(), ref.getData() + ref.getSize())
+   FoldingSetNodeId(FoldingSetNodeIdRef ref) : m_bits(ref.getData(), ref.getData() + ref.getSize())
    {}
 
    /// Add* - Add various data types to Bit data.
    void addPointer(const void *ptr);
-   void addPointer(signed value);
-   void addPointer(unsigned value);
-   void addPointer(long value);
-   void addPointer(unsigned long value);
-   void addPointer(long long value);
-   void addPointer(unsigned long long value);
+   void addInteger(signed value);
+   void addInteger(unsigned value);
+   void addInteger(long value);
+   void addInteger(unsigned long value);
+   void addInteger(long long value);
+   void addInteger(unsigned long long value);
    void addBoolean(bool value)
    {
-      addPointer(value ? 1U : 0U);
+      addInteger(value ? 1U : 0U);
    }
-   void addString(StringRef String);
+   void addString(StringRef string);
    void addNodeId(const FoldingSetNodeId &id);
 
    template <typename T>
@@ -442,7 +441,7 @@ template<typename T>
 inline unsigned
 DefaultFoldingSetTrait<T>::computeHash(T &x, FoldingSetNodeId &tempId)
 {
-   FoldingSetTrait<T>::profile(X, tempId);
+   FoldingSetTrait<T>::profile(x, tempId);
    return tempId.computeHash();
 }
 
@@ -787,12 +786,12 @@ public:
 
    T &operator*() const
    {
-      return *static_cast<T*>(nodePtr);
+      return *static_cast<T*>(m_nodePtr);
    }
 
    T *operator->() const
    {
-      return static_cast<T*>(nodePtr);
+      return static_cast<T*>(m_nodePtr);
    }
 
    inline FoldingSetIterator &operator++()

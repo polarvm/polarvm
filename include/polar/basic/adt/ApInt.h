@@ -90,9 +90,9 @@ public:
    /// This enum is used to hold the constants we needed for ApInt.
    enum : unsigned {
       /// Byte size of a word.
-      ApInt_WORD_SIZE = sizeof(WordType),
+      APINT_WORD_SIZE = sizeof(WordType),
       /// Bits in a word.
-      ApInt_BITS_PER_WORD = ApInt_WORD_SIZE * CHAR_BIT
+      APINT_BITS_PER_WORD = APINT_WORD_SIZE * CHAR_BIT
    };
 
    static const WordType WORD_MAX = ~WordType(0);
@@ -126,7 +126,7 @@ private:
    /// \returns true if the number of bits <= 64, false otherwise.
    bool isSingleWord() const
    {
-      return m_bitWidth <= ApInt_BITS_PER_WORD;
+      return m_bitWidth <= APINT_BITS_PER_WORD;
    }
 
    /// \brief Determine which word a bit is in.
@@ -134,7 +134,7 @@ private:
    /// \returns the word position for the specified bit position.
    static unsigned whichWord(unsigned bitPosition)
    {
-      return bitPosition / ApInt_BITS_PER_WORD;
+      return bitPosition / APINT_BITS_PER_WORD;
    }
 
    /// \brief Determine which bit in a word a bit is in.
@@ -143,7 +143,7 @@ private:
    /// in the ApInt.
    static unsigned whichBit(unsigned bitPosition)
    {
-      return bitPosition % ApInt_BITS_PER_WORD;
+      return bitPosition % APINT_BITS_PER_WORD;
    }
 
    /// \brief Get a single bit mask.
@@ -166,10 +166,10 @@ private:
    ApInt &clearUnusedBits()
    {
       // Compute how many bits are used in the final word
-      unsigned WordBits = ((m_bitWidth-1) % ApInt_BITS_PER_WORD) + 1;
+      unsigned WordBits = ((m_bitWidth-1) % APINT_BITS_PER_WORD) + 1;
 
       // Mask out the high bits.
-      uint64_t mask = WORD_MAX >> (ApInt_BITS_PER_WORD - WordBits);
+      uint64_t mask = WORD_MAX >> (APINT_BITS_PER_WORD - WordBits);
       if (isSingleWord()) {
          m_intValue.m_value &= mask;
       } else {
@@ -443,7 +443,7 @@ public:
    bool isAllOnesValue() const
    {
       if (isSingleWord()) {
-         return m_intValue.m_value == WORD_MAX >> (ApInt_BITS_PER_WORD - m_bitWidth);
+         return m_intValue.m_value == WORD_MAX >> (APINT_BITS_PER_WORD - m_bitWidth);
       }
       return countTrailingOnesSlowCase() == m_bitWidth;
    }
@@ -571,7 +571,7 @@ public:
       assert(numBits != 0 && "numBits must be non-zero");
       assert(numBits <= m_bitWidth && "numBits out of range");
       if (isSingleWord()) {
-         return m_intValue.m_value == (WORD_MAX >> (ApInt_BITS_PER_WORD - numBits));
+         return m_intValue.m_value == (WORD_MAX >> (APINT_BITS_PER_WORD - numBits));
       }
       unsigned ones = countTrailingOnesSlowCase();
       return (numBits == ones) &&
@@ -875,7 +875,7 @@ public:
          clearUnusedBits();
       } else {
          m_intValue.m_pValue[0] = rhs;
-         memset(m_intValue.m_pValue+1, 0, (getNumWords() - 1) * ApInt_WORD_SIZE);
+         memset(m_intValue.m_pValue+1, 0, (getNumWords() - 1) * APINT_WORD_SIZE);
       }
       return *this;
    }
@@ -909,7 +909,7 @@ public:
          return *this;
       }
       m_intValue.m_pValue[0] &= rhs;
-      memset(m_intValue.m_pValue+1, 0, (getNumWords() - 1) * ApInt_WORD_SIZE);
+      memset(m_intValue.m_pValue+1, 0, (getNumWords() - 1) * APINT_WORD_SIZE);
       return *this;
    }
 
@@ -1072,7 +1072,7 @@ public:
       if (isSingleWord()) {
          int64_t SignExtVAL = polar::utils::sign_extend(m_intValue.m_value, m_bitWidth);
          if (shiftAmt == m_bitWidth) {
-            m_intValue.m_value = SignExtVAL >> (ApInt_BITS_PER_WORD - 1); // Fill with sign bit.
+            m_intValue.m_value = SignExtVAL >> (APINT_BITS_PER_WORD - 1); // Fill with sign bit.
          } else {
             m_intValue.m_value = SignExtVAL >> shiftAmt;
          }
@@ -1350,7 +1350,7 @@ public:
    bool slt(int64_t rhs) const
    {
       return (!isSingleWord() && getMinSignedBits() > 64) ? isNegative()
-                                                          : getSignExtVALue() < rhs;
+                                                          : getSignExtValue() < rhs;
    }
 
    /// \brief Unsigned less or equal comparison
@@ -1440,7 +1440,7 @@ public:
    bool sgt(int64_t rhs) const
    {
       return (!isSingleWord() && getMinSignedBits() > 64) ? !isNegative()
-                                                          : getSignExtVALue() > rhs;
+                                                          : getSignExtValue() > rhs;
    }
 
    /// \brief Unsigned greater or equal comparison
@@ -1568,7 +1568,7 @@ public:
          m_intValue.m_value = WORD_MAX;
       } else {
          // Set all the bits in all the words.
-         memset(m_intValue.m_pValue, -1, getNumWords() * ApInt_WORD_SIZE);
+         memset(m_intValue.m_pValue, -1, getNumWords() * APINT_WORD_SIZE);
       }
       // Clear the unused ones
       clearUnusedBits();
@@ -1603,8 +1603,8 @@ public:
       if (loBit == hiBit) {
          return;
       }
-      if (loBit < ApInt_BITS_PER_WORD && hiBit <= ApInt_BITS_PER_WORD) {
-         uint64_t mask = WORD_MAX >> (ApInt_BITS_PER_WORD - (hiBit - loBit));
+      if (loBit < APINT_BITS_PER_WORD && hiBit <= APINT_BITS_PER_WORD) {
+         uint64_t mask = WORD_MAX >> (APINT_BITS_PER_WORD - (hiBit - loBit));
          mask <<= loBit;
          if (isSingleWord()) {
             m_intValue.m_value |= mask;
@@ -1640,7 +1640,7 @@ public:
       if (isSingleWord()) {
          m_intValue.m_value = 0;
       } else {
-         memset(m_intValue.m_pValue, 0, getNumWords() * ApInt_WORD_SIZE);
+         memset(m_intValue.m_pValue, 0, getNumWords() * APINT_WORD_SIZE);
       }
    }
 
@@ -1722,7 +1722,7 @@ public:
    /// width.
    static unsigned getNumWords(unsigned BitWidth)
    {
-      return ((uint64_t)BitWidth + ApInt_BITS_PER_WORD - 1) / ApInt_BITS_PER_WORD;
+      return ((uint64_t)BitWidth + APINT_BITS_PER_WORD - 1) / APINT_BITS_PER_WORD;
    }
 
    /// \brief Compute the number of active bits in the value
@@ -1780,7 +1780,7 @@ public:
    /// This method attempts to return the value of this ApInt as a sign extended
    /// int64_t. The bit width must be <= 64 or the value must fit within an
    /// int64_t. Otherwise an assertion will result.
-   int64_t getSignExtVALue() const
+   int64_t getSignExtValue() const
    {
       if (isSingleWord()) {
          return sign_extend(m_intValue.m_value, m_bitWidth);
@@ -1806,7 +1806,7 @@ public:
    unsigned countLeadingZeros() const
    {
       if (isSingleWord()) {
-         unsigned unusedBits = ApInt_BITS_PER_WORD - m_bitWidth;
+         unsigned unusedBits = APINT_BITS_PER_WORD - m_bitWidth;
          return count_leading_zeros(m_intValue.m_value) - unusedBits;
       }
       return countLeadingZerosSlowCase();
@@ -1823,7 +1823,7 @@ public:
    unsigned countLeadingOnes() const
    {
       if (isSingleWord()) {
-         return count_leading_ones(m_intValue.m_value << (ApInt_BITS_PER_WORD - m_bitWidth));
+         return count_leading_ones(m_intValue.m_value << (APINT_BITS_PER_WORD - m_bitWidth));
       }
       return countLeadingOnesSlowCase();
    }
