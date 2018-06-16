@@ -22,7 +22,6 @@ namespace polar {
 
 // forward declare class with namespace
 namespace utils {
-class FoldingSetNodeId;
 class RawOutStream;
 } // utils
 
@@ -30,12 +29,21 @@ namespace basic {
 
 class HashCode;
 class StringRef;
+class FoldingSetNodeId;
 
-using polar::utils::FoldingSetNodeId;
 using polar::utils::count_leading_zeros;
 using polar::utils::count_leading_ones;
+using polar::utils::count_trailing_ones;
+using polar::utils::count_trailing_zeros;
 using polar::utils::RawOutStream;
 using polar::utils::count_population;
+using polar::utils::is_power_of_two;
+using polar::utils::is_mask;
+using polar::utils::is_shifted_mask;
+using polar::utils::sign_extend;
+using polar::utils::bits_to_double;
+using polar::utils::double_to_bits;
+using polar::utils::float_to_bits;
 
 template <typename T> class SmallVectorImpl;
 template <typename T> class ArrayRef;
@@ -225,10 +233,10 @@ private:
    void ashrSlowCase(unsigned shiftAmt);
 
    /// out-of-line slow case for operator=
-   void AssignSlowCase(const ApInt &rhs);
+   void assignSlowCase(const ApInt &rhs);
 
    /// out-of-line slow case for operator==
-   bool EqualSlowCase(const ApInt &rhs) const POLAR_READONLY;
+   bool equalSlowCase(const ApInt &rhs) const POLAR_READONLY;
 
    /// out-of-line slow case for countLeadingZeros
    unsigned countLeadingZerosSlowCase() const POLAR_READONLY;
@@ -261,10 +269,10 @@ private:
    void andAssignSlowCase(const ApInt& rhs);
 
    /// out-of-line slow case for operator|=.
-   void orAssignSlowCasewCase(const ApInt& rhs);
+   void orAssignSlowCase(const ApInt& rhs);
 
    /// out-of-line slow case for operator^=.
-   void xorAssignSlowCasewCase(const ApInt& rhs);
+   void xorAssignSlowCase(const ApInt& rhs);
 
    /// Unsigned comparison. Returns -1, 0, or 1 if this ApInt is less than, equal
    /// to, or greater than rhs.
@@ -344,7 +352,7 @@ public:
    /// \brief Move Constructor.
    ApInt(ApInt &&other) : m_bitWidth(other.m_bitWidth)
    {
-      memcpy(&m_intValue, &other.m_intValue, sizeof(U));
+      memcpy(&m_intValue, &other.m_intValue, sizeof(m_intValue));
       other.m_bitWidth = 0;
    }
 
@@ -521,7 +529,7 @@ public:
    bool isPowerOf2() const
    {
       if (isSingleWord()) {
-         return isPowerOf2_64(m_intValue.m_value);
+         return is_power_of_two(m_intValue.m_value);
       }
       return countPopulationSlowCase() == 1;
    }
@@ -576,7 +584,7 @@ public:
    bool isMask() const
    {
       if (isSingleWord()) {
-         return isMask_64(m_intValue.m_value);
+         return is_mask(m_intValue.m_value);
       }
       unsigned ones = countTrailingOnesSlowCase();
       return (ones > 0) && ((ones + countLeadingZerosSlowCase()) == m_bitWidth);
@@ -587,7 +595,7 @@ public:
    bool isShiftedMask() const
    {
       if (isSingleWord()) {
-         return isShiftedMask_64(m_intValue.m_value);
+         return is_shifted_mask(m_intValue.m_value);
       }
       unsigned ones = countPopulationSlowCase();
       unsigned leadZ = countLeadingZerosSlowCase();
@@ -834,7 +842,7 @@ public:
          m_bitWidth = rhs.m_bitWidth;
          return clearUnusedBits();
       }
-      AssignSlowCase(rhs);
+      assignSlowCase(rhs);
       return *this;
    }
 
@@ -917,7 +925,7 @@ public:
       if (isSingleWord()) {
          m_intValue.m_value |= rhs.m_intValue.m_value;
       } else {
-         orAssignSlowCasewCase(rhs);
+         orAssignSlowCase(rhs);
       }
       return *this;
    }
@@ -950,7 +958,7 @@ public:
       if (isSingleWord()) {
          m_intValue.m_value ^= rhs.m_intValue.m_value;
       } else {
-         xorAssignSlowCasewCase(rhs);
+         xorAssignSlowCase(rhs);
       }
       return *this;
    }
@@ -1054,7 +1062,7 @@ public:
    {
       ApInt ret(*this);
       ret.ashrInPlace(shiftAmt);
-      return R;
+      return ret;
    }
 
    /// Arithmetic right-shift this ApInt by shiftAmt in place.
@@ -1241,7 +1249,7 @@ public:
       if (isSingleWord()) {
          return m_intValue.m_value == rhs.m_intValue.m_value;
       }
-      return EqualSlowCase(rhs);
+      return equalSlowCase(rhs);
    }
 
    /// \brief Equality operator.
@@ -1775,7 +1783,7 @@ public:
    int64_t getSignExtVALue() const
    {
       if (isSingleWord()) {
-         return SignExtend64(m_intValue.m_value, m_bitWidth);
+         return sign_extend(m_intValue.m_value, m_bitWidth);
       }
       assert(getMinSignedBits() <= 64 && "Too many bits for int64_t");
       return int64_t(m_intValue.m_pValue[0]);
@@ -1799,7 +1807,7 @@ public:
    {
       if (isSingleWord()) {
          unsigned unusedBits = ApInt_BITS_PER_WORD - m_bitWidth;
-         return llvm::countLeadingZeros(m_intValue.m_value) - unusedBits;
+         return count_leading_zeros(m_intValue.m_value) - unusedBits;
       }
       return countLeadingZerosSlowCase();
    }
@@ -1854,7 +1862,7 @@ public:
    unsigned countTrailingOnes() const
    {
       if (isSingleWord()) {
-         return llvm::countTrailingOnes(m_intValue.m_value);
+         return count_leading_ones(m_intValue.m_value);
       }
       return countTrailingOnesSlowCase();
    }
@@ -1880,7 +1888,7 @@ public:
 
    /// Converts an ApInt to a string and append it to Str.  Str is commonly a
    /// SmallString.
-   void toString(SmallVectorImpl<char> &str, unsigned radix, bool signed,
+   void toString(SmallVectorImpl<char> &str, unsigned radix, bool isSigned,
                  bool formatAsCLiteral = false) const;
 
    /// Considers the ApInt to be unsigned and converts it into a string in the
@@ -1902,7 +1910,7 @@ public:
    /// Note other this is an inefficient method.  It is better to pass in a
    /// SmallVector/SmallString to the methods above to avoid thrashing the heap
    /// for the string.
-   std::string toString(unsigned radix, bool signed) const;
+   std::string toString(unsigned radix, bool isSigned) const;
 
    /// \returns a byte-swapped representation of this ApInt Value.
    ApInt byteSwap() const;
@@ -1931,8 +1939,9 @@ public:
    /// The conversion does not do a translation from integer to double, it just
    /// re-interprets the bits as a double. Note other it is valid to do this on
    /// any bit width. Exactly 64 bits will be translated.
-   double bitsToDouble() const {
-      return BitsToDouble(getWord(0));
+   double bitsToDouble() const
+   {
+      return bits_to_double(getWord(0));
    }
 
    /// \brief Converts ApInt bits to a double
@@ -1951,7 +1960,7 @@ public:
    /// re-interprets the bits of the double.
    static ApInt doubleToBits(double value)
    {
-      return ApInt(sizeof(double) * CHAR_BIT, doubleToBits(value));
+      return ApInt(sizeof(double) * CHAR_BIT, double_to_bits(value));
    }
 
    /// \brief Converts a float to ApInt bits.
@@ -1960,7 +1969,7 @@ public:
    /// re-interprets the bits of the float.
    static ApInt floatToBits(float value)
    {
-      return ApInt(sizeof(float) * CHAR_BIT, floatToBits(value));
+      return ApInt(sizeof(float) * CHAR_BIT, float_to_bits(value));
    }
 
    /// @}
@@ -2043,12 +2052,12 @@ public:
    /// @{
 
    /// Calculate the magic number for signed division by a constant.
-   struct ms;
-   ms magic() const;
+   struct MagicSign;
+   MagicSign getMagic() const;
 
    /// Calculate the magic number for unsigned division by a constant.
-   struct mu;
-   mu magicu(unsigned leadingZeros = 0) const;
+   struct MagicUnsign;
+   MagicUnsign getMagicUnsign(unsigned leadingZeros = 0) const;
 
    /// @}
    /// \name Building-block Operations for ApInt and APFloat
@@ -2186,14 +2195,15 @@ public:
 };
 
 /// Magic data for optimising signed division by a constant.
-struct ApInt::Ms
+struct ApInt::MagicSign
 {
    ApInt m_magic;    ///< magic number
    unsigned m_shift; ///< shift amount
 };
 
 /// Magic data for optimising unsigned division by a constant.
-struct ApInt::Mu {
+struct ApInt::MagicUnsign
+{
    ApInt m_magic;    ///< magic number
    bool m_addIndicator;     ///< add indicator
    unsigned m_shift; ///< shift amount
@@ -2288,7 +2298,7 @@ inline ApInt operator^(uint64_t lhs, ApInt rhs)
    return rhs;
 }
 
-inline raw_ostream &operator<<(RawOutStream &outstream, const ApInt &value)
+inline RawOutStream &operator<<(RawOutStream &outstream, const ApInt &value)
 {
    value.print(outstream, true);
    return outstream;

@@ -120,7 +120,7 @@ std::size_t count_trailing_zeros(T value, ZeroBehavior zb = ZeroBehavior::Width)
    static_assert(std::numeric_limits<T>::is_integer &&
                  !std::numeric_limits<T>::is_signed,
                  "Only unsigned integral types are allowed.");
-   return internal::TrailingZerosCounter<T, sizeof(T)>::count(value, value);
+   return internal::TrailingZerosCounter<T, sizeof(T)>::count(value, zb);
 }
 
 namespace internal {
