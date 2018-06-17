@@ -596,9 +596,9 @@ public:
    {
       clear();
       if (this->getCapacity() < numElts) {
-         grow(numElts);
+         this->grow(numElts);
       }
-      setEnd(this->begin() + numElts);
+      this->setEnd(this->begin() + numElts);
       std::uninitialized_fill(this->begin(), this->end(), element);
    }
 
@@ -1079,7 +1079,7 @@ public:
    explicit SmallVector(size_t size, const T &value = T())
       : SmallVectorImpl<T>(N)
    {
-      assign(size, value);
+      this->assign(size, value);
    }
 
    template <typename ItTy,

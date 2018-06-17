@@ -109,7 +109,7 @@ private:
 
    friend struct DenseMapApIntKeyInfo;
 
-   friend class APSInt;
+   friend class ApSInt;
 
    /// \brief Fast internal constructor
    ///

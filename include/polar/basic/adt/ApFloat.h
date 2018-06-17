@@ -18,12 +18,13 @@
 #include <memory>
 
 namespace polar {
-namespace basic {
 
 // forward declare class with namespace
 namespace utils {
 class RawOutStream;
 } // utils
+
+namespace basic {
 
 #define APFLOAT_DISPATCH_ON_SEMANTICS(METHOD_CALL)                             \
    do {                                                                         \
@@ -148,7 +149,7 @@ enum class LostFraction
 struct ApFloatBase
 {
    typedef ApInt::WordType integerPart;
-   static const unsigned m_integerPartWidth = ApInt::ApInt_BITS_PER_WORD;
+   static const unsigned sm_integerPartWidth = ApInt::APINT_BITS_PER_WORD;
 
    /// A signed type to represent a floating point numbers unbiased exponent.
    typedef signed short ExponentType;
@@ -157,7 +158,7 @@ struct ApFloatBase
    /// @{
 
    static const FltSemantics &getIEEEhalf() POLAR_READNONE;
-   static const FltSemantics &getIEEEsin() POLAR_READNONE;
+   static const FltSemantics &getIEEEsingle() POLAR_READNONE;
    static const FltSemantics &getIEEEdouble() POLAR_READNONE;
    static const FltSemantics &getIEEEquad() POLAR_READNONE;
    static const FltSemantics &getPPCDoubleDouble() POLAR_READNONE;
@@ -191,7 +192,7 @@ struct ApFloatBase
    /// IEEE-754R 7: Default exception handling.
    ///
    /// opUnderflow or opOverflow are always returned or-ed with opInexact.
-   enum class OpStatus
+   enum OpStatus
    {
       opOK = 0x00,
       opInvalidOp = 0x01,
@@ -257,7 +258,7 @@ public:
    /// Returns whether this instance allocated memory.
    bool needsCleanup() const
    {
-      return partCount() > 1;
+      return getPartCount() > 1;
    }
 
    /// \name Convenience "constructors"
@@ -517,9 +518,9 @@ private:
    /// \name Simple Queries
    /// @{
 
-   integerPart *significandParts();
-   const integerPart *significandParts() const;
-   unsigned int partCount() const;
+   integerPart *getSignificandParts();
+   const integerPart *getSignificandParts() const;
+   unsigned int getPartCount() const;
 
    /// @}
 
@@ -535,8 +536,8 @@ private:
    void initialize(const FltSemantics *);
    void shiftSignificandLeft(unsigned int);
    LostFraction shiftSignificandRight(unsigned int);
-   unsigned int significandLSB() const;
-   unsigned int significandMSB() const;
+   unsigned int getSignificandLsb() const;
+   unsigned int getSignificandMsb() const;
    void zeroSignificand();
    /// Return true if the significand excluding the integral bit is all ones.
    bool isSignificandAllOnes() const;
@@ -582,14 +583,14 @@ private:
    ApInt convertDoubleApFloatToApInt() const;
    ApInt convertQuadrupleApFloatToApInt() const;
    ApInt convertF80LongDoubleApFloatToApInt() const;
-   ApInt convertgetPPCDoubleDoubleApFloatToApInt() const;
+   ApInt convertPPCDoubleDoubleApFloatToApInt() const;
    void initFromApInt(const FltSemantics *sem, const ApInt &api);
    void initFromHalfApInt(const ApInt &api);
    void initFromFloatApInt(const ApInt &api);
    void initFromDoubleApInt(const ApInt &api);
    void initFromQuadrupleApInt(const ApInt &api);
    void initFromF80LongDoubleApInt(const ApInt &api);
-   void initFromgetPPCDoubleDoubleApInt(const ApInt &api);
+   void initFromPPCDoubleDoubleApInt(const ApInt &api);
 
    void assign(const IEEEFloat &);
    void copySignificand(const IEEEFloat &);
@@ -604,7 +605,7 @@ private:
    /// The significand must be at least one bit wider than the target precision.
    union Significand {
       integerPart m_part;
-      integerPart *mparts;
+      integerPart *m_parts;
    } m_significand;
 
    /// The signed unbiased exponent of the value.
@@ -622,7 +623,7 @@ private:
 
 HashCode hash_value(const IEEEFloat &arg);
 int ilogb(const IEEEFloat &arg);
-IEEEFloat scalbn(IEEEFloat x, int exp, IEEEFloat::RoundingMode);
+IEEEFloat scalbn(IEEEFloat x, int exp, IEEEFloat::RoundingMode roundingMode);
 IEEEFloat frexp(const IEEEFloat &value, int &exp, IEEEFloat::RoundingMode rmode);
 
 // This mode implements more precise float in terms of two ApFloats.
@@ -740,7 +741,7 @@ public:
    friend int ilogb(const DoubleApFloat &arg);
    friend DoubleApFloat scalbn(DoubleApFloat value, int exp, RoundingMode);
    friend DoubleApFloat frexp(const DoubleApFloat &value, int &exp, RoundingMode);
-   friend hash_code hash_value(const DoubleApFloat &arg);
+   friend HashCode hash_value(const DoubleApFloat &arg);
 };
 
 HashCode hash_value(const DoubleApFloat &arg);
@@ -789,7 +790,7 @@ class ApFloat : public ApFloatBase
             m_ieee.~IEEEFloat();
             return;
          }
-         if (usesLayout<DoubleApFloat>(*semantics)) {
+         if (usesLayout<DoubleApFloat>(*m_semantics)) {
             m_dvalue.~DoubleApFloat();
             return;
          }
@@ -916,7 +917,7 @@ class ApFloat : public ApFloatBase
 
    void makeSmallestNormalized(bool neg)
    {
-      APFLOAT_DISPATCH_ON_SEMANTICS(makeSmallestNormalized(Neg));
+      APFLOAT_DISPATCH_ON_SEMANTICS(makeSmallestNormalized(neg));
    }
 
    // FIXME: This is due to clang 3.3 (or older version) always checks for the
@@ -962,8 +963,10 @@ public:
    {}
    explicit ApFloat(double dvalue) : m_storage(IEEEFloat(dvalue), getIEEEdouble())
    {}
-   explicit ApFloat(float fvalue) : m_storage(IEEEFloat(fvalue), getIEEEsin())
+
+   explicit ApFloat(float fvalue) : m_storage(IEEEFloat(fvalue), getIEEEsingle())
    {}
+
    ApFloat(const ApFloat &other) = default;
    ApFloat(ApFloat &&other) = default;
 
@@ -1132,7 +1135,7 @@ public:
       assert(&getSemantics() == &other.getSemantics() &&
              "Should only call on two ApFloats with the same semantics");
       if (usesLayout<IEEEFloat>(getSemantics())) {
-         return m_storage.m_ieee.remainder(RHS.m_storage.m_ieee);
+         return m_storage.m_ieee.remainder(other.m_storage.m_ieee);
       }
 
       if (usesLayout<DoubleApFloat>(getSemantics())) {
@@ -1450,7 +1453,7 @@ public:
                toString(str, formatPrecision, formatMaxPadding, truncateZero));
    }
 
-   void print(raw_ostream &) const;
+   void print(RawOutStream &) const;
    void dump() const;
 
    bool getExactInverse(ApFloat *inv) const
@@ -1458,12 +1461,12 @@ public:
       APFLOAT_DISPATCH_ON_SEMANTICS(getExactInverse(inv));
    }
 
-   friend hash_code hash_value(const ApFloat &Arg);
-   friend int ilogb(const ApFloat &Arg) { return ilogb(Arg.getIEEE()); }
-   friend ApFloat scalbn(ApFloat X, int Exp, RoundingMode RM);
-   friend ApFloat frexp(const ApFloat &X, int &Exp, RoundingMode RM);
-   friend class IEEEFloat;
-   friend class  DoubleApFloat;
+   friend HashCode hash_value(const ApFloat &arg);
+   friend int ilogb(const ApFloat &arg) { return ilogb(arg.getIEEE()); }
+   friend ApFloat scalbn(ApFloat fvalue, int exp, RoundingMode roundingMode);
+   friend ApFloat frexp(const ApFloat &fvalue, int &exp, RoundingMode roundingMode);
+   friend class internal::IEEEFloat;
+   friend class internal::DoubleApFloat;
 };
 
 /// See friend declarations above.
@@ -1488,18 +1491,19 @@ inline ApFloat scalbn(ApFloat x, int exp, ApFloat::RoundingMode rmode)
 ///
 /// While the C standard says Exp is an unspecified value for infinity and nan,
 /// this returns INT_MAX for infinities, and INT_MIN for NaNs.
-inline ApFloat frexp(const ApFloat &x, int &exp, ApFloat::RoundingMode rmode)
+inline ApFloat frexp(const ApFloat &fvalue, int &exp, ApFloat::RoundingMode roundingMode)
 {
-   if (ApFloat::usesLayout<internal::IEEEFloat>(X.getSemantics())) {
-      return ApFloat(frexp(x.m_storage.m_ieee, exp, RM), x.getSemantics());
+   if (ApFloat::usesLayout<internal::IEEEFloat>(fvalue.getSemantics())) {
+      return ApFloat(frexp(fvalue.m_storage.m_ieee, exp, roundingMode), fvalue.getSemantics());
    }
 
-   if (ApFloat::usesLayout<internal::DoubleApFloat>(x.getSemantics())) {
-      return ApFloat(frexp(x.m_storage.m_dvalue, exp, rmode), x.getSemantics());
+   if (ApFloat::usesLayout<internal::DoubleApFloat>(fvalue.getSemantics())) {
+      return ApFloat(frexp(fvalue.m_storage.m_dvalue, exp, roundingMode), fvalue.getSemantics());
    }
 
    polar_unreachable("Unexpected semantics");
 }
+
 /// Returns the absolute value of the argument.
 inline ApFloat abs(ApFloat value)
 {
@@ -1526,7 +1530,7 @@ inline ApFloat minnum(const ApFloat &lhs, const ApFloat &rhs) {
       return lhs;
    }
 
-   return (rhs.compare(lhs) == ApFloat::cmpLessThan) ? rhs : lhs;
+   return (rhs.compare(lhs) == ApFloat::CmpResult::cmpLessThan) ? rhs : lhs;
 }
 
 /// Implements IEEE maxNum semantics. Returns the larger of the 2 arguments if
