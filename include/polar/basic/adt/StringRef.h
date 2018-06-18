@@ -6,7 +6,7 @@
 //
 // See http://polarphp.org/LICENSE.txt for license information
 // See http://polarphp.org/CONTRIBUTORS.txt for the list of polarPHP project authors
-// 
+//
 // Created by softboy on 2018/05/27.
 
 #ifndef POLAR_BASIC_ADT_STRINGREF_H
@@ -27,7 +27,7 @@
 namespace polar {
 namespace basic {
 
-class APInt;
+class ApInt;
 class HashCode;
 template <typename T> class SmallVectorImpl;
 class StringRef;
@@ -53,18 +53,18 @@ class StringRef
 {
 public:
    static const size_t npos = ~size_t(0);
-   
+
    using iterator = const char *;
    using const_iterator = const char *;
    using size_type = size_t;
-   
+
 private:
    /// The start of the string, in an external buffer.
    const char *m_data = nullptr;
-   
+
    /// The length of the string.
    size_t m_length = 0;
-   
+
    // Workaround memcmp issue with null pointers (undefined behavior)
    // by providing a specialized version
    POLAR_ATTRIBUTE_ALWAYS_INLINE
@@ -75,74 +75,74 @@ private:
       }
       return ::memcmp(lhs, rhs, length);
    }
-   
+
 public:
    /// @name Constructors
    /// @{
-   
+
    /// Construct an empty string ref.
    /*implicit*/ StringRef() = default;
-   
+
    /// Disable conversion from nullptr.  This prevents things like
    /// if (S == nullptr)
    StringRef(std::nullptr_t) = delete;
-   
+
    /// Construct a string ref from a cstring.
    POLAR_ATTRIBUTE_ALWAYS_INLINE
    /*implicit*/ StringRef(const char *str)
       : m_data(str), m_length(str ? ::strlen(str) : 0)
    {}
-   
+
    /// Construct a string ref from a pointer and length.
    POLAR_ATTRIBUTE_ALWAYS_INLINE
    /*implicit*/ constexpr StringRef(const char *data, size_t length)
       : m_data(data), m_length(length)
    {}
-   
+
    /// Construct a string ref from an std::string.
    POLAR_ATTRIBUTE_ALWAYS_INLINE
    /*implicit*/ StringRef(const std::string &Str)
       : m_data(Str.data()), m_length(Str.length())
    {}
-   
+
    static StringRef withNullAsEmpty(const char *data)
    {
       return StringRef(data ? data : "");
    }
-   
+
    /// @}
    /// @name Iterators
    /// @{
-   
+
    iterator begin() const
    {
       return m_data;
    }
-   
+
    iterator end() const
    {
       return m_data + m_length;
    }
-   
+
    const unsigned char *getBytesBegin() const
    {
       return reinterpret_cast<const unsigned char *>(begin());
    }
-   
+
    const unsigned char *getBytesEnd() const
    {
       return reinterpret_cast<const unsigned char *>(end());
    }
-   
+
    IteratorRange<const unsigned char *> getBytes() const
    {
       return make_range(getBytesBegin(), getBytesEnd());
    }
-   
+
    /// @}
    /// @name String Operations
    /// @{
-   
+
    /// data - Get a pointer to the start of the string (which may not be null
    /// terminated).
    POLAR_NODISCARD
@@ -151,7 +151,7 @@ public:
    {
       return m_data;
    }
-   
+
    /// empty - Check if the string is empty.
    POLAR_NODISCARD
    POLAR_ATTRIBUTE_ALWAYS_INLINE
@@ -159,7 +159,7 @@ public:
    {
       return m_length == 0;
    }
-   
+
    /// size - Get the string size.
    POLAR_NODISCARD
    POLAR_ATTRIBUTE_ALWAYS_INLINE
@@ -167,7 +167,7 @@ public:
    {
       return m_length;
    }
-   
+
    /// front - Get the first character in the string.
    POLAR_NODISCARD
    char getFront() const
@@ -181,7 +181,7 @@ public:
    {
       return getFront();
    }
-   
+
    /// back - Get the last character in the string.
    POLAR_NODISCARD
    char getBack() const
@@ -195,7 +195,7 @@ public:
    {
       return getBack();
    }
-   
+
    // copy - Allocate copy in Allocator and return StringRef to it.
    template <typename Allocator>
    POLAR_NODISCARD StringRef copy(Allocator &A) const
@@ -208,7 +208,7 @@ public:
       std::copy(begin(), end(), storage);
       return StringRef(storage, m_length);
    }
-   
+
    /// equals - Check for string equality, this is more efficient than
    /// compare() when the relative ordering of inequal strings isn't needed.
    POLAR_NODISCARD
@@ -218,14 +218,14 @@ public:
       return (m_length == other.m_length &&
               compareMemory(m_data, other.m_data, other.m_length) == 0);
    }
-   
+
    /// equals_lower - Check for string equality, ignoring case.
    POLAR_NODISCARD
    bool equalsLower(StringRef other) const
    {
       return m_length == other.m_length && compareLower(other) == 0;
    }
-   
+
    /// compare - Compare two strings; the result is -1, 0, or 1 if this string
    /// is lexicographically less than, equal to, or greater than the \p RHS.
    POLAR_NODISCARD
@@ -239,19 +239,19 @@ public:
       // Otherwise the prefixes match, so we only need to check the lengths.
       if (m_length == other.m_length) {
          return 0;
-      }  
+      }
       return m_length < other.m_length ? -1 : 1;
    }
-   
+
    /// compareLower - Compare two strings, ignoring case.
    POLAR_NODISCARD
    int compareLower(StringRef other) const;
-   
+
    /// compareNumeric - Compare two strings, treating sequences of digits as
    /// numbers.
    POLAR_NODISCARD
    int compareNumeric(StringRef other) const;
-   
+
    /// \brief Determine the edit distance between this string and another
    /// string.
    ///
@@ -273,7 +273,7 @@ public:
    POLAR_NODISCARD
    unsigned editDistance(StringRef other, bool allowReplacements = true,
                          unsigned maxEditDistance = 0) const;
-   
+
    /// str - Get the contents as an std::string.
    POLAR_NODISCARD
    std::string getStr() const
@@ -283,18 +283,18 @@ public:
       }
       return std::string(m_data, m_length);
    }
-   
+
    /// @}
    /// @name Operator Overloads
    /// @{
-   
+
    POLAR_NODISCARD
    char operator[](size_t index) const
    {
       assert(index < m_length && "Invalid index!");
       return m_data[m_length];
    }
-   
+
    /// Disallow accidental assignment from a temporary std::string.
    ///
    /// The declaration here is extra complicated so that `stringRef = {}`
@@ -303,20 +303,20 @@ public:
    typename std::enable_if<std::is_same<T, std::string>::value,
    StringRef>::type &
    operator=(T &&str) = delete;
-   
+
    /// @}
    /// @name Type Conversions
    /// @{
-   
+
    operator std::string() const
    {
       return getStr();
    }
-   
+
    /// @}
    /// @name String Predicates
    /// @{
-   
+
    /// Check if this string starts with the given \p Prefix.
    POLAR_NODISCARD
    POLAR_ATTRIBUTE_ALWAYS_INLINE
@@ -325,11 +325,11 @@ public:
       return m_length >= prefix.m_length &&
             compareMemory(m_data, prefix.m_data, prefix.m_length) == 0;
    }
-   
+
    /// Check if this string starts with the given \p Prefix, ignoring case.
    POLAR_NODISCARD
    bool startsWithLower(StringRef prefix) const;
-   
+
    /// Check if this string ends with the given \p Suffix.
    POLAR_NODISCARD
    POLAR_ATTRIBUTE_ALWAYS_INLINE
@@ -338,15 +338,15 @@ public:
       return m_length >= suffix.m_length &&
             compareMemory(end() - suffix.m_length, suffix.m_data, suffix.m_length) == 0;
    }
-   
+
    /// Check if this string ends with the given \p Suffix, ignoring case.
    POLAR_NODISCARD
    bool endsWithLower(StringRef suffix) const;
-   
+
    /// @}
    /// @name String Searching
    /// @{
-   
+
    /// Search for the first character \p C in the string.
    ///
    /// \returns The index of the first occurrence of \p C, or npos if not
@@ -363,14 +363,14 @@ public:
       }
       return npos;
    }
-   
+
    /// Search for the first character \p C in the string, ignoring case.
    ///
    /// \returns The index of the first occurrence of \p C, or npos if not
    /// found.
    POLAR_NODISCARD
    size_t findLower(char character, size_t from = 0) const;
-   
+
    /// Search for the first character satisfying the predicate \p F
    ///
    /// \returns The index of the first character satisfying \p F starting from
@@ -388,7 +388,7 @@ public:
       }
       return npos;
    }
-   
+
    /// Search for the first character not satisfying the predicate \p F
    ///
    /// \returns The index of the first character not satisfying \p F starting
@@ -399,21 +399,21 @@ public:
    {
       return findIf([func](char c) { return !func(c); }, from);
    }
-   
+
    /// Search for the first string \p Str in the string.
    ///
    /// \returns The index of the first occurrence of \p Str, or npos if not
    /// found.
    POLAR_NODISCARD
    size_t find(StringRef str, size_t from = 0) const;
-   
+
    /// Search for the first string \p Str in the string, ignoring case.
    ///
    /// \returns The index of the first occurrence of \p Str, or npos if not
    /// found.
    POLAR_NODISCARD
    size_t findLower(StringRef Str, size_t from = 0) const;
-   
+
    /// Search for the last character \p C in the string.
    ///
    /// \returns The index of the last occurrence of \p C, or npos if not
@@ -430,28 +430,28 @@ public:
       }
       return npos;
    }
-   
+
    /// Search for the last character \p C in the string, ignoring case.
    ///
    /// \returns The index of the last occurrence of \p C, or npos if not
    /// found.
    POLAR_NODISCARD
    size_t rfindLower(char character, size_t from = npos) const;
-   
+
    /// Search for the last string \p Str in the string.
    ///
    /// \returns The index of the last occurrence of \p Str, or npos if not
    /// found.
    POLAR_NODISCARD
    size_t rfind(StringRef str) const;
-   
+
    /// Search for the last string \p Str in the string, ignoring case.
    ///
    /// \returns The index of the last occurrence of \p Str, or npos if not
    /// found.
    POLAR_NODISCARD
    size_t rfindLower(StringRef str) const;
-   
+
    /// Find the first character in the string that is \p C, or npos if not
    /// found. Same as find.
    POLAR_NODISCARD
@@ -459,26 +459,26 @@ public:
    {
       return find(character, from);
    }
-   
+
    /// Find the first character in the string that is in \p Chars, or npos if
    /// not found.
    ///
    /// Complexity: O(size() + Chars.size())
    POLAR_NODISCARD
    size_t findFirstOf(StringRef chars, size_t from = 0) const;
-   
+
    /// Find the first character in the string that is not \p C or npos if not
    /// found.
    POLAR_NODISCARD
    size_t findFirstNotOf(char character, size_t from = 0) const;
-   
+
    /// Find the first character in the string that is not in the string
    /// \p Chars, or npos if not found.
    ///
    /// Complexity: O(size() + Chars.size())
    POLAR_NODISCARD
    size_t findFirstNotOf(StringRef chars, size_t from = 0) const;
-   
+
    /// Find the last character in the string that is \p C, or npos if not
    /// found.
    POLAR_NODISCARD
@@ -486,26 +486,26 @@ public:
    {
       return rfind(character, from);
    }
-   
+
    /// Find the last character in the string that is in \p C, or npos if not
    /// found.
    ///
    /// Complexity: O(size() + Chars.size())
    POLAR_NODISCARD
    size_t findLastOf(StringRef chars, size_t from = npos) const;
-   
+
    /// Find the last character in the string that is not \p C, or npos if not
    /// found.
    POLAR_NODISCARD
    size_t findLastNotOf(char character, size_t from = npos) const;
-   
+
    /// Find the last character in the string that is not in \p Chars, or
    /// npos if not found.
    ///
    /// Complexity: O(size() + Chars.size())
    POLAR_NODISCARD
    size_t findLastNotOf(StringRef chars, size_t from = npos) const;
-   
+
    /// Return true if the given string is a substring of *this, and false
    /// otherwise.
    POLAR_NODISCARD
@@ -514,7 +514,7 @@ public:
    {
       return find(other) != npos;
    }
-   
+
    /// Return true if the given character is contained in *this, and false
    /// otherwise.
    POLAR_NODISCARD
@@ -523,7 +523,7 @@ public:
    {
       return findFirstOf(character) != npos;
    }
-   
+
    /// Return true if the given string is a substring of *this, and false
    /// otherwise.
    POLAR_NODISCARD
@@ -532,7 +532,7 @@ public:
    {
       return findLower(other) != npos;
    }
-   
+
    /// Return true if the given character is contained in *this, and false
    /// otherwise.
    POLAR_NODISCARD
@@ -541,11 +541,11 @@ public:
    {
       return findLower(character) != npos;
    }
-   
+
    /// @}
    /// @name Helpful Algorithms
    /// @{
-   
+
    /// Return the number of occurrences of \p C in the string.
    POLAR_NODISCARD
    size_t count(char character) const
@@ -555,14 +555,14 @@ public:
          if (m_data[i] == character) {
             ++count;
          }
-      } 
+      }
       return count;
    }
-   
+
    /// Return the number of non-overlapped occurrences of \p Str in
    /// the string.
    size_t count(StringRef str) const;
-   
+
    /// Parse the current string as an integer of the specified radix.  If
    /// \p radix is specified as zero, this does radix autosensing using
    /// extended C rules: 0 is octal, 0x is hex, 0b is binary.
@@ -582,7 +582,7 @@ public:
       result = llVal;
       return false;
    }
-   
+
    template <typename T>
    typename std::enable_if<!std::numeric_limits<T>::is_signed, bool>::type
    getAsInteger(unsigned radix, T &result) const
@@ -598,7 +598,7 @@ public:
       result = ullVal;
       return false;
    }
-   
+
    /// Parse the current string as an integer of the specified radix.  If
    /// \p radix is specified as zero, this does radix autosensing using
    /// extended C rules: 0 is octal, 0x is hex, 0b is binary.
@@ -620,7 +620,7 @@ public:
       result = llVal;
       return false;
    }
-   
+
    template <typename T>
    typename std::enable_if<!std::numeric_limits<T>::is_signed, bool>::type
    consumeInteger(unsigned radix, T &result)
@@ -633,7 +633,7 @@ public:
       result = ullVal;
       return false;
    }
-   
+
    /// Parse the current string as an integer of the specified \p radix, or of
    /// an autosensed radix if the \p radix given is 0.  The current value in
    /// \p result is discarded, and the storage is changed to be wide enough to
@@ -644,8 +644,8 @@ public:
    ///
    /// APInt::fromString is superficially similar but assumes the
    /// string is well-formed in the given radix.
-   bool getAsInteger(unsigned radix, APInt &result) const;
-   
+   bool getAsInteger(unsigned radix, ApInt &result) const;
+
    /// Parse the current string as an IEEE double-precision floating
    /// point value.  The string must be a well-formed double.
    ///
@@ -653,23 +653,23 @@ public:
    /// cannot be represented exactly.  Otherwise, the function only fails
    /// in case of an overflow or underflow.
    bool getAsDouble(double &result, bool allowInexact = true) const;
-   
+
    /// @}
    /// @name String Operations
    /// @{
-   
+
    // Convert the given ASCII string to lowercase.
    POLAR_NODISCARD
    std::string toLower() const;
-   
+
    /// Convert the given ASCII string to uppercase.
    POLAR_NODISCARD
    std::string toUpper() const;
-   
+
    /// @}
    /// @name Substring Operations
    /// @{
-   
+
    /// Return a reference to the substring from [Start, Start + N).
    ///
    /// \param Start The index of the starting character in the substring; if
@@ -686,7 +686,7 @@ public:
       start = std::min(start, m_length);
       return StringRef(m_data + start, std::min(size, m_length - start));
    }
-   
+
    /// Return a StringRef equal to 'this' but with only the first \p N
    /// elements remaining.  If \p N is greater than the length of the
    /// string, the entire string is returned.
@@ -699,7 +699,7 @@ public:
       }
       return dropBack(getSize() - size);
    }
-   
+
    /// Return a StringRef equal to 'this' but with only the last \p N
    /// elements remaining.  If \p N is greater than the length of the
    /// string, the entire string is returned.
@@ -712,7 +712,7 @@ public:
       }
       return dropFront(getSize() - size);
    }
-   
+
    /// Return the longest prefix of 'this' such that every character
    /// in the prefix satisfies the given predicate.
    POLAR_NODISCARD
@@ -721,7 +721,7 @@ public:
    {
       return substr(0, findIfNot(func));
    }
-   
+
    /// Return the longest prefix of 'this' such that no character in
    /// the prefix satisfies the given predicate.
    POLAR_NODISCARD
@@ -730,7 +730,7 @@ public:
    {
       return substr(0, findIf(func));
    }
-   
+
    /// Return a StringRef equal to 'this' but with the first \p N elements
    /// dropped.
    POLAR_NODISCARD
@@ -740,7 +740,7 @@ public:
       assert(getSize() >= size && "Dropping more elements than exist");
       return substr(size);
    }
-   
+
    /// Return a StringRef equal to 'this' but with the last \p N elements
    /// dropped.
    POLAR_NODISCARD
@@ -750,7 +750,7 @@ public:
       assert(getSize() >= size && "Dropping more elements than exist");
       return substr(0, getSize() - size);
    }
-   
+
    /// Return a StringRef equal to 'this', but with all characters satisfying
    /// the given predicate dropped from the beginning of the string.
    POLAR_NODISCARD
@@ -759,7 +759,7 @@ public:
    {
       return substr(findIfNot(func));
    }
-   
+
    /// Return a StringRef equal to 'this', but with all characters not
    /// satisfying the given predicate dropped from the beginning of the string.
    POLAR_NODISCARD
@@ -768,7 +768,7 @@ public:
    {
       return substr(findIf(func));
    }
-   
+
    /// Returns true if this StringRef has the given prefix and removes that
    /// prefix.
    POLAR_ATTRIBUTE_ALWAYS_INLINE
@@ -780,7 +780,7 @@ public:
       *this = dropFront(prefix.getSize());
       return true;
    }
-   
+
    /// Returns true if this StringRef has the given suffix and removes that
    /// suffix.
    POLAR_ATTRIBUTE_ALWAYS_INLINE
@@ -791,7 +791,7 @@ public:
       *this = dropBack(suffix.getSize());
       return true;
    }
-   
+
    /// Return a reference to the substring from [Start, End).
    ///
    /// \param Start The index of the starting character in the substring; if
@@ -811,7 +811,7 @@ public:
       end = std::min(std::max(start, end), m_length);
       return StringRef(m_data + start, end - start);
    }
-   
+
    /// Split into two substrings around the first occurrence of a separator
    /// character.
    ///
@@ -828,10 +828,10 @@ public:
       size_t idx = find(separator);
       if (idx == npos) {
          return std::make_pair(*this, StringRef());
-      } 
+      }
       return std::make_pair(slice(0, idx), slice(idx + 1, npos));
    }
-   
+
    /// Split into two substrings around the first occurrence of a separator
    /// string.
    ///
@@ -851,7 +851,7 @@ public:
       }
       return std::make_pair(slice(0, idx), slice(idx + separator.getSize(), npos));
    }
-   
+
    /// Split into substrings around the occurrences of a separator string.
    ///
    /// Each substring is stored in \p retArray. If \p MaxSplit is >= 0, at most
@@ -869,7 +869,7 @@ public:
    void split(SmallVectorImpl<StringRef> &retArray,
               StringRef separator, int maxSplit = -1,
               bool keepEmpty = true) const;
-   
+
    /// Split into substrings around the occurrences of a separator character.
    ///
    /// Each substring is stored in \p A. If \p MaxSplit is >= 0, at most
@@ -886,7 +886,7 @@ public:
    /// \param KeepEmpty - True if empty substring should be added.
    void split(SmallVectorImpl<StringRef> &retArray, char separator, int maxSplit = -1,
               bool keepEmpty = true) const;
-   
+
    /// Split into two substrings around the last occurrence of a separator
    /// character.
    ///
@@ -906,7 +906,7 @@ public:
       }
       return std::make_pair(slice(0, idx), slice(idx + 1, npos));
    }
-   
+
    /// Return string with consecutive \p Char characters starting from the
    /// the left removed.
    POLAR_NODISCARD
@@ -914,7 +914,7 @@ public:
    {
       return dropFront(std::min(m_length, findFirstNotOf(character)));
    }
-   
+
    /// Return string with consecutive characters in \p Chars starting from
    /// the left removed.
    POLAR_NODISCARD
@@ -922,7 +922,7 @@ public:
    {
       return dropFront(std::min(m_length, findFirstNotOf(chars)));
    }
-   
+
    /// Return string with consecutive \p Char characters starting from the
    /// right removed.
    POLAR_NODISCARD
@@ -930,7 +930,7 @@ public:
    {
       return dropBack(m_length - std::min(m_length, findLastNotOf(character) + 1));
    }
-   
+
    /// Return string with consecutive characters in \p Chars starting from
    /// the right removed.
    POLAR_NODISCARD
@@ -938,7 +938,7 @@ public:
    {
       return dropBack(m_length - std::min(m_length, findLastNotOf(chars) + 1));
    }
-   
+
    /// Return string with consecutive \p Char characters starting from the
    /// left and right removed.
    POLAR_NODISCARD
@@ -946,7 +946,7 @@ public:
    {
       return ltrim(character).rtrim(character);
    }
-   
+
    /// Return string with consecutive characters in \p Chars starting from
    /// the left and right removed.
    POLAR_NODISCARD
@@ -954,7 +954,7 @@ public:
    {
       return ltrim(chars).rtrim(chars);
    }
-   
+
    /// @}
 };
 
