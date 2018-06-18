@@ -1005,6 +1005,8 @@ bool get_darwin_conf_dir(bool tempDir, SmallVectorImpl<char> &result)
    return false;
 }
 
+} // anonymous namespace
+
 bool get_user_cache_dir(SmallVectorImpl<char> &result)
 {
    // First try using XDG_CACHE_HOME env variable,
@@ -1028,6 +1030,8 @@ bool get_user_cache_dir(SmallVectorImpl<char> &result)
 
    return false;
 }
+
+namespace {
 
 const char *get_env_temp_dir()
 {

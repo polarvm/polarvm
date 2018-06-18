@@ -156,7 +156,7 @@ RawOutStream &debug_stream()
 
       DbgStream() :
          m_stream(error_stream(), "*** Debug Log Output ***\n",
-              (!sg_enableDebugBuffering || !sg_debugFlag) ? 0 : sg_debugBufferSize) {
+                  (!sg_enableDebugBuffering || !sg_debugFlag) ? 0 : sg_debugBufferSize) {
          if (sg_enableDebugBuffering && sg_debugFlag && sg_debugBufferSize != 0)
             // TODO: Add a handler for SIGUSER1-type signals so the user can
             // force a debug dump.

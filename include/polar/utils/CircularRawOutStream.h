@@ -70,7 +70,7 @@ private:
 
    /// flushBuffer - Dump the contents of the buffer to Stream.
    ///
-   void getFlushBuffer()
+   void flushBuffer()
    {
       if (m_filled) {
          // Write the older portion of the buffer.

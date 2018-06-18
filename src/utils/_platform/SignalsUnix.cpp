@@ -330,7 +330,7 @@ void remove_fles_to_remove()
 } // anonymous namespace
 
 // The signal handler that runs.
-static RETSIGTYPE signal_handler(int sig)
+RETSIGTYPE signal_handler(int sig)
 {
    // Restore the signal behavior to default, so that the program actually
    // crashes when we return and the signal reissues.  This also ensures that if
@@ -398,8 +398,8 @@ void dont_remove_file_on_signal(StringRef filename)
    FileToRemoveList::erase(sg_filesToRemove, filename.getStr());
 }
 
-extern void insert_signal_handler(sys::SignalHandlerCallback funcPtr,
-                                  void *cookie);
+void insert_signal_handler(sys::SignalHandlerCallback funcPtr,
+                           void *cookie);
 
 /// Add a function to be called when a signal is delivered to the process. The
 /// handler can have a cookie passed to it to identify what instance of the
@@ -461,13 +461,13 @@ bool find_modules_and_offsets(void **stackTrace, int depth,
    dl_iterate_phdr(dl_iterate_phdr_cb, &data);
    return true;
 }
-//#else
+#else
 /// This platform does not have dl_iterate_phdr, so we do not yet know how to
 /// find all loaded DSOs.
-static bool find_modules_and_offsets(void **stackTrace, int depth,
-                                     const char **modules, intptr_t *offsets,
-                                     const char *mainExecutableName,
-                                     StringSaver &strPool)
+bool find_modules_and_offsets(void **stackTrace, int depth,
+                              const char **modules, intptr_t *offsets,
+                              const char *mainExecutableName,
+                              StringSaver &strPool)
 {
    return false;
 }
