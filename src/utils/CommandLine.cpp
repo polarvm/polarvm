@@ -48,6 +48,8 @@
 namespace polar {
 namespace cmd {
 
+using polar::basic::Triple;
+
 #define DEBUG_TYPE "commandline"
 
 template class BasicParser<bool>;

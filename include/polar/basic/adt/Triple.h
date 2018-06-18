@@ -22,9 +22,7 @@
 #undef sparc
 
 namespace polar {
-
-using polar::basic::Twine;
-using polar::basic::StringRef;
+namespace basic {
 
 /// Triple - Helper class for working with autoconf configuration names. For
 /// historical reasons, we also call these 'triples' (they used to contain
@@ -219,7 +217,9 @@ public:
       MSVC,
       Itanium,
       Cygnus,
+      AMDOpenCL,
       CoreCLR,
+      OpenCL,
       Simulator,  // Simulator variants of other systems, e.g., Apple's iOS
       LastEnvironmentType = EnvironmentType::Simulator
    };
@@ -275,7 +275,7 @@ public:
    bool operator==(const Triple &other) const
    {
       return m_arch == other.m_arch && m_subArch == other.m_subArch &&
-            m_vendor == other.Vendor && m_os == other.m_os &&
+            m_vendor == other.m_vendor && m_os == other.m_os &&
             m_environment == other.m_environment &&
             m_objectFormat == other.m_objectFormat;
    }
@@ -911,6 +911,7 @@ public:
    /// @}
 };
 
+} // basic
 } // polar
 
 #endif // POLAR_BASIC_ADT_TRIPLE_H

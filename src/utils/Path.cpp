@@ -1274,7 +1274,7 @@ Expected<TempFile> TempFile::create(const Twine &model, unsigned mode)
 
 namespace path {
 
-extern bool get_user_cache_dir(SmallVectorImpl<char> &result);
+bool get_user_cache_dir(SmallVectorImpl<char> &result);
 
 bool user_cache_directory(SmallVectorImpl<char> &result, const Twine &path1,
                           const Twine &path2, const Twine &path3) {

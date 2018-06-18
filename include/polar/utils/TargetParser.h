@@ -25,7 +25,15 @@
 #include <vector>
 
 namespace polar {
+
+// forward declare class with namespace
+namespace basic {
 class StringRef;
+class Triple;
+} // basic
+
+using polar::basic::StringRef;
+using polar::basic::Triple;
 
 // Target specific information into their own namespaces. These should be
 // generated from TableGen because the information is already there, and there
@@ -164,17 +172,18 @@ ArchKind parse_cpu_arch(StringRef CPU);
 ISAKind parse_arch_isa(StringRef Arch);
 EndianKind parse_arch_endian(StringRef Arch);
 ProfileKind parse_arch_profile(StringRef Arch);
-unsigned parse_archVersion(StringRef Arch);
+unsigned parse_arch_version(StringRef Arch);
 
 StringRef compute_default_target_abi(const Triple &TT, StringRef CPU);
 
 } // namespace ARM
 
 // FIXME:This should be made into class design,to avoid dupplication.
-namespace AArch64 {
+namespace aarch64 {
 
 // Arch names.
-enum class ArchKind {
+enum class ArchKind
+{
 #define AARCH64_ARCH(NAME, ID, CPU_ATTR, SUB_ARCH, ARCH_ATTR, ARCH_FPU, ARCH_BASE_EXT) ID,
 #include "AArch64TargetParser.def"
 };
@@ -227,13 +236,13 @@ StringRef get_default_cpu(StringRef Arch);
 
 // Parser
 unsigned parse_fpu(StringRef FPU);
-AArch64::ArchKind parse_arch(StringRef Arch);
+aarch64::ArchKind parse_arch(StringRef Arch);
 unsigned parse_arch_ext(StringRef ArchExt);
 ArchKind parse_cpu_arch(StringRef CPU);
 arm::ISAKind parse_arch_isa(StringRef Arch);
 arm::EndianKind parse_arch_endian(StringRef Arch);
 arm::ProfileKind parse_arch_profile(StringRef Arch);
-unsigned parse_archVersion(StringRef Arch);
+unsigned parse_arch_version(StringRef Arch);
 
 } // namespace AArch64
 
