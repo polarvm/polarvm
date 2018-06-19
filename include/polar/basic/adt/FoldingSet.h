@@ -205,9 +205,9 @@ private:
    void growBucketCount(unsigned newBucketCount);
 
 protected:
-   /// getNodeprofile - Instantiations of the FoldingSet template implement
+   /// getNodeProfile - Instantiations of the FoldingSet template implement
    /// this function to gather data m_bits for the given node.
-   virtual void getNodeprofile(Node *node, FoldingSetNodeId &id) const = 0;
+   virtual void getNodeProfile(Node *node, FoldingSetNodeId &id) const = 0;
 
    /// nodeEquals - Instantiations of the FoldingSet template implement
    /// this function to compare the given node with the given ID.
@@ -572,9 +572,9 @@ template <class T> class FoldingSet final : public FoldingSetImpl<T>
    using Super = FoldingSetImpl<T>;
    using Node = typename Super::Node;
 
-   /// getNodeprofile - Each instantiatation of the FoldingSet needs to provide a
+   /// getNodeProfile - Each instantiatation of the FoldingSet needs to provide a
    /// way to convert nodes into a unique specifier.
-   void getNodeprofile(Node *node, FoldingSetNodeId &id) const override
+   void getNodeProfile(Node *node, FoldingSetNodeId &id) const override
    {
       T *tempNode = static_cast<T *>(node);
       FoldingSetTrait<T>::profile(*tempNode, id);
@@ -618,7 +618,7 @@ class ContextualFoldingSet final : public FoldingSetImpl<T>
 {
    // Unfortunately, this can't derive from FoldingSet<T> because the
    // construction of the vtable for FoldingSet<T> requires
-   // FoldingSet<T>::getNodeprofile to be instantiated, which in turn
+   // FoldingSet<T>::getNodeProfile to be instantiated, which in turn
    // requires a single-argument T::profile().
 
    using Super = FoldingSetImpl<T>;
@@ -626,9 +626,9 @@ class ContextualFoldingSet final : public FoldingSetImpl<T>
 
    Ctx m_context;
 
-   /// getNodeprofile - Each instantiatation of the FoldingSet needs to provide a
+   /// getNodeProfile - Each instantiatation of the FoldingSet needs to provide a
    /// way to convert nodes into a unique specifier.
-   void getNodeprofile(Node *node, FoldingSetNodeId &id) const override
+   void getNodeProfile(Node *node, FoldingSetNodeId &id) const override
    {
       T *tempNode = static_cast<T *>(node);
       ContextualFoldingSetTrait<T, Ctx>::profile(*tempNode, id, m_context);

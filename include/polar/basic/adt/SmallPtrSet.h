@@ -212,7 +212,7 @@ protected:
       }
 
       // Big set case.
-      auto *bucket = FindBucketFor(ptr);
+      auto *bucket = findBucketFor(ptr);
       if (*bucket == ptr) {
          return bucket;
       }
@@ -227,7 +227,7 @@ private:
 
    std::pair<const void *const *, bool> insertImplBig(const void *ptr);
 
-   const void * const *FindBucketFor(const void *ptr) const;
+   const void * const *findBucketFor(const void *ptr) const;
    void shrinkAndClear();
 
    /// Grow - Allocate a larger backing store for the buckets and move it over.
