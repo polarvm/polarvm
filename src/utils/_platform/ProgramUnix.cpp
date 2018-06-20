@@ -171,6 +171,8 @@ void set_memory_limits(unsigned size)
 #endif
 }
 
+} // anonymous namespace
+
 bool execute(ProcessInfo &processInfo, StringRef program, const char **args,
              const char **envp, ArrayRef<std::optional<StringRef>> redirects,
              unsigned memoryLimit, std::string *errMsg)
@@ -321,7 +323,107 @@ bool execute(ProcessInfo &processInfo, StringRef program, const char **args,
    return true;
 }
 
-} // anonymous namespace
+ProcessInfo wait(const ProcessInfo &processInfo, unsigned secondsToWait,
+                 bool waitUntilTerminates, std::string *errMsg) {
+   struct sigaction act, old;
+   assert(processInfo.m_pid && "invalid pid to wait on, process not started?");
+
+   int waitPidOptions = 0;
+   pid_t childPid = processInfo.m_pid;
+   if (waitUntilTerminates) {
+      secondsToWait = 0;
+   } else if (secondsToWait) {
+      // Install a timeout handler.  The handler itself does nothing, but the
+      // simple fact of having a handler at all causes the wait below to return
+      // with EINTR, unlike if we used SIG_IGN.
+      memset(&act, 0, sizeof(act));
+      act.sa_handler = timeout_handler;
+      sigemptyset(&act.sa_mask);
+      sigaction(SIGALRM, &act, &old);
+      alarm(secondsToWait);
+   } else if (secondsToWait == 0) {
+      waitPidOptions = WNOHANG;
+   }
+
+   // Parent process: Wait for the child process to terminate.
+   int status;
+   ProcessInfo waitResult;
+
+   do {
+      waitResult.m_pid = waitpid(childPid, &status, waitPidOptions);
+   } while (waitUntilTerminates && waitResult.m_pid == -1 && errno == EINTR);
+
+   if (waitResult.m_pid != processInfo.m_pid) {
+      if (waitResult.m_pid == 0) {
+         // Non-blocking wait.
+         return waitResult;
+      } else {
+         if (secondsToWait && errno == EINTR) {
+            // Kill the child.
+            kill(processInfo.m_pid, SIGKILL);
+
+            // Turn off the alarm and restore the signal handler
+            alarm(0);
+            sigaction(SIGALRM, &old, nullptr);
+
+            // Wait for child to die
+            if (::wait(&status) != childPid) {
+               make_error_msg(errMsg, "Child timed out but wouldn't die");
+            } else {
+               make_error_msg(errMsg, "Child timed out", 0);
+            }
+            waitResult.m_returnCode = -2; // Timeout detected
+            return waitResult;
+         } else if (errno != EINTR) {
+            make_error_msg(errMsg, "Error waiting for child process");
+            waitResult.m_returnCode = -1;
+            return waitResult;
+         }
+      }
+   }
+
+   // We exited normally without timeout, so turn off the timer.
+   if (secondsToWait && !waitUntilTerminates) {
+      alarm(0);
+      sigaction(SIGALRM, &old, nullptr);
+   }
+
+   // Return the proper exit status. Detect error conditions
+   // so we can return -1 for them and set ErrMsg informatively.
+   int result = 0;
+   if (WIFEXITED(status)) {
+      result = WEXITSTATUS(status);
+      waitResult.m_returnCode = result;
+
+      if (result == 127) {
+         if (errMsg) {
+            *errMsg = polar::sys::get_error_str(ENOENT);
+         }
+         waitResult.m_returnCode = -1;
+         return waitResult;
+      }
+      if (result == 126) {
+         if (errMsg) {
+            *errMsg = "Program could not be executed";
+         }
+         waitResult.m_returnCode = -1;
+         return waitResult;
+      }
+   } else if (WIFSIGNALED(status)) {
+      if (errMsg) {
+         *errMsg = strsignal(WTERMSIG(status));
+#ifdef WCOREDUMP
+         if (WCOREDUMP(status)) {
+            *errMsg += " (core dumped)";
+         }
+#endif
+      }
+      // Return a special value to indicate that the process received an unhandled
+      // signal during execution as opposed to failing to execute.
+      waitResult.m_returnCode = -2;
+   }
+   return waitResult;
+}
 
 std::error_code change_stdin_to_binary()
 {

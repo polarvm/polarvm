@@ -566,8 +566,8 @@ bool get_as_unsigned_integer(StringRef str, unsigned radix,
    return !str.empty();
 }
 
-bool getAsSignedInteger(StringRef str, unsigned radix,
-                        long long &result)
+bool get_as_signed_integer(StringRef str, unsigned radix,
+                           long long &result)
 {
    if (consume_signed_integer(str, radix, result)) {
       return true;

@@ -22,11 +22,9 @@
 namespace polar {
 namespace sys {
 
-namespace {
 bool execute(ProcessInfo &processInfo, StringRef program, const char **args,
-             const char **env, ArrayRef<std::optional<StringRef>> redirects,
+             const char **envp, ArrayRef<std::optional<StringRef>> redirects,
              unsigned memoryLimit, std::string *errMsg);
-} // anonymous namespace
 
 int execute_and_wait(StringRef program, const char **args, const char **envp,
                      ArrayRef<std::optional<StringRef>> redirects,
