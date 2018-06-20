@@ -449,7 +449,7 @@ public:
    /// if the key is not in the map.
    ValueType &operator[](StringRef key)
    {
-      return tryEmplace(key).first->second;
+      return tryEmplace(key).first->m_second;
    }
 
    /// count - Return 1 if the element is in the map, 0 otherwise.

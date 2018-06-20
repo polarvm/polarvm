@@ -98,7 +98,7 @@ else()
 endif()
 
 option(POLAR_STDLIB_ASSERTIONS
-   "Enable internal checks for the Swift standard library (useful for debugging the library itself, does not affect checks required for safety)"
+   "Enable internal checks for the polarVM standard library (useful for debugging the library itself, does not affect checks required for safety)"
    "${POLAR_STDLIB_ASSERTIONS_default}")
 
 # POLAR_VERSION is deliberately /not/ cached so that an existing build directory
@@ -211,6 +211,14 @@ include(HandlePolarOptions)
 include(LinkerProb)
 include(Config-ix)
 
+# By default, we target the host, but this can be overridden at CMake
+# invocation time.
+set(POLAR_DEFAULT_TARGET_TRIPLE "${POLAR_HOST_TRIPLE}" CACHE STRING
+  "Default target for which LLVM will generate code." )
+set(TARGET_TRIPLE "${POLAR_DEFAULT_TARGET_TRIPLE}")
+message(STATUS "polarVM host triple: ${POLAR_HOST_TRIPLE}")
+message(STATUS "polarVM default target triple: ${POLAR_DEFAULT_TARGET_TRIPLE}")
+
 polar_precondition(CMAKE_SYSTEM_NAME)
 
 #
@@ -246,7 +254,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # They are not referenced. See set_output_directory().
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${POLAR_BINARY_DIR}/bin )
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${POLAR_BINARY_DIR}/lib${POLAR_LIBDIR_SUFFIX} )
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${POLAR_BINARY_DIR}/lib${LLVM_LIBDIR_SUFFIX} )
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${POLAR_BINARY_DIR}/lib${POLAR_LIBDIR_SUFFIX} )
 
 # We'll need this once we have generated headers
 include_directories(BEFORE

@@ -12,8 +12,10 @@
 #ifndef POLAR_GLOABL_POLAR_CONFIG_H
 #define POLAR_GLOABL_POLAR_CONFIG_H
 
-/* Host triple POLAR will be executed on */
+/* Host triple polarVM will be executed on */
 #cmakedefine POLAR_HOST_TRIPLE "${POLAR_HOST_TRIPLE}"
+/* Target triple polarVM will generate code for by default */
+#cmakedefine POLAR_DEFAULT_TARGET_TRIPLE "${POLAR_DEFAULT_TARGET_TRIPLE}"
 
 /* POLAR architecture name for the native architecture, if available */
 #cmakedefine POLAR_NATIVE_ARCH "${POLAR_NATIVE_ARCH}"
