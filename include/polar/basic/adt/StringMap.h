@@ -461,8 +461,9 @@ public:
    /// insert - Insert the specified key/value pair into the map.  If the key
    /// already exists in the map, return false and ignore the request, otherwise
    /// insert it and return true.
-   bool insert(MapEntryType *keyValue) {
-      unsigned bucketNo = LookupBucketFor(keyValue->getKey());
+   bool insert(MapEntryType *keyValue)
+   {
+      unsigned bucketNo = lookupBucketFor(keyValue->getKey());
       StringMapEntryBase *&bucket = m_theTable[bucketNo];
       if (bucket && bucket != getTombstoneValue()) {
          return false;  // Already exists in map.
