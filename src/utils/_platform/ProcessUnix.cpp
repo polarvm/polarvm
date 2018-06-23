@@ -27,6 +27,7 @@
 #include "polar/global/Config.h"
 #include "polar/global/ManagedStatic.h"
 #include "polar/utils/Process.h"
+#include "polar/basic/adt/StringSwitch.h"
 
 #if HAVE_FCNTL_H
 #include <fcntl.h>
@@ -66,6 +67,8 @@
 
 namespace polar {
 namespace sys {
+
+using polar::basic::StringSwitch;
 
 extern bool sg_coreFilesPrevented;
 extern const char sg_colorcodes[][2][8][10];
