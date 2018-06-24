@@ -30,7 +30,7 @@ void print_recycler_stats(size_t size, size_t align, size_t freeListSize);
 /// and facilitates reusing deallocated memory in place of allocating
 /// new memory.
 ///
-template <class T, size_t Size = sizeof(T), size_t Align = alignof(T)>
+template <typename T, size_t Size = sizeof(T), size_t Align = alignof(T)>
 class Recycler
 {
    struct FreeNode
@@ -102,7 +102,7 @@ public:
    template<class AllocatorType>
    T *allocate(AllocatorType &allocator)
    {
-      return allocator<T>(allocator);
+      return allocate<T>(allocator);
    }
 
    template<class SubClass, class AllocatorType>

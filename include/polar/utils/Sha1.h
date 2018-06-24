@@ -21,6 +21,7 @@
 #define POLAR_UTILS_Sha1_H
 
 #include "polar/basic/adt/ArrayRef.h"
+#include "polar/basic/adt/StringRef.h"
 #include <array>
 #include <cstdint>
 
@@ -30,7 +31,6 @@ namespace polar {
 namespace basic {
 template <typename T>
 class ArrayRef;
-class StringRef;
 } //basic
 
 namespace utils {

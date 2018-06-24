@@ -488,7 +488,7 @@ public:
       if (iter == begin()) {
          return nullptr;
       }
-      return &*std::prev(I);
+      return &*std::prev(iter);
    }
    
    /// \brief Get the previous node, or \c nullptr for the list head.

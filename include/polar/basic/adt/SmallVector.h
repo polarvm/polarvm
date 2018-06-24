@@ -528,14 +528,14 @@ public:
    void resize(size_type size, const T &newValue)
    {
       if (size < this->getSize()) {
-         destroy_range(this->begin() + size, this->end());
-         setEnd(this->begin() + size);
+         this->destroyRange(this->begin() + size, this->end());
+         this->setEnd(this->begin() + size);
       } else if (size > this->getSize()) {
          if (this->getCapacity() < size) {
-            grow(size);
+            this->grow(size);
          }
          std::uninitialized_fill(this->end(), this->begin() + size, newValue);
-         setEnd(this->begin() + size);
+         this->setEnd(this->begin() + size);
       }
    }
 
@@ -656,7 +656,7 @@ public:
    iterator insert(iterator iter, T &&element)
    {
       if (iter == this->end()) {  // Important special case for empty vector.
-         push_back(::std::move(element));
+         this->pushBack(::std::move(element));
          return this->end() - 1;
       }
 
@@ -672,7 +672,7 @@ public:
       ::new ((void*) this->end()) T(::std::move(this->back()));
       // Push everything else over.
       std::move_backward(iter, this->end() - 1, this->end());
-      setEnd(this->end() + 1);
+      this->setEnd(this->end() + 1);
 
       // If we just moved the element we're inserting, be sure to update
       // the reference.
@@ -754,7 +754,7 @@ public:
 
       // Move over the elements that we're about to overwrite.
       T *oldEnd = this->end();
-      setEnd(this->end() + numToInsert);
+      this->setEnd(this->end() + numToInsert);
       size_t numOverwritten = oldEnd - iter;
       uninitializedMove(iter, oldEnd, this->end() - numOverwritten);
 
@@ -840,7 +840,7 @@ public:
          this->grow();
       }
       ::new ((void *)this->end()) T(std::forward<ArgTypes>(args)...);
-      setEnd(this->end() + 1);
+      this->setEnd(this->end() + 1);
    }
 
    template <typename... ArgTypes>

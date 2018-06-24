@@ -69,6 +69,11 @@ public:
    }
 };
 
+} // utils
+} // polar
+
+using polar::utils::RecyclingAllocator;
+
 template<class AllocatorType, class T, size_t Size, size_t Align>
 inline void *operator new(size_t size,
                           RecyclingAllocator<AllocatorType,
@@ -85,8 +90,5 @@ inline void operator delete(void *subObject,
 {
    allocator.deallocate(subObject);
 }
-
-} // basic
-} // polar
 
 #endif // POLAR_UTILS_RECYCLINGALLOCATOR_H
