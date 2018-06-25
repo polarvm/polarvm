@@ -227,16 +227,16 @@ struct DenseMapInfo<PointerIntPair<PointerTypeype, IntBits, IntType>>
    
    static Ty getEmptyKey()
    {
-      uintptr_t Val = static_cast<uintptr_t>(-1);
-      Val <<= polar::utils::PointerLikeTypeTraits<Ty>::NumLowBitsAvailable;
-      return Ty::getFromOpaqueValue(reinterpret_cast<void *>(Val));
+      uintptr_t value = static_cast<uintptr_t>(-1);
+      value <<= polar::utils::PointerLikeTypeTraits<Ty>::NumLowBitsAvailable;
+      return Ty::getFromOpaqueValue(reinterpret_cast<void *>(value));
    }
    
    static Ty getTombstoneKey()
    {
-      uintptr_t Val = static_cast<uintptr_t>(-2);
-      Val <<= polar::utils::PointerLikeTypeTraits<PointerTypeype>::NumLowBitsAvailable;
-      return Ty::getFromOpaqueValue(reinterpret_cast<void *>(Val));
+      uintptr_t value = static_cast<uintptr_t>(-2);
+      value <<= polar::utils::PointerLikeTypeTraits<PointerTypeype>::NumLowBitsAvailable;
+      return Ty::getFromOpaqueValue(reinterpret_cast<void *>(value));
    }
    
    static unsigned getHashValue(Ty value)
