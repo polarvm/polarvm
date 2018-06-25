@@ -6,11 +6,11 @@
 //
 // See http://polarphp.org/LICENSE.txt for license information
 // See http://polarphp.org/CONTRIBUTORS.txt for the list of polarPHP project authors
-// 
+//
 // Created by softboy on 2018/05/27.
 
-#ifndef POLAR_BASIC_ADT_IteratorRange_H
-#define POLAR_BASIC_ADT_IteratorRange_H
+#ifndef POLAR_BASIC_ADT_ITERATOR_RANGE_H
+#define POLAR_BASIC_ADT_ITERATOR_RANGE_H
 
 #include <iterator>
 #include <utility>
@@ -27,7 +27,7 @@ class IteratorRange
 {
    IteratorType m_beginIterator;
    IteratorType m_endIterator;
-   
+
 public:
    //TODO: Add SFINAE to test that the Container's iterators match the range's
    //      iterators.
@@ -37,17 +37,17 @@ public:
       : m_beginIterator(c.begin()),
         m_endIterator(c.end())
    {}
-   
+
    IteratorRange(IteratorType m_beginIterator, IteratorType m_endIterator)
       : m_beginIterator(std::move(m_beginIterator)),
         m_endIterator(std::move(m_endIterator))
    {}
-   
+
    IteratorType begin() const
    {
       return m_beginIterator;
    }
-   
+
    IteratorType end() const
    {
       return m_endIterator;
@@ -79,4 +79,4 @@ IteratorRange<decltype(begin(std::declval<T>()))> drop_begin(T &&t, int n)
 } // basic
 } // polar
 
-#endif // POLAR_BASIC_ADT_IteratorRange_H
+#endif // POLAR_BASIC_ADT_ITERATOR_RANGE_H

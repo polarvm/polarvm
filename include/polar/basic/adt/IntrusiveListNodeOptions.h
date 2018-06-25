@@ -6,11 +6,11 @@
 //
 // See http://polarphp.org/LICENSE.txt for license information
 // See http://polarphp.org/CONTRIBUTORS.txt for the list of polarPHP project authors
-// 
+//
 // Created by softboy on 2018/06/05.
 
-#ifndef POLAR_BASIC_ADT_INTRUSIVE_LIST_NodeOptions_H
-#define POLAR_BASIC_ADT_INTRUSIVE_LIST_NodeOptions_H
+#ifndef POLAR_BASIC_ADT_INTRUSIVE_LIST_NODEOPTIONS_H
+#define POLAR_BASIC_ADT_INTRUSIVE_LIST_NODEOPTIONS_H
 
 #include "polar/global/AbiBreaking.h"
 #include "polar/global/PolarConfig.h"
@@ -145,10 +145,10 @@ struct NodeOptions
    using const_pointer = const T *;
    using const_reference = const T &;
    using tag = TagType;
-   
+
    static const bool sm_enableSentinelSracking = EnableSentinelTracking;
    static const bool sm_isSentinelTrackingExplicit = IsSentinelTrackingExplicit;
-   
+
    using NodeBaseType = IntrusiveListNodeBase<sm_enableSentinelSracking>;
    using ListBaseType = IntrusiveListBase<sm_enableSentinelSracking>;
 };
@@ -165,4 +165,4 @@ struct ComputeNodeOptions
 } // basic
 } // polar
 
-#endif // POLAR_BASIC_ADT_INTRUSIVE_LIST_NodeOptions_H
+#endif // POLAR_BASIC_ADT_INTRUSIVE_LIST_NODEOPTIONS_H
