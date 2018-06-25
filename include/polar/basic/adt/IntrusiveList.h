@@ -83,7 +83,7 @@ struct IntrusiveListCallbackTraits {
    /// Callback before transferring nodes to this list.
    ///
    /// \pre \c this!=&oldList
-   template <class Iterator>
+   template <typename Iterator>
    void transferNodesFromList(IntrusiveListCallbackTraits &oldList, Iterator /*first*/,
                               Iterator /*last*/)
    {
@@ -125,11 +125,11 @@ struct IntrusiveListTyperaits<const Type>
 
 namespace ilist_internal {
 
-template <class T> T &make();
+template <typename T> T &make();
 
 /// Type trait to check for a traits class that has a getNext member (as a
 /// canary for any of the ilist_nextprev_traits API).
-template <class TraitsType, class NodeType>
+template <typename TraitsType, typename NodeType>
 struct HasGetNext
 {
    typedef char Yes[1];
@@ -138,9 +138,9 @@ struct HasGetNext
    template <size_t N>
    struct SFINAE {};
    
-   template <class U>
+   template <typename U>
    static Yes &test(U *iter, decltype(iter->getNext(&make<NodeType>())) * = 0);
-   template <class> static No &test(...);
+   template <typename> static No &test(...);
    
 public:
    static const bool value = sizeof(test<TraitsType>(nullptr)) == sizeof(Yes);
@@ -148,15 +148,15 @@ public:
 
 /// Type trait to check for a traits class that has a createSentinel member (as
 /// a canary for any of the ilist_sentinel_traits API).
-template <class TraitsType>
+template <typename TraitsType>
 struct HasCreateSentinel
 {
    typedef char Yes[1];
    typedef char No[2];
    
-   template <class U>
+   template <typename U>
    static Yes &test(U *iter, decltype(iter->createSentinel()) * = 0);
-   template <class> static No &test(...);
+   template <typename> static No &test(...);
    
 public:
    static const bool value = sizeof(test<TraitsType>(nullptr)) == sizeof(Yes);
@@ -165,22 +165,22 @@ public:
 /// Type trait to check for a traits class that has a createNode member.
 /// Allocation should be managed in a wrapper class, instead of in
 /// IntrusiveListTyperaits.
-template <class TraitsType, class NodeType>
+template <typename TraitsType, typename NodeType>
 struct HasCreateNode
 {
    typedef char Yes[1];
    typedef char No[2];
    template <size_t N> struct SFINAE {};
    
-   template <class U>
+   template <typename U>
    static Yes &test(U *iter, decltype(iter->createNode(make<NodeType>())) * = 0);
-   template <class> static No &test(...);
+   template <typename> static No &test(...);
    
 public:
    static const bool value = sizeof(test<TraitsType>(nullptr)) == sizeof(Yes);
 };
 
-template <class TraitsType, class NodeType>
+template <typename TraitsType, typename NodeType>
 struct HasObsoleteCustomization
 {
    static const bool value = HasGetNext<TraitsType, NodeType>::value ||
@@ -204,7 +204,7 @@ struct HasObsoleteCustomization
 /// holds the next/prev pointers.  The only state of the list itself is an
 /// ilist_sentinel, which holds pointers to the first and last nodes in the
 /// list.
-template <class IntrusiveListType, class TraitsType>
+template <typename IntrusiveListType, typename TraitsType>
 class PurelyIntrusiveListImpl : public TraitsType, IntrusiveListType
 {
    using BaseListType = IntrusiveListType;
@@ -306,7 +306,7 @@ public:
    }
    
    /// Clone another list.
-   template <class Cloner> void cloneFrom(const PurelyIntrusiveListImpl &list, Cloner clone)
+   template <typename Cloner> void cloneFrom(const PurelyIntrusiveListImpl &list, Cloner clone)
    {
       clear();
       for (const_reference item : list) {
@@ -424,7 +424,7 @@ public:
    }
    
    // Special forms of insert...
-   template<class InIterator> void insert(iterator where, InIterator first, InIterator last)
+   template<typename InIterator> void insert(iterator where, InIterator first, InIterator last)
    {
       for (; first != last; ++first) {
          insert(where, *first);
@@ -464,7 +464,7 @@ public:
       splice(where, list, iterator(node));
    }
    
-   template <class Compare>
+   template <typename Compare>
    void merge(PurelyIntrusiveListImpl &other, Compare comp)
    {
       if (this == &other) {
@@ -519,7 +519,7 @@ public:
 ///
 /// The \p Options parameters are the same as those for \a SimpleIntrusiveList.  See
 /// there for a description of what's available.
-template <class T, class... Options>
+template <typename T, class... Options>
 class PurelyIntrusiveList
       : public PurelyIntrusiveListImpl<SimpleIntrusiveList<T, Options...>, IntrusiveListTyperaits<T>>
 {
@@ -541,7 +541,7 @@ public:
    }
 };
 
-template <class T, class... Options> using ilist = PurelyIntrusiveList<T, Options...>;
+template <typename T, class... Options> using ilist = PurelyIntrusiveList<T, Options...>;
 
 } // basic
 } // polar
@@ -549,7 +549,7 @@ template <class T, class... Options> using ilist = PurelyIntrusiveList<T, Option
 namespace std {
 
 // Ensure that swap uses the fast list swap...
-template<class Type>
+template<typename Type>
 void swap(polar::basic::PurelyIntrusiveList<Type> &left, polar::basic::PurelyIntrusiveList<Type> &right)
 {
    left.swap(right);
