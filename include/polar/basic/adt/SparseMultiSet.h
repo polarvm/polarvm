@@ -225,7 +225,7 @@ public:
       // The Sparse array doesn't actually need to be initialized, so malloc
       // would be enough here, but that will cause tools like valgrind to
       // complain about branching on uninitialized data.
-      m_sparse = static_cast<SparseT*>(safe_calloc(universe, sizeof(SparseT)));
+      m_sparse = static_cast<SparseT*>(polar::utils::safe_calloc(universe, sizeof(SparseT)));
       m_universe = universe;
    }
 
