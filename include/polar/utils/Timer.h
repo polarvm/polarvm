@@ -210,7 +210,7 @@ public:
       m_timer->startTimer();
    }
 
-   explicit TimeRegion(Timer *t) : m_timer(timer)
+   explicit TimeRegion(Timer *timer) : m_timer(timer)
    {
       if (m_timer) {
          m_timer->startTimer();
