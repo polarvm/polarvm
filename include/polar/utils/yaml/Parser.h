@@ -85,7 +85,7 @@ using polar::utils::SMRange;
 
 /// Dump all the tokens in this stream to OS.
 /// \returns true if there was an error, false otherwise.
-bool dump_tokens(StringRef input, raw_ostream &);
+bool dump_tokens(StringRef input, RawOutStream &);
 
 /// Scans all tokens in input without outputting anything. This is used
 ///        for benchmarking the tokenizer.
@@ -259,15 +259,18 @@ public:
               StringRef value)
       : Node(NK_Scalar, doc, anchor, tag), m_value(value)
    {
-      SMLocation start = SMLocation::getFromPointer(Val.begin());
-      SMLocation end = SMLocation::getFromPointer(Val.end());
-      SourceRange = SMRange(start, end);
+      SMLocation start = SMLocation::getFromPointer(value.begin());
+      SMLocation end = SMLocation::getFromPointer(value.end());
+      m_sourceRange = SMRange(start, end);
    }
 
    // Return Value without any escaping or folding or other fun YAML stuff. This
    // is the exact bytes that are contained in the file (after conversion to
    // utf8).
-   StringRef getRawValue() const { return Value; }
+   StringRef getRawValue() const
+   {
+      return m_value;
+   }
 
    /// Gets the value of this node as a StringRef.
    ///
@@ -604,7 +607,8 @@ class AliasNode final : public Node
 
 public:
    AliasNode(std::unique_ptr<Document> &doc, StringRef value)
-      : Node(NK_Alias, D, StringRef(), StringRef()), m_name(value) {}
+      : Node(NK_Alias, doc, StringRef(), StringRef()), m_name(value)
+   {}
 
    StringRef getName() const
    {

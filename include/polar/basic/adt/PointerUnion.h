@@ -143,7 +143,7 @@ public:
    {
       using Ty = typename ::polar::basic::PointerUnionTypeSelector<
       PT1, T, IsPT1,
-      ::basic::PointerUnionTypeSelector<PT2, T, IsPT2,
+      ::polar::basic::PointerUnionTypeSelector<PT2, T, IsPT2,
       UNION_DOESNT_CONTAIN_TYPE<T>>>::Return;
       int TyNo = Ty::Num;
       return static_cast<int>(m_value.getInt()) == TyNo;
@@ -240,6 +240,12 @@ bool operator<(PointerUnion<PT1, PT2> lhs, PointerUnion<PT1, PT2> rhs)
    return lhs.getOpaqueValue() < rhs.getOpaqueValue();
 }
 
+} // basic
+
+namespace utils {
+
+using polar::basic::PointerUnion;
+
 // Teach SmallPtrSet that PointerUnion is "basically a pointer", that has
 // # low bits available = min(PT1bits,PT2bits)-1.
 template <typename PT1, typename PT2>
@@ -261,6 +267,10 @@ struct PointerLikeTypeTraits<PointerUnion<PT1, PT2>>
       typename PointerUnion<PT1, PT2>::ValueType>::NumLowBitsAvailable
    };
 };
+
+} // utils
+
+namespace basic {
 
 /// A pointer union of three pointer types. See documentation for PointerUnion
 /// for usage.
@@ -413,6 +423,12 @@ public:
    }
 };
 
+} // basic
+
+namespace utils {
+
+using polar::basic::PointerUnion3;
+
 // Teach SmallPtrSet that PointerUnion3 is "basically a pointer", that has
 // # low bits available = min(PT1bits,PT2bits,PT2bits)-2.
 template <typename PT1, typename PT2, typename PT3>
@@ -425,7 +441,7 @@ struct PointerLikeTypeTraits<PointerUnion3<PT1, PT2, PT3>>
 
    static inline PointerUnion3<PT1, PT2, PT3> getFromVoidPointer(void *ptr)
    {
-      return PointerUnion3<PT1, PT2, PT3>::getFromOpaqueValue(P);
+      return PointerUnion3<PT1, PT2, PT3>::getFromOpaqueValue(ptr);
    }
 
    // The number of bits available are the min of the two pointer types.
@@ -434,6 +450,10 @@ struct PointerLikeTypeTraits<PointerUnion3<PT1, PT2, PT3>>
       typename PointerUnion3<PT1, PT2, PT3>::ValueType>::NumLowBitsAvailable
    };
 };
+
+} // utils
+
+namespace basic {
 
 template <typename PT1, typename PT2, typename PT3>
 bool operator<(PointerUnion3<PT1, PT2, PT3> lhs,
@@ -570,6 +590,12 @@ public:
    }
 };
 
+} // basic
+
+namespace utils {
+
+using polar::basic::PointerUnion4;
+
 // Teach SmallPtrSet that PointerUnion4 is "basically a pointer", that has
 // # low bits available = min(PT1bits,PT2bits,PT2bits)-2.
 template <typename PT1, typename PT2, typename PT3, typename PT4>
@@ -583,7 +609,7 @@ struct PointerLikeTypeTraits<PointerUnion4<PT1, PT2, PT3, PT4>>
 
    static inline PointerUnion4<PT1, PT2, PT3, PT4> getFromVoidPointer(void *ptr)
    {
-      return PointerUnion4<PT1, PT2, PT3, PT4>::getFromOpaqueValue(P);
+      return PointerUnion4<PT1, PT2, PT3, PT4>::getFromOpaqueValue(ptr);
    }
 
    // The number of bits available are the min of the two pointer types.
@@ -592,6 +618,10 @@ struct PointerLikeTypeTraits<PointerUnion4<PT1, PT2, PT3, PT4>>
       typename PointerUnion4<PT1, PT2, PT3, PT4>::ValueType>::NumLowBitsAvailable
    };
 };
+
+} // utils
+
+namespace basic {
 
 // Teach DenseMap how to use PointerUnions as keys.
 template <typename T, typename U>
@@ -619,7 +649,7 @@ struct DenseMapInfo<PointerUnion<T, U>>
 
    static bool isEqual(const Pair &lhs, const Pair &rhs)
    {
-      return lhs.template is<T>() == other.template is<T>() &&
+      return lhs.template is<T>() == rhs.template is<T>() &&
             (lhs.template is<T>() ? FirstInfo::isEqual(lhs.template get<T>(),
                                                        rhs.template get<T>())
                                   : SecondInfo::isEqual(lhs.template get<U>(),

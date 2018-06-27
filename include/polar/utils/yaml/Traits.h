@@ -47,6 +47,7 @@ using polar::utils::internal::PackedEndianSpecificIntegral;
 using polar::utils::AlignedCharArrayUnion;
 using polar::basic::StringMap;
 using polar::basic::SmallVector;
+using polar::basic::SameType;
 
 struct EmptyContext {};
 
@@ -486,16 +487,16 @@ public:
 inline bool is_number(StringRef str)
 {
    static const char octalChars[] = "01234567";
-   if (str.startswith("0") &&
+   if (str.startsWith("0") &&
        str.dropFront().findFirstNotOf(octalChars) == StringRef::npos) {
       return true;
    }
-   if (str.startswith("0o") &&
+   if (str.startsWith("0o") &&
        str.dropFront(2).findFirstNotOf(octalChars) == StringRef::npos) {
       return true;
    }
    static const char hexChars[] = "0123456789abcdefABCDEF";
-   if (str.startswith("0x") &&
+   if (str.startsWith("0x") &&
        str.dropFront(2).findFirstNotOf(hexChars) == StringRef::npos) {
       return true;
    }
@@ -507,7 +508,9 @@ inline bool is_number(StringRef str)
       return true;
    }
    std::regex regex("^(\\.[0-9]+|[0-9]+(\\.[0-9]*)?)([eE][-+]?[0-9]+)?$");
-   if (std::regex_match(std::string_view(str.getData(), str.getSize()), regex)) {
+   std::string text(str.getData(), str.getSize());
+   std::smatch matches;
+   if (std::regex_match(text, matches, regex)) {
       return true;
    }
    return false;
@@ -898,7 +901,7 @@ template <typename T>
 typename std::enable_if<HasScalarBitSetTraits<T>::value, void>::type
 yamlize(IO &io, T &value, bool, EmptyContext &context) {
    bool doClear;
-   if (io.beginBitSetScalar(DoClear)) {
+   if (io.beginBitSetScalar(doClear)) {
       if (doClear) {
          value = static_cast<T>(0);
       }
@@ -958,7 +961,7 @@ yamlize(IO &io, T &value, bool, Context &context)
       io.beginMapping();
    }
    if (io.outputting()) {
-      StringRef error = MappingTraits<T>::validate(io, Val);
+      StringRef error = MappingTraits<T>::validate(io, value);
       if (!error.empty()) {
          error_stream() << error << "\n";
          assert(error.empty() && "invalid struct trying to be written as yaml");
@@ -1185,12 +1188,12 @@ struct ScalarTraits<double> {
 // For endian types, we just use the existing ScalarTraits for the underlying
 // type.  This way endian aware types are supported whenever a ScalarTraits
 // is defined for the underlying type.
-template <typename value_type, polar::utils::Endianness endian, size_t alignment>
+template <typename value_type, polar::utils::Endianness defaultEndian, size_t alignment>
 struct ScalarTraits<PackedEndianSpecificIntegral<
-      value_type, endian, alignment>>
+      value_type, defaultEndian, alignment>>
 {
    using EndianType =
-   PackedEndianSpecificIntegral<value_type, endian,
+   PackedEndianSpecificIntegral<value_type, defaultEndian,
    alignment>;
 
    static void output(const EndianType &endian, void *context, RawOutStream &stream)
@@ -1230,8 +1233,8 @@ struct MappingNormalization
 
    ~MappingNormalization()
    {
-      if (!io.outputting()) {
-         m_result = m_bufPtr->denormalize(io);
+      if (!m_io.outputting()) {
+         m_result = m_bufPtr->denormalize(m_io);
       }
       m_bufPtr->~TNorm();
    }
@@ -1262,7 +1265,7 @@ struct MappingNormalizationHeap
          m_bufPtr = new (&m_buffer) TNorm(m_io, obj);
       }
       else if (allocator) {
-         m_bufPtr = allocator->Allocate<TNorm>();
+         m_bufPtr = allocator->allocate<TNorm>();
          new (m_bufPtr) TNorm(m_io);
       } else {
          m_bufPtr = new TNorm(m_io);
@@ -1275,7 +1278,7 @@ struct MappingNormalizationHeap
          m_bufPtr->~TNorm();
       }
       else {
-         m_result = m_bufPtr->denormalize(io);
+         m_result = m_bufPtr->denormalize(m_io);
       }
    }
 
@@ -1502,7 +1505,7 @@ public:
    /// anyway.
    void setWriteDefaultValues(bool write)
    {
-      WriteDefaultValues = write;
+      m_writeDefaultValues = write;
    }
 
    bool outputting() override;
@@ -1644,7 +1647,7 @@ operator>>(Input &yin, T &docList) {
    EmptyContext context;
    while ( yin.setCurrentDocument() ) {
       yamlize(yin, DocumentListTraits<T>::element(yin, docList, i), true, context);
-      if ( yin.error() )
+      if (yin.getError())
          return yin;
       yin.nextDocument();
       ++i;
@@ -1791,7 +1794,7 @@ operator<<(Output &out, T &value)
    EmptyContext context;
    out.beginDocuments();
    if (out.preflightDocument(0)) {
-      yamlize(out, Val, true, context);
+      yamlize(out, value, true, context);
       out.postflightDocument();
    }
    out.endDocuments();
@@ -1896,7 +1899,7 @@ struct StdMapStringCustomMappingTraitsImpl
    using map_type = std::map<std::string, T>;
 
    static void inputOne(IO &io, StringRef key, map_type &v) {
-      io.mapRequired(key.str().c_str(), v[key]);
+      io.mapRequired(key.getStr().c_str(), v[key]);
    }
 
    static void output(IO &io, map_type &v)

@@ -76,7 +76,7 @@ TEST(ConvertUtfTest, testOddLengthInput)
 TEST(ConvertUtfTest, testEmpty)
 {
    std::string result;
-   bool success = utils::convert_utf16_to_utf8_string(basic::ArrayRef<char>(basic::None), result);
+   bool success = utils::convert_utf16_to_utf8_string(basic::ArrayRef<char>(std::nullopt), result);
    EXPECT_TRUE(success);
    EXPECT_TRUE(result.empty());
 }
@@ -92,7 +92,7 @@ TEST(ConvertUtfTest, testHasUTF16BOM)
    hasBOM = utils::has_utf16_byte_order_mark(basic::make_array_ref("\xfe\xff\x00asdf", 6));
    EXPECT_TRUE(hasBOM);
    
-   hasBOM = utils::has_utf16_byte_order_mark(basic::None);
+   hasBOM = utils::has_utf16_byte_order_mark(std::nullopt);
    EXPECT_FALSE(hasBOM);
    hasBOM = utils::has_utf16_byte_order_mark(basic::make_array_ref("\xfe", 1));
    EXPECT_FALSE(hasBOM);

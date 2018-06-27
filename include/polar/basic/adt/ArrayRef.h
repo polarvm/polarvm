@@ -13,7 +13,6 @@
 #define POLAR_BASIC_ADT_ARRAY_REF_H
 
 #include "polar/basic/adt/Hashing.h"
-#include "polar/basic/adt/None.h"
 #include "polar/basic/adt/SmallVector.h"
 #include "polar/basic/adt/StlExtras.h"
 #include <algorithm>
@@ -64,7 +63,7 @@ public:
    /*implicit*/ ArrayRef() = default;
    
    /// Construct an empty ArrayRef from None.
-   /*implicit*/ ArrayRef(NoneType)
+   /*implicit*/ ArrayRef(std::nullopt_t)
    {}
    
    /// Construct an ArrayRef from a single element.
@@ -371,7 +370,7 @@ public:
    /*implicit*/ MutableArrayRef() = default;
    
    /// Construct an empty MutableArrayRef from None.
-   /*implicit*/ MutableArrayRef(NoneType) : ArrayRef<T>()
+   /*implicit*/ MutableArrayRef(std::nullopt_t) : ArrayRef<T>()
    {}
    
    /// Construct an MutableArrayRef from a single element.

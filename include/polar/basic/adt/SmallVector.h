@@ -324,7 +324,7 @@ public:
          grow();
       }
       ::new ((void*) this->end()) T(element);
-      setEnd(this->end() + 1);
+      this->setEnd(this->end() + 1);
    }
 
    inline void push_back(const T &element)

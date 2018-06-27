@@ -13,7 +13,6 @@
 #define POLAR_UTILS_SOURCE_MGR_H
 
 #include "polar/basic/adt/ArrayRef.h"
-#include "polar/basic/adt/None.h"
 #include "polar/basic/adt/PointerUnion.h"
 #include "polar/basic/adt/SmallVector.h"
 #include "polar/basic/adt/StringRef.h"
@@ -283,7 +282,7 @@ public:
          return m_range.m_start.getPointer() < other.m_range.m_start.getPointer();
       }
       if (m_range.m_end.getPointer() != other.m_range.m_end.getPointer()) {
-         return m_range.v.getPointer() < other.m_range.m_end.getPointer();
+         return m_range.m_end.getPointer() < other.m_range.m_end.getPointer();
       }
       return m_text < other.m_text;
    }
