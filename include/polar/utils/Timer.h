@@ -300,7 +300,7 @@ public:
    static void constructTimerLists();
 private:
    friend class Timer;
-   friend void polar::basic::print_statistics_json(RawOutStream &outStream);
+   friend void print_statistics_json(RawOutStream &outStream);
    void addTimer(Timer &T);
    void removeTimer(Timer &T);
    void prepareToPrintList();
