@@ -9,8 +9,8 @@
 // 
 // Created by softboy on 2018/06/03.
 
-#ifndef POLAR_BASIC_STRING_SWITCH_H
-#define POLAR_BASIC_STRING_SWITCH_H
+#ifndef POLAR_BASIC_ADT_STRING_SWITCH_H
+#define POLAR_BASIC_ADT_STRING_SWITCH_H
 
 #include "polar/basic/adt/StringRef.h"
 #include <cassert>
@@ -285,4 +285,4 @@ public:
 } // basic
 } // polar
 
-#endif // POLAR_BASIC_STRING_SWITCH_H
+#endif // POLAR_BASIC_ADT_STRING_SWITCH_H
