@@ -51,7 +51,7 @@ endfunction()
 macro(polar_config executable)
    cmake_parse_arguments(ARG "USE_SHARED" "" "" ${ARGN})
    set(link_components ${ARG_UNPARSED_ARGUMENTS})
-   
+
    if(USE_SHARED)
       # If USE_SHARED is specified, then we link against libPolarPHP,
       # but also against the component libraries below. This is
@@ -62,7 +62,7 @@ macro(polar_config executable)
       # To do this, we need special handling for "all", since that
       # may imply linking to libraries that are not included in
       # libPolarPHP.
-      
+
       if (DEFINED link_components AND DEFINED POLAR_DYLIB_COMPONENTS)
          if("${POLAR_DYLIB_COMPONENTS}" STREQUAL "all")
             set(link_components "")
@@ -70,16 +70,16 @@ macro(polar_config executable)
             list(REMOVE_ITEM link_components ${POLAR_DYLIB_COMPONENTS})
          endif()
       endif()
-      
+
       target_link_libraries(${executable} PRIVATE PolarPHP)
    endif()
-   
+
    polar_explicit_config(${executable} ${link_components})
 endmacro(polar_config)
 
 function(polar_explicit_config executable)
    set( link_components ${ARGN} )
-   
+
    polar_map_components_to_libnames(LIBRARIES ${link_components})
    get_target_property(t ${executable} TYPE)
    if(t STREQUAL "STATIC_LIBRARY")
@@ -101,9 +101,9 @@ function(polar_map_components_to_libnames out_libs)
       get_property(POLAR_AVAILABLE_LIBS GLOBAL PROPERTY POLAR_LIBS)
    endif()
    string(TOUPPER "${POLAR_AVAILABLE_LIBS}" capitalized_libs)
-   
+
    get_property(POLAR_TARGETS_CONFIGURED GLOBAL PROPERTY POLAR_TARGETS_CONFIGURED)
-   
+
    # Generally in our build system we avoid order-dependence. Unfortunately since
    # not all targets create the same set of libraries we actually need to ensure
    # that all build targets associated with a target are added before we can
@@ -116,10 +116,10 @@ function(polar_map_components_to_libnames out_libs)
          endif()
       endforeach()
    endif()
-   
+
    # Expand some keywords:
    list(FIND POLAR_TARGETS_TO_BUILD "${POLAR_NATIVE_ARCH}" have_native_backend)
-   
+
    # Translate symbolic component names to real libraries:
    foreach(c ${link_components})
       # add codegen, asmprinter, asmparser, disassembler
@@ -226,7 +226,7 @@ function(polar_map_components_to_libnames out_libs)
          endif( lib_idx LESS 0 )
       endif( NOT idx LESS 0 )
    endforeach(c)
-   
+
    set(${out_libs} ${expanded_components} PARENT_SCOPE)
 endfunction()
 
@@ -238,14 +238,14 @@ function(polar_expand_topologically name required_libs visited_libs)
    if( found LESS 0 )
       list(APPEND visited_libs ${name})
       set(visited_libs ${visited_libs} PARENT_SCOPE)
-      
-      get_property(lib_deps GLOBAL PROPERTY LLVMBUILD_LIB_DEPS_${name})
+
+      get_property(lib_deps GLOBAL PROPERTY POLARBUILD_LIB_DEPS_${name})
       foreach( lib_dep ${lib_deps} )
          polar_expand_topologically(${lib_dep} "${required_libs}" "${visited_libs}")
          set(required_libs ${required_libs} PARENT_SCOPE)
          set(visited_libs ${visited_libs} PARENT_SCOPE)
       endforeach()
-      
+
       list(APPEND required_libs ${name})
       set(required_libs ${required_libs} PARENT_SCOPE)
    endif()
@@ -254,13 +254,13 @@ endfunction()
 # Expand dependencies while topologically sorting the list of libraries:
 function(polar_expand_dependencies out_libs)
    set(expanded_components ${ARGN})
-   
+
    set(required_libs)
    set(visited_libs)
    foreach( lib ${expanded_components} )
       polar_expand_topologically(${lib} "${required_libs}" "${visited_libs}")
    endforeach()
-   
+
    list(REVERSE required_libs)
    set(${out_libs} ${required_libs} PARENT_SCOPE)
 endfunction()
