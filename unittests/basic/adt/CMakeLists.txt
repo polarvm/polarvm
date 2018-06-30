@@ -5,3 +5,4 @@ polar_add_unittest(PolarBaseLibTests BasicAdtTest
    IntrusiveListBaseTest.cpp
    IntrusiveListNodeBaseTest.cpp
    IntrusiveListNodeTest.cpp)
+

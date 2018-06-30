@@ -214,7 +214,7 @@ include(Config-ix)
 # By default, we target the host, but this can be overridden at CMake
 # invocation time.
 set(POLAR_DEFAULT_TARGET_TRIPLE "${POLAR_HOST_TRIPLE}" CACHE STRING
-  "Default target for which LLVM will generate code." )
+   "Default target for which LLVM will generate code." )
 set(TARGET_TRIPLE "${POLAR_DEFAULT_TARGET_TRIPLE}")
 message(STATUS "polarVM host triple: ${POLAR_HOST_TRIPLE}")
 message(STATUS "polarVM default target triple: ${POLAR_DEFAULT_TARGET_TRIPLE}")

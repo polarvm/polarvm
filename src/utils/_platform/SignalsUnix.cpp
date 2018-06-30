@@ -68,138 +68,18 @@ using polar::utils::error_stream;
 
 static RETSIGTYPE signal_handler(int sig);  // defined below.
 
+static ManagedStatic<std::mutex> sg_signalsMutex;
+
+static ManagedStatic<std::vector<std::string>> sg_filesToRemove;
+
 // see signals.cpp file
 extern void run_signal_handlers();
 extern void insert_signal_handler(sys::SignalHandlerCallback funcPtr,
                                   void *cookie);
 
-/// The function to call if ctrl-c is pressed.
+/// InterruptFunction - The function to call if ctrl-c is pressed.
 using InterruptFunctionType = void (*)();
-static std::atomic<InterruptFunctionType> sg_interruptFunction =
-      ATOMIC_VAR_INIT(nullptr);
-
-/// Signal-safe removal of files.
-/// Inserting and erasing from the list isn't signal-safe, but removal of files
-/// themselves is signal-safe. Memory is freed when the head is freed, deletion
-/// is therefore not signal-safe either.
-class FileToRemoveList
-{
-   std::atomic<char *> m_filename = ATOMIC_VAR_INIT(nullptr);
-   std::atomic<FileToRemoveList *> m_next = ATOMIC_VAR_INIT(nullptr);
-
-   FileToRemoveList() = default;
-   // Not signal-safe.
-   FileToRemoveList(const std::string &str) : m_filename(strdup(str.c_str()))
-   {}
-
-public:
-   // Not signal-safe.
-   ~FileToRemoveList()
-   {
-      if (FileToRemoveList *next = m_next.exchange(nullptr)) {
-         delete next;
-      }
-
-      if (char *file = m_filename.exchange(nullptr)) {
-         free(file);
-      }
-   }
-
-   // Not signal-safe.
-   static void insert(std::atomic<FileToRemoveList *> &head,
-                      const std::string &filename)
-   {
-      // Insert the new file at the end of the list.
-      FileToRemoveList *newHead = new FileToRemoveList(filename);
-      std::atomic<FileToRemoveList *> *insertionPoint = &head;
-      FileToRemoveList *oldHead = nullptr;
-      while (!insertionPoint->compare_exchange_strong(oldHead, newHead)) {
-         insertionPoint = &oldHead->m_next;
-         oldHead = nullptr;
-      }
-   }
-
-   // Not signal-safe.
-   static void erase(std::atomic<FileToRemoveList *> &head,
-                     const std::string &filename)
-   {
-      // Use a lock to avoid concurrent erase: the comparison would access
-      // free'd memory.
-      static ManagedStatic<std::mutex> lock;
-      std::lock_guard writer(*lock);
-
-      for (FileToRemoveList *current = head.load(); current;
-           current = current->m_next.load()) {
-         if (char *oldFilename = current->m_filename.load()) {
-            if (oldFilename != filename) {
-               continue;
-            }
-            // Leave an empty filename.
-            oldFilename = current->m_filename.exchange(nullptr);
-            // The filename might have become null between the time we
-            // compared it and we exchanged it.
-            if (oldFilename) {
-               free(oldFilename);
-            }
-         }
-      }
-   }
-
-   // Signal-safe.
-   static void removeAllFiles(std::atomic<FileToRemoveList *> &head)
-   {
-      // If cleanup were to occur while we're removing files we'd have a bad time.
-      // Make sure we're OK by preventing cleanup from doing anything while we're
-      // removing files. If cleanup races with us and we win we'll have a leak,
-      // but we won't crash.
-      FileToRemoveList *oldHead = head.exchange(nullptr);
-
-      for (FileToRemoveList *currentFile = oldHead; currentFile;
-           currentFile = currentFile->m_next.load()) {
-         // If erasing was occuring while we're trying to remove files we'd look
-         // at free'd data. Take away the path and put it back when done.
-         if (char *path = currentFile->m_filename.exchange(nullptr)) {
-            // Get the status so we can determine if it's a file or directory. If we
-            // can't stat the file, ignore it.
-            struct stat buf;
-            if (stat(path, &buf) != 0) {
-               continue;
-            }
-            // If this is not a regular file, ignore it. We want to prevent removal
-            // of special files like /dev/null, even if the compiler is being run
-            // with the super-user permissions.
-            if (!S_ISREG(buf.st_mode)) {
-               continue;
-            }
-            // Otherwise, remove the file. We ignore any errors here as there is
-            // nothing else we can do.
-            unlink(path);
-            // We're done removing the file, erasing can safely proceed.
-            currentFile->m_filename.exchange(path);
-         }
-      }
-
-      // We're done removing files, cleanup can safely proceed.
-      head.exchange(oldHead);
-   }
-};
-
-static std::atomic<FileToRemoveList *> sg_filesToRemove = ATOMIC_VAR_INIT(nullptr);
-
-/// Clean up the list in a signal-friendly manner.
-/// Recall that signals can fire during llvm_shutdown. If this occurs we should
-/// either clean something up or nothing at all, but we shouldn't crash!
-struct FilesToRemoveCleanup
-{
-   // Not signal-safe.
-   ~FilesToRemoveCleanup()
-   {
-      FileToRemoveList *head = sg_filesToRemove.exchange(nullptr);
-      if (head) {
-         delete head;
-      }
-   }
-};
+InterruptFunctionType sg_interruptFunction = nullptr;
 
 static StringRef sg_argv0;
 
@@ -230,12 +110,30 @@ static const int sg_killSigs[] =
    #endif
 };
 
-static std::atomic<unsigned> sg_numRegisteredSignals = ATOMIC_VAR_INIT(0);
+static std::atomic<unsigned> sg_numRegisteredSignals = 0;
 static struct
 {
    struct sigaction m_sigaction;
    int m_sigNo;
 } sg_registeredSignalInfo[array_lengthof(sg_intSigs) + array_lengthof(sg_killSigs)];
+
+static void register_handler(int signal)
+{
+   assert(sg_numRegisteredSignals < array_lengthof(sg_registeredSignalInfo) &&
+          "Out of space for signal handlers!");
+
+   struct sigaction newHandler;
+
+   newHandler.sa_handler = signal_handler;
+   newHandler.sa_flags = SA_NODEFER | SA_RESETHAND | SA_ONSTACK;
+   sigemptyset(&newHandler.sa_mask);
+
+   // Install the new handler, save the old one in RegisteredSignalInfo.
+   sigaction(signal, &newHandler,
+             &sg_registeredSignalInfo[sg_numRegisteredSignals].m_sigaction);
+   sg_registeredSignalInfo[sg_numRegisteredSignals].m_sigNo = signal;
+   ++sg_numRegisteredSignals;
+}
 
 #if defined(HAVE_SIGALTSTACK)
 // Hold onto both the old and new alternate signal stack so that it's not
@@ -245,9 +143,7 @@ static struct
 static stack_t sg_oldAltStack;
 static void* sg_newAltStackPointer;
 
-namespace {
-
-void create_sig_alt_stack()
+static void create_sig_alt_stack()
 {
    const size_t altStackSize = MINSIGSTKSZ + 64 * 1024;
    // If we're executing on the alternate stack, or we already have an alternate
@@ -268,46 +164,27 @@ void create_sig_alt_stack()
    }
 }
 #else
-void create_sig_alt_stack() {}
+static void create_sig_alt_stack() {}
 #endif
 
 void register_handlers()
-{ // Not signal-safe.
-   // The mutex prevents other threads from registering handlers while we're
-   // doing it. We also have to protect the handlers and their count because
-   // a signal handler could fire while we're registeting handlers.
-   static ManagedStatic<std::mutex> signalHandlerRegistrationMutex;
-   std::lock_guard lock(*signalHandlerRegistrationMutex);
+{
+   std::lock_guard lockGuard(*sg_signalsMutex);
 
    // If the handlers are already registered, we're done.
-   if (sg_numRegisteredSignals.load() != 0) {
+   if (sg_numRegisteredSignals != 0) {
       return;
    }
+
    // Create an alternate stack for signal handling. This is necessary for us to
    // be able to reliably handle signals due to stack overflow.
    create_sig_alt_stack();
-   auto registerHandler = [&](int signal) {
-      unsigned index = sg_numRegisteredSignals.load();
-      assert(index < array_lengthof(sg_registeredSignalInfo) &&
-             "Out of space for signal handlers!");
-
-      struct sigaction newHandler;
-
-      newHandler.sa_handler = signal_handler;
-      newHandler.sa_flags = SA_NODEFER | SA_RESETHAND | SA_ONSTACK;
-      sigemptyset(&newHandler.sa_mask);
-
-      // Install the new handler, save the old one in RegisteredSignalInfo.
-      sigaction(signal, &newHandler, &sg_registeredSignalInfo[index].m_sigaction);
-      sg_registeredSignalInfo[index].m_sigNo = signal;
-      ++sg_numRegisteredSignals;
-   };
 
    for (auto sig : sg_intSigs) {
-      registerHandler(sig);
+      register_handler(sig);
    }
    for (auto sig : sg_killSigs) {
-      registerHandler(sig);
+      register_handler(sig);
    }
 }
 
@@ -321,13 +198,37 @@ void unregister_handlers()
    }
 }
 
-/// Process the FilesToRemove list.
+/// Process the sg_filesToRemove list.
 void remove_fles_to_remove()
 {
-   FileToRemoveList::removeAllFiles(sg_filesToRemove);
-}
+   // Avoid constructing ManagedStatic in the signal handler.
+   // If sg_filesToRemove is not constructed, there are no files to remove.
+   if (!sg_filesToRemove.isConstructed()) {
+      return;
+   }
+   // We avoid iterators in case of debug iterators that allocate or release
+   // memory.
+   std::vector<std::string>& FilesToRemoveRef = *sg_filesToRemove;
+   for (unsigned i = 0, e = FilesToRemoveRef.size(); i != e; ++i) {
+      const char *path = FilesToRemoveRef[i].c_str();
 
-} // anonymous namespace
+      // Get the status so we can determine if it's a file or directory. If we
+      // can't stat the file, ignore it.
+      struct stat buf;
+      if (stat(path, &buf) != 0) {
+         continue;
+      }
+      // If this is not a regular file, ignore it. We want to prevent removal of
+      // special files like /dev/null, even if the compiler is being run with the
+      // super-user permissions.
+      if (!S_ISREG(buf.st_mode)) {
+         continue;
+      }
+      // Otherwise, remove the file. We ignore any errors here as there is nothing
+      // else we can do.
+      unlink(path);
+   }
+}
 
 // The signal handler that runs.
 RETSIGTYPE signal_handler(int sig)
@@ -344,13 +245,19 @@ RETSIGTYPE signal_handler(int sig)
    sigprocmask(SIG_UNBLOCK, &sigMask, nullptr);
 
    {
+      std::unique_lock<std::mutex> lockGuard(*sg_signalsMutex);
       remove_fles_to_remove();
 
       if (std::find(std::begin(sg_intSigs), std::end(sg_intSigs), sig)
           != std::end(sg_intSigs)) {
-         if (auto oldInterruptFunction = sg_interruptFunction.exchange(nullptr)) {
-            return oldInterruptFunction();
+         if (sg_interruptFunction) {
+            void (*ifunc)() = sg_interruptFunction;
+            lockGuard.unlock();
+            sg_interruptFunction = nullptr;
+            ifunc();        // run the interrupt function.
+            return;
          }
+         lockGuard.unlock();
          raise(sig);   // Execute the default handler.
          return;
       }
@@ -372,22 +279,26 @@ RETSIGTYPE signal_handler(int sig)
 
 void run_interrupt_handlers()
 {
+   std::lock_guard lockGuard(*sg_signalsMutex);
    remove_fles_to_remove();
 }
 
-void set_interrupt_function(void (*func)())
+void set_interrupt_function(InterruptFunctionType func)
 {
-   sg_interruptFunction.exchange(func);
+   {
+      std::lock_guard lockGuard(*sg_signalsMutex);
+      sg_interruptFunction = func;
+   }
    register_handlers();
 }
 
 // The public API
 bool remove_file_on_signal(StringRef filename, std::string* errMsg)
 {
-   // Ensure that cleanup will occur as soon as one file is added.
-   static ManagedStatic<FilesToRemoveCleanup> filesToRemoveCleanup;
-   *filesToRemoveCleanup;
-   FileToRemoveList::insert(sg_filesToRemove, filename.getStr());
+   {
+      std::lock_guard lockGuard(*sg_signalsMutex);
+      sg_filesToRemove->push_back(filename);
+   }
    register_handlers();
    return false;
 }
@@ -395,18 +306,25 @@ bool remove_file_on_signal(StringRef filename, std::string* errMsg)
 // The public API
 void dont_remove_file_on_signal(StringRef filename)
 {
-   FileToRemoveList::erase(sg_filesToRemove, filename.getStr());
+   std::lock_guard lockGuard(*sg_signalsMutex);
+   std::vector<std::string>::reverse_iterator reverseIter =
+         find(polar::basic::reverse(*sg_filesToRemove), filename);
+   std::vector<std::string>::iterator iter = sg_filesToRemove->end();
+   if (reverseIter != sg_filesToRemove->rend()) {
+      iter = sg_filesToRemove->erase(reverseIter.base() - 1);
+   }
 }
 
-void insert_signal_handler(sys::SignalHandlerCallback funcPtr,
-                           void *cookie);
+extern ManagedStatic<std::vector<std::pair<void (*)(void *), void *>>>
+                                                                     sg_callBacksToRun;
 
-/// Add a function to be called when a signal is delivered to the process. The
-/// handler can have a cookie passed to it to identify what instance of the
-/// handler it is.
+/// AddSignalHandler - Add a function to be called when a signal is delivered
+/// to the process.  The handler can have a cookie passed to it to identify
+/// what instance of the handler it is.
 void add_signal_handler(SignalHandlerCallback funcPtr,
-                        void *cookie) { // Signal-safe.
-   insert_signal_handler(funcPtr, cookie);
+                        void *cookie)
+{
+   sg_callBacksToRun->push_back(std::make_pair(funcPtr, cookie));
    register_handlers();
 }
 
@@ -473,7 +391,7 @@ bool find_modules_and_offsets(void **stackTrace, int depth,
 }
 #endif // defined(HAVE_BACKTRACE) && ENABLE_BACKTRACES && ...
 
-//#if ENABLE_BACKTRACES && defined(HAVE__UNWIND_BACKTRACE)
+#if ENABLE_BACKTRACES && defined(HAVE__UNWIND_BACKTRACE)
 int unwind_backtrace(void **stackTrace, int maxEntries)
 {
    if (maxEntries < 0)
@@ -506,7 +424,7 @@ int unwind_backtrace(void **stackTrace, int maxEntries)
    static_cast<void *>(&handleFrame));
    return std::max(entries, 0);
 }
-//#endif
+#endif
 
 // In the case of a program crash or fault, print out a stack trace so that the
 // user has an indication of why and where we died.

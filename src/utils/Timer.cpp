@@ -56,6 +56,13 @@ sg_infooutputFilename("info-output-file", cmd::ValueDesc("filename"),
                       cmd::Hidden, cmd::location(get_lib_support_info_output_filename()));
 }
 
+} // utils
+
+namespace basic {
+
+using polar::utils::error_stream;
+using polar::utils::get_lib_support_info_output_filename;
+
 std::unique_ptr<RawFdOutStream> create_info_output_file()
 {
    const std::string &outputFilename = get_lib_support_info_output_filename();
@@ -79,6 +86,10 @@ std::unique_ptr<RawFdOutStream> create_info_output_file()
                   << outputFilename << " for appending!\n";
    return std::make_unique<RawFdOutStream>(2, false); // stderr.
 }
+
+} // basic
+
+namespace utils {
 
 namespace {
 struct CreateDefaultTimerGroup
@@ -319,7 +330,7 @@ void TimerGroup::removeTimer(Timer &timer)
    if (m_firstTimer || m_timersToPrint.empty()) {
       return;
    }
-   std::unique_ptr<RawOutStream> outStream = create_info_output_file();
+   std::unique_ptr<RawOutStream> outStream = polar::basic::create_info_output_file();
    printQueuedTimers(*outStream);
 }
 

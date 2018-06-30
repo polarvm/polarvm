@@ -58,60 +58,18 @@ sg_disableSymbolication("disable-symbolication",
                         cmd::Desc("Disable symbolizing crash backtraces."),
                         cmd::location(sg_disableSymbolicationFlag), cmd::Hidden);
 
-// Callbacks to run in signal handler must be lock-free because a signal handler
-// could be running as we add new callbacks. We don't add unbounded numbers of
-// callbacks, an array is therefore sufficient.
-struct CallbackAndCookie
-{
-   sys::SignalHandlerCallback m_callback;
-   void *m_cookie;
-   enum class Status
-   {
-      Empty,
-      Initializing,
-      Initialized,
-      Executing
-   };
-   std::atomic<Status> m_flag;
-};
 
-static constexpr size_t sg_maxSignalHandlerCallbacks = 8;
-static CallbackAndCookie sg_callBacksToRun[sg_maxSignalHandlerCallbacks];
+ManagedStatic<std::vector<std::pair<void (*)(void *), void *>>>
+                                                                     sg_callBacksToRun;
 
-// Signal-safe.
-void run_signal_handlers()
-{
-   for (size_t index = 0; index < sg_maxSignalHandlerCallbacks; ++index) {
-      auto &runMe = sg_callBacksToRun[index];
-      auto expected = CallbackAndCookie::Status::Initialized;
-      auto desired = CallbackAndCookie::Status::Executing;
-      if (!runMe.m_flag.compare_exchange_strong(expected, desired)) {
-         continue;
-      }
-      (*runMe.m_callback)(runMe.m_cookie);
-      runMe.m_callback = nullptr;
-      runMe.m_cookie = nullptr;
-      runMe.m_flag.store(CallbackAndCookie::Status::Empty);
-   }
-}
-
-// Signal-safe.
-void insert_signal_handler(sys::SignalHandlerCallback funcPtr,
-                           void *cookie)
-{
-   for (size_t index = 0; index < sg_maxSignalHandlerCallbacks; ++index) {
-      auto &setMe = sg_callBacksToRun[index];
-      auto expected = CallbackAndCookie::Status::Empty;
-      auto desired = CallbackAndCookie::Status::Initializing;
-      if (!setMe.m_flag.compare_exchange_strong(expected, desired)) {
-         continue;
-      }
-      setMe.m_callback = funcPtr;
-      setMe.m_cookie = cookie;
-      setMe.m_flag.store(CallbackAndCookie::Status::Initialized);
+void run_signal_handlers() {
+   if (!sg_callBacksToRun.isConstructed()) {
       return;
    }
-   report_fatal_error("too many signal callbacks already registered");
+   for (auto &iter : *sg_callBacksToRun) {
+      iter.first(iter.second);
+   }
+   sg_callBacksToRun->clear();
 }
 
 bool find_modules_and_offsets(void **stackTrace, int depth,

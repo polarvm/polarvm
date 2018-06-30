@@ -28,8 +28,8 @@ std::string get_error_str(int errnum)
       return str;
    }
 #if defined(HAVE_STRERROR_R) || HAVE_DECL_STRERROR_S
-   const int maxErrStrLen = 2000;
-   char buffer[maxErrStrLen];
+   const int m_maxErrStrLen = 2000;
+   char buffer[m_maxErrStrLen];
    buffer[0] = '\0';
 #endif
 
@@ -38,13 +38,13 @@ std::string get_error_str(int errnum)
 #if defined(__GLIBC__) && defined(_GNU_SOURCE)
    // glibc defines its own incompatible version of strerror_r
    // which may not use the buffer supplied.
-   str = strerror_r(errnum, buffer, maxErrStrLen - 1);
+   str = strerror_r(errnum, buffer, m_maxErrStrLen - 1);
 #else
-   strerror_r(errnum, buffer, MaxErrStrLen - 1);
+   strerror_r(errnum, buffer, m_maxErrStrLen - 1);
    str = buffer;
 #endif
 #elif HAVE_DECL_STRERROR_S // "Windows Secure API"
-   strerror_s(buffer, MaxErrStrLen - 1, errnum);
+   strerror_s(buffer, m_maxErrStrLen - 1, errnum);
    str = buffer;
 #elif defined(HAVE_STRERROR)
    // Copy the thread un-safe result of strerror into

@@ -180,9 +180,9 @@ std::string get_main_executable(const char *argv0, void *mainAddr) {
    char exePath[MAXPATHLEN];
    uint32_t size = sizeof(exePath);
    if (_NSGetExecutablePath(exePath, &size) == 0) {
-      char link_path[MAXPATHLEN];
-      if (realPath(exePath, link_path)) {
-         return link_path;
+      char linkPath[MAXPATHLEN];
+      if (::realpath(exePath, linkPath)) {
+         return linkPath;
       }
    }
 #elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) ||   \
@@ -678,7 +678,7 @@ std::error_code MappedFileRegion::init(int fd, uint64_t offset,
    // MAP_RESILIENT_MEDIA flag.  These flags are only usable when mapping
    // with PROT_READ, so take care not to specify them otherwise.
    //----------------------------------------------------------------------
-   if (Mode == readonly) {
+   if (mode == readonly) {
 #if defined(MAP_RESILIENT_CODESIGN)
       flags |= MAP_RESILIENT_CODESIGN;
 #endif
@@ -739,8 +739,8 @@ int MappedFileRegion::getAlignment()
 
 namespace internal {
 std::error_code directory_iterator_construct(internal::DirIterState &iter,
-                                            StringRef path,
-                                            bool followSymlinks)
+                                             StringRef path,
+                                             bool followSymlinks)
 {
    SmallString<128> pathNull(path);
    DIR *directory = ::opendir(pathNull.getCStr());
@@ -950,13 +950,12 @@ std::error_code real_path(const Twine &path, SmallVectorImpl<char> &dest,
       return real_path(sorage, dest, false);
    }
 
-   SmallString<128> storage;
-   StringRef p = path.toNullTerminatedStringRef(storage);
-   char buffer[PATH_MAX];
-   if (::realpath(p.begin(), buffer) == nullptr) {
-      return std::error_code(errno, std::generic_category());
+   int fd;
+   std::error_code errorCode = open_file_for_read(path, fd, &dest);
+   if (errorCode) {
+      return errorCode;
    }
-   dest.append(buffer, buffer + strlen(buffer));
+   ::close(fd);
    return std::error_code();
 }
 
@@ -989,17 +988,16 @@ bool get_darwin_conf_dir(bool tempDir, SmallVectorImpl<char> &result)
    size_t confLen = confstr(confName, nullptr, 0);
    if (confLen > 0) {
       do {
-         Result.resize(confLen);
-         confLen = confstr(confName, Result.data(), Result.size());
-      } while (confLen > 0 && confLen != Result.size());
+         result.resize(confLen);
+         confLen = confstr(confName, result.getData(), result.getSize());
+      } while (confLen > 0 && confLen != result.getSize());
 
       if (confLen > 0) {
-         assert(Result.back() == 0);
-         Result.pop_back();
+         assert(result.back() == 0);
+         result.pop_back();
          return true;
       }
-
-      Result.clear();
+      result.clear();
    }
 #endif
    return false;
