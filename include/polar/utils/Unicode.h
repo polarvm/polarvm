@@ -12,12 +12,6 @@
 #ifndef POLAR_UTILS_UNICODE_H
 #define POLAR_UTILS_UNICODE_H
 
-#include "polar/basic/adt/ArrayRef.h"
-#include "polar/basic/adt/SmallPtrSet.h"
-#include "polar/utils/Debug.h"
-#include "polar/utils/RawOutStream.h"
-#include <algorithm>
-
 namespace polar {
 // forward declare class with namespace
 namespace basic {

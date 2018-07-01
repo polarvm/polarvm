@@ -25,7 +25,6 @@
 #include "polar/utils/Path.h"
 #include "polar/utils/Process.h"
 #include "polar/utils/Program.h"
-#include "polar/utils/SmallVectorMemoryBuffer.h"
 #include <cassert>
 #include <cerrno>
 #include <cstring>
@@ -627,8 +626,6 @@ MemoryBufferRef MemoryBuffer::getMemBufferRef() const
 void MemoryBuffer::anchor()
 {}
 
-void SmallVectorMemoryBuffer::anchor()
-{}
 
 } // utils
 } // polar
