@@ -60,7 +60,7 @@ sg_disableSymbolication("disable-symbolication",
 
 
 ManagedStatic<std::vector<std::pair<void (*)(void *), void *>>>
-                                                                     sg_callBacksToRun;
+                                                              sg_callBacksToRun;
 
 void run_signal_handlers() {
    if (!sg_callBacksToRun.isConstructed()) {
@@ -105,8 +105,9 @@ bool print_symbolized_stack_trace(StringRef argv0, void **stackTrace,
    OptionalError<std::string> polarPHPSymbolizerPathOrErr = std::error_code();
    if (!argv0.empty()) {
       StringRef parent =  polar::fs::path::parent_path(argv0);
-      if (!parent.empty())
+      if (!parent.empty()) {
          polarPHPSymbolizerPathOrErr = polar::sys::find_program_by_name("polar-symbolizer", parent);
+      }
    }
    if (!polarPHPSymbolizerPathOrErr) {
       polarPHPSymbolizerPathOrErr = polar::sys::find_program_by_name("polar-symbolizer");

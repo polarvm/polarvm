@@ -42,8 +42,6 @@ function(polar_add_unittest test_suite test_name)
    # executable must be linked with it in order to provide consistent
    # API for all shared libaries loaded by this executable.
    target_link_libraries(${test_name} PRIVATE ${POLAR_TEMP_GTEST_LIBS} ${POLAR_PTHREAD_LIB})
-   get_target_property(xxx ${test_name} LINK_LIBRARIES)
-   message(${xxx})
 
    add_dependencies(${test_suite} ${test_name})
    get_target_property(test_suite_folder ${test_suite} FOLDER)
