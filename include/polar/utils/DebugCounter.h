@@ -9,7 +9,6 @@
 //
 // Created by softboy on 2018/06/29.
 
-
 #ifndef POLAR_UTILS_DEBUG_COUNTER_H
 #define POLAR_UTILS_DEBUG_COUNTER_H
 
