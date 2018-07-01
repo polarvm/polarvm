@@ -18,7 +18,7 @@
 #include "polar/utils/RawOutStream.h"
 #include <algorithm>
 
-#define POLAR_DEBUG_TYPE "unicode"
+#define DEBUG_TYPE "unicode"
 
 namespace polar {
 namespace sys {
@@ -95,7 +95,7 @@ private:
             POLAR_DEBUG(debug_stream().writeHex(iter->m_lower) << "\n");
             return false;
          }
-         if (iterI->m_upper < I->m_lower) {
+         if (iter->m_upper < iter->m_lower) {
             POLAR_DEBUG(debug_stream() << "m_upper bound 0x");
             POLAR_DEBUG(debug_stream().writeHex(iter->m_lower));
             POLAR_DEBUG(debug_stream() << " should not be less than lower bound 0x");
@@ -113,6 +113,6 @@ private:
 } // sys
 } // polar
 
-#undef POLAR_DEBUG_TYPE // "unicode"
+#undef DEBUG_TYPE // "unicode"
 
 #endif // POLAR_UTILS_UNICODE_CHARRANGES_H
