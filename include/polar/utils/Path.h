@@ -17,8 +17,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#ifndef POLAR_UTILS_ERROR_PATH_H
-#define POLAR_UTILS_ERROR_PATH_H
+#ifndef POLAR_UTILS_PATH_H
+#define POLAR_UTILS_PATH_H
 
 #include "polar/basic/adt/Twine.h"
 #include "polar/basic/adt/Iterator.h"
@@ -490,4 +490,4 @@ bool remove_dots(SmallVectorImpl<char> &path, bool remove_dot_dot = false,
 } // fs
 } // polar
 
-#endif // POLAR_UTILS_ERROR_PATH_H
+#endif // POLAR_UTILS_PATH_H
