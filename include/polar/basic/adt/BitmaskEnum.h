@@ -91,13 +91,13 @@ template <typename E> typename std::underlying_type<E>::type mask()
          1;
 }
 
-/// Check that Val is in range for E, and return Val cast to E's underlying
+/// Check that value is in range for E, and return value cast to E's underlying
 /// type.
-template <typename E> typename std::underlying_type<E>::type underlying(E Val)
+template <typename E> typename std::underlying_type<E>::type underlying(E value)
 {
-   auto U = static_cast<typename std::underlying_type<E>::type>(Val);
+   auto U = static_cast<typename std::underlying_type<E>::type>(value);
    assert(U >= 0 && "Negative enum values are not allowed.");
-   assert(U <= Mask<E>() && "Enum value too large (or largest val too small?)");
+   assert(U <= mask<E>() && "Enum value too large (or largest val too small?)");
    return U;
 }
 

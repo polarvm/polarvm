@@ -43,7 +43,8 @@ public:
    explicit BinaryStreamReader(StringRef data, Endianness endian);
 
    BinaryStreamReader(const BinaryStreamReader &other)
-      : m_stream(other.m_stream), m_offset(other.m_offset)
+      : m_stream(other.m_stream),
+        m_offset(other.m_offset)
    {}
 
    BinaryStreamReader &operator=(const BinaryStreamReader &other)
@@ -91,7 +92,7 @@ public:
       }
       dest = endian::read<T, UNALIGNED>(
                bytes.getData(), m_stream.getEndian());
-      return Error::success();
+      return Error::getSuccess();
    }
 
    /// Similar to readInteger.
@@ -147,7 +148,7 @@ public:
    /// returns an appropriate error code.
    Error readStreamRef(BinaryStreamRef &ref, uint32_t length);
 
-   /// Read \p Length bytes from the underlying stream into \p Stream.  This is
+   /// Read \p Length bytes from the underlying stream into \p m_stream.  This is
    /// equivalent to calling getUnderlyingStream().slice(Offset, Length).
    /// Updates the stream's offset to point after the newly read object.  Never
    /// causes a copy.
@@ -269,7 +270,7 @@ public:
 
    uint32_t getLength() const
    {
-      return Stream.getLength();
+      return m_stream.getLength();
    }
 
    uint32_t getBytesRemaining() const

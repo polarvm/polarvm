@@ -183,7 +183,7 @@ public:
 
    VarStreamArrayIterator(const ArrayType &m_array, const Extractor &extractor,
                           uint32_t offset, bool *hadError)
-      : m_iterRef(m_array.m_stream.dropFront(offset)), m_extract(extractor),
+      : m_iterRef(m_array.m_stream.dropFront(offset)), m_extractor(extractor),
         m_m_array(&m_array), m_absOffset(offset), m_hadError(hadError)
    {
       if (m_iterRef.getLength() == 0) {
@@ -272,7 +272,9 @@ private:
       m_m_array = nullptr;
       m_thisLen = 0;
    }
-   void markError() {
+
+   void markError()
+   {
       moveToEnd();
       m_hasError = true;
       if (m_hadError != nullptr) {
@@ -287,13 +289,13 @@ private:
    uint32_t m_thisLen{0};
    uint32_t m_absOffset{0};
    bool m_hasError{false};
-   bool m_hadError{nullptr};
+   bool *m_hadError{nullptr};
 };
 
 template <typename T> class FixedStreamArrayIterator;
 
 /// FixedStreamArray is similar to VarStreamArray, except with each record
-/// having a fixed-length.  As with VarStreamArray, there is no upfront
+/// having a fixed-length.  As with VarStreamArray, them_hadErrorre is no upfront
 /// cost associated with building or copying a FixedStreamArray, as the
 /// memory for each element is not read from the backing stream until that
 /// element is iterated.
@@ -325,7 +327,7 @@ public:
 
    const T &operator[](uint32_t idx) const
    {
-      assert(idx < size());
+      assert(idx < getSize());
       uint32_t offset = idx * sizeof(T);
       ArrayRef<uint8_t> data;
       if (auto errorCode = m_stream.readBytes(offset, sizeof(T), data)) {
@@ -385,8 +387,8 @@ class FixedStreamArrayIterator
 {
 
 public:
-   FixedStreamArrayIterator(const FixedStreamArray<T> &m_array, uint32_t idx)
-      : m_array(m_array), m_idx(idx)
+   FixedStreamArrayIterator(const FixedStreamArray<T> &array, uint32_t idx)
+      : m_array(array), m_idx(idx)
    {}
 
    FixedStreamArrayIterator<T> &
@@ -421,7 +423,7 @@ public:
 
    FixedStreamArrayIterator<T> &operator-=(std::ptrdiff_t size)
    {
-      assert(std::ptrdiff_t(idx) >= size);
+      assert(std::ptrdiff_t(m_idx) >= size);
       m_idx -= size;
       return *this;
    }
@@ -441,7 +443,7 @@ public:
 
 private:
    FixedStreamArray<T> m_array;
-   uint32_t idx;
+   uint32_t m_idx;
 };
 
 } // utils

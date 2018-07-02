@@ -42,10 +42,12 @@ protected:
    BinaryStreamRefBase(std::shared_ptr<StreamType> sharedImpl, uint32_t offset,
                        std::optional<uint32_t> length)
       : m_sharedImpl(sharedImpl), m_borrowedImpl(sharedImpl.get()),
-        ViewOffset(offset), Length(Length) {}
-   BinaryStreamRefBase(StreamType &m_borrowedImpl, uint32_t offset,
-                       std::optional<uint32_t> Length)
-      : m_borrowedImpl(&m_borrowedImpl), ViewOffset(offset), Length(Length) {}
+        m_viewOffset(offset), m_length(length) {}
+   BinaryStreamRefBase(StreamType &borrowedImpl, uint32_t offset,
+                       std::optional<uint32_t> length)
+      : m_borrowedImpl(&borrowedImpl), m_viewOffset(offset), m_length(length)
+   {}
+
    BinaryStreamRefBase(const BinaryStreamRefBase &other) = default;
    BinaryStreamRefBase &operator=(const BinaryStreamRefBase &other) = default;
 
@@ -94,10 +96,8 @@ public:
       if (!m_borrowedImpl) {
          return RefType();
       }
-
       RefType result(static_cast<const RefType &>(*this));
-      size = std::min(N, getLength());
-
+      size = std::min(size, getLength());
       if (size == 0) {
          return result;
       }
@@ -163,10 +163,10 @@ protected:
       if (offset > getLength()) {
          return make_error<BinaryStreamError>(StreamErrorCode::invalid_offset);
       }
-      if (getLength() < DataSize + offset) {
+      if (getLength() < dataSize + offset) {
          return make_error<BinaryStreamError>(StreamErrorCode::stream_too_short);
       }
-      return Error::success();
+      return Error::getSuccess();
    }
 
    std::shared_ptr<StreamType> m_sharedImpl;
@@ -187,9 +187,9 @@ class BinaryStreamRef
 {
    friend class BinaryStreamRefBase<BinaryStreamRef, BinaryStream>;
    friend class WritableBinaryStreamRef;
-   BinaryStreamRef(std::shared_ptr<BinaryStream> impl, uint32_t viewOffset,
+   BinaryStreamRef(std::shared_ptr<BinaryStream> impl, uint32_t m_viewOffset,
                    std::optional<uint32_t> length)
-      : BinaryStreamRefBase(impl, viewOffset, length)
+      : BinaryStreamRefBase(impl, m_viewOffset, length)
    {}
 
 public:
@@ -213,7 +213,7 @@ public:
    /// Given an offset into this StreamRef and a Size, return a reference to a
    /// buffer owned by the stream.
    ///
-   /// \returns a success error code if the entire range of data is within the
+   /// \returns a getSuccess error code if the entire range of data is within the
    /// bounds of this BinaryStreamRef's view and the implementation could read
    /// the data, and an appropriate error code otherwise.
    Error readBytes(uint32_t offset, uint32_t size,
@@ -222,7 +222,7 @@ public:
    /// Given an offset into this BinaryStreamRef, return a reference to the
    /// largest buffer the stream could support without necessitating a copy.
    ///
-   /// \returns a success error code if implementation could read the data,
+   /// \returns a getSuccess error code if implementation could read the data,
    /// and an appropriate error code otherwise.
    Error readLongestContiguousChunk(uint32_t offset,
                                     ArrayRef<uint8_t> &buffer) const;
@@ -235,7 +235,7 @@ struct BinarySubstreamRef
 
    BinarySubstreamRef slice(uint32_t offset, uint32_t size) const
    {
-      BinaryStreamRef subSub = StreamData.slice(offset, m_offset);
+      BinaryStreamRef subSub = m_streamData.slice(offset, m_offset);
       return {offset + offset, subSub};
    }
 
@@ -271,8 +271,8 @@ class WritableBinaryStreamRef
 {
    friend class BinaryStreamRefBase<WritableBinaryStreamRef, WritableBinaryStream>;
    WritableBinaryStreamRef(std::shared_ptr<WritableBinaryStream> impl,
-                           uint32_t viewOffset, std::optional<uint32_t> length)
-      : BinaryStreamRefBase(impl, viewOffset, length)
+                           uint32_t m_viewOffset, std::optional<uint32_t> length)
+      : BinaryStreamRefBase(impl, m_viewOffset, length)
    {}
 
    Error checkOffsetForWrite(uint32_t offset, uint32_t dataSize) const
@@ -307,7 +307,7 @@ public:
    /// Given an offset into this WritableBinaryStreamRef and some input data,
    /// writes the data to the underlying stream.
    ///
-   /// \returns a success error code if the data could fit within the underlying
+   /// \returns a getSuccess error code if the data could fit within the underlying
    /// stream at the specified location and the implementation could write the
    /// data, and an appropriate error code otherwise.
    Error writeBytes(uint32_t offset, ArrayRef<uint8_t> data) const;
