@@ -130,7 +130,7 @@ public:
 
    RuntimeFunctionFlag flag() const
    {
-      return RuntimeFunctiongetFlag(m_unwindData & 0x3);
+      return RuntimeFunctionFlag(m_unwindData & 0x3);
    }
 
    uint32_t getExceptionInformationRVA() const
@@ -161,7 +161,7 @@ public:
       assert((flag() == RuntimeFunctionFlag::RFF_Packed ||
               flag() == RuntimeFunctionFlag::RFF_PackedFragment) &&
              "packed form required for this operation");
-      assert(((m_unwindData & 0x00006000) || L()) && "L must be set to 1");
+      assert(((m_unwindData & 0x00006000) || l()) && "L must be set to 1");
       return ReturnType((m_unwindData & 0x00006000) >> 13);
    }
 
@@ -202,14 +202,14 @@ public:
       assert((flag() == RuntimeFunctionFlag::RFF_Packed ||
               flag() == RuntimeFunctionFlag::RFF_PackedFragment) &&
              "packed form required for this operation");
-      assert(((~m_unwindData & 0x00200000) || L()) &&
+      assert(((~m_unwindData & 0x00200000) || l()) &&
              "L flag must be set, chaining requires r11 and LR");
-      assert(((~m_unwindData & 0x00200000) || (Reg() < 7) || R()) &&
+      assert(((~m_unwindData & 0x00200000) || (reg() < 7) || r()) &&
              "r11 must not be included in Reg; C implies r11");
       return ((m_unwindData & 0x00200000) >> 21);
    }
 
-   uint16_t stackAdjust() const
+   uint16_t getStackAdjust() const
    {
       assert((flag() == RuntimeFunctionFlag::RFF_Packed ||
               flag() == RuntimeFunctionFlag::RFF_PackedFragment) &&
