@@ -25,7 +25,8 @@ namespace utils {
 
 /// Utility function to encode a SLEB128 value to an output stream.
 inline void encode_sleb128(int64_t value, RawOutStream &outstream,
-                           unsigned padTo = 0) {
+                           unsigned padTo = 0)
+{
    bool more;
    unsigned count = 0;
    do {
@@ -84,7 +85,8 @@ inline unsigned encode_sleb128(int64_t value, uint8_t *p, unsigned padTo = 0)
 
 /// Utility function to encode a ULEB128 value to an output stream.
 inline void encode_uleb128(uint64_t value, RawOutStream &outstream,
-                           unsigned padTo = 0) {
+                           unsigned padTo = 0)
+{
    unsigned count = 0;
    do {
       uint8_t byte = value & 0x7f;
@@ -109,7 +111,8 @@ inline void encode_uleb128(uint64_t value, RawOutStream &outstream,
 /// Utility function to encode a ULEB128 value to a buffer. Returns
 /// the length in bytes of the encoded value.
 inline unsigned encode_uleb128(uint64_t value, uint8_t *p,
-                               unsigned padTo = 0) {
+                               unsigned padTo = 0)
+{
    uint8_t *origPtr = p;
    unsigned count = 0;
    do {
@@ -132,7 +135,7 @@ inline unsigned encode_uleb128(uint64_t value, uint8_t *p,
 }
 
 /// Utility function to decode a ULEB128 value.
-inline uint64_t decodeULEB128(const uint8_t *p, unsigned *n = nullptr,
+inline uint64_t decode_uleb128(const uint8_t *p, unsigned *n = nullptr,
                               const uint8_t *end = nullptr,
                               const char **error = nullptr)
 {
@@ -175,7 +178,8 @@ inline uint64_t decodeULEB128(const uint8_t *p, unsigned *n = nullptr,
 /// Utility function to decode a SLEB128 value.
 inline int64_t decode_sleb128(const uint8_t *p, unsigned *n = nullptr,
                               const uint8_t *end = nullptr,
-                              const char **error = nullptr) {
+                              const char **error = nullptr)
+{
    const uint8_t *origPtr = p;
    int64_t value = 0;
    unsigned shift = 0;

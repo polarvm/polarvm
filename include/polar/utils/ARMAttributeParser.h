@@ -25,6 +25,7 @@ template <typename T>
 class SmallVectorImpl;
 } // basic
 
+using basic::ArrayRef;
 using basic::StringRef;
 using utils::ScopedPrinter;
 using basic::SmallVectorImpl;
@@ -32,143 +33,141 @@ using basic::SmallVectorImpl;
 class ARMAttributeParser
 {
    ScopedPrinter *m_printer;
-
    std::map<unsigned, unsigned> m_attributes;
-
    struct DisplayHandler
    {
       armbuildattrs::AttrType m_attribute;
-      void (ARMAttributeParser::*Routine)(armbuildattrs::AttrType,
+      void (ARMAttributeParser::*m_routine)(armbuildattrs::AttrType,
                                           const uint8_t *, uint32_t &);
    };
    static const DisplayHandler sm_displayRoutines[];
 
-   uint64_t ParseInteger(const uint8_t *data, uint32_t &offset);
+   uint64_t parseInteger(const uint8_t *data, uint32_t &offset);
 
-   StringRef ParseString(const uint8_t *data, uint32_t &offset);
+   StringRef parseString(const uint8_t *data, uint32_t &offset);
 
-   void IntegerAttribute(armbuildattrs::AttrType tag, const uint8_t *data,
+   void integerAttribute(armbuildattrs::AttrType tag, const uint8_t *data,
                          uint32_t &offset);
-   void StringAttribute(armbuildattrs::AttrType tag, const uint8_t *data,
+   void stringAttribute(armbuildattrs::AttrType tag, const uint8_t *data,
                         uint32_t &offset);
 
-   void PrintAttribute(unsigned tag, unsigned Value, StringRef ValueDesc);
+   void printAttribute(unsigned tag, unsigned Value, StringRef ValueDesc);
 
-   void CPU_arch(armbuildattrs::AttrType tag, const uint8_t *data,
-                 uint32_t &offset);
-
-   void CPU_arch_profile(armbuildattrs::AttrType tag, const uint8_t *data,
-                         uint32_t &offset);
-
-   void ARM_ISA_use(armbuildattrs::AttrType tag, const uint8_t *data,
-                    uint32_t &offset);
-
-   void THUMB_ISA_use(armbuildattrs::AttrType tag, const uint8_t *data,
-                      uint32_t &offset);
-
-   void FP_arch(armbuildattrs::AttrType tag, const uint8_t *data,
+   void cpuArch(armbuildattrs::AttrType tag, const uint8_t *data,
                 uint32_t &offset);
 
-   void WMMX_arch(armbuildattrs::AttrType tag, const uint8_t *data,
+   void cpuArchProfile(armbuildattrs::AttrType tag, const uint8_t *data,
+                       uint32_t &offset);
+
+   void armIsaUse(armbuildattrs::AttrType tag, const uint8_t *data,
                   uint32_t &offset);
 
-   void Advanced_SIMD_arch(armbuildattrs::AttrType tag, const uint8_t *data,
-                           uint32_t &offset);
+   void thumbIsaUse(armbuildattrs::AttrType tag, const uint8_t *data,
+                    uint32_t &offset);
 
-   void PCS_config(armbuildattrs::AttrType tag, const uint8_t *data,
-                   uint32_t &offset);
+   void fpArch(armbuildattrs::AttrType tag, const uint8_t *data,
+               uint32_t &offset);
 
-   void ABI_PCS_R9_use(armbuildattrs::AttrType tag, const uint8_t *data,
-                       uint32_t &offset);
+   void wmmxArch(armbuildattrs::AttrType tag, const uint8_t *data,
+                 uint32_t &offset);
 
-   void ABI_PCS_RW_data(armbuildattrs::AttrType tag, const uint8_t *data,
-                        uint32_t &offset);
-
-   void ABI_PCS_RO_data(armbuildattrs::AttrType tag, const uint8_t *data,
-                        uint32_t &offset);
-
-   void ABI_PCS_GOT_use(armbuildattrs::AttrType tag, const uint8_t *data,
-                        uint32_t &offset);
-
-   void ABI_PCS_wchar_t(armbuildattrs::AttrType tag, const uint8_t *data,
-                        uint32_t &offset);
-
-   void ABI_FP_rounding(armbuildattrs::AttrType tag, const uint8_t *data,
-                        uint32_t &offset);
-
-   void ABI_FP_denormal(armbuildattrs::AttrType tag, const uint8_t *data,
-                        uint32_t &offset);
-
-   void ABI_FP_exceptions(armbuildattrs::AttrType tag, const uint8_t *data,
-                          uint32_t &offset);
-
-   void ABI_FP_user_exceptions(armbuildattrs::AttrType tag, const uint8_t *data,
-                               uint32_t &offset);
-
-   void ABI_FP_number_model(armbuildattrs::AttrType tag, const uint8_t *data,
-                            uint32_t &offset);
-
-   void ABI_align_needed(armbuildattrs::AttrType tag, const uint8_t *data,
+   void advancedSimdArch(armbuildattrs::AttrType tag, const uint8_t *data,
                          uint32_t &offset);
 
-   void ABI_align_preserved(armbuildattrs::AttrType tag, const uint8_t *data,
-                            uint32_t &offset);
+   void pcsConfig(armbuildattrs::AttrType tag, const uint8_t *data,
+                  uint32_t &offset);
 
-   void ABI_enum_size(armbuildattrs::AttrType tag, const uint8_t *data,
-                      uint32_t &offset);
+   void abiPcsR9Use(armbuildattrs::AttrType tag, const uint8_t *data,
+                    uint32_t &offset);
 
-   void ABI_HardFP_use(armbuildattrs::AttrType tag, const uint8_t *data,
-                       uint32_t &offset);
+   void abiPcsRwData(armbuildattrs::AttrType tag, const uint8_t *data,
+                        uint32_t &offset);
 
-   void ABI_VFP_args(armbuildattrs::AttrType tag, const uint8_t *data,
-                     uint32_t &offset);
+   void abiPcsRoData(armbuildattrs::AttrType tag, const uint8_t *data,
+                        uint32_t &offset);
 
-   void ABI_WMMX_args(armbuildattrs::AttrType tag, const uint8_t *data,
-                      uint32_t &offset);
+   void abiPcsGotUse(armbuildattrs::AttrType tag, const uint8_t *data,
+                        uint32_t &offset);
 
-   void ABI_optimization_goals(armbuildattrs::AttrType tag, const uint8_t *data,
+   void abiPcsWcharType(armbuildattrs::AttrType tag, const uint8_t *data,
+                        uint32_t &offset);
+
+   void abiFpRounding(armbuildattrs::AttrType tag, const uint8_t *data,
+                        uint32_t &offset);
+
+   void abiFpDenormal(armbuildattrs::AttrType tag, const uint8_t *data,
+                        uint32_t &offset);
+
+   void abiFpExceptions(armbuildattrs::AttrType tag, const uint8_t *data,
+                          uint32_t &offset);
+
+   void abiFpUserExceptions(armbuildattrs::AttrType tag, const uint8_t *data,
                                uint32_t &offset);
 
-   void ABI_FP_optimization_goals(armbuildattrs::AttrType tag,
-                                  const uint8_t *data, uint32_t &offset);
+   void abiFpNumberModel(armbuildattrs::AttrType tag, const uint8_t *data,
+                            uint32_t &offset);
+
+   void abiAlignNeeded(armbuildattrs::AttrType tag, const uint8_t *data,
+                         uint32_t &offset);
+
+   void abiAlignPreserved(armbuildattrs::AttrType tag, const uint8_t *data,
+                            uint32_t &offset);
+
+   void abiEnumSize(armbuildattrs::AttrType tag, const uint8_t *data,
+                      uint32_t &offset);
+
+   void abiHardFpUse(armbuildattrs::AttrType tag, const uint8_t *data,
+                       uint32_t &offset);
+
+   void abiVfpArgs(armbuildattrs::AttrType tag, const uint8_t *data,
+                     uint32_t &offset);
+
+   void abiWmmxArgs(armbuildattrs::AttrType tag, const uint8_t *data,
+                      uint32_t &offset);
+
+   void abiOptimizationGoals(armbuildattrs::AttrType tag, const uint8_t *data,
+                               uint32_t &offset);
+
+   void abiFpOptimizationGoals(armbuildattrs::AttrType tag,
+                               const uint8_t *data, uint32_t &offset);
 
    void compatibility(armbuildattrs::AttrType tag, const uint8_t *data,
                       uint32_t &offset);
 
-   void CPU_unaligned_access(armbuildattrs::AttrType tag, const uint8_t *data,
-                             uint32_t &offset);
+   void cpuUnalignedAccess(armbuildattrs::AttrType tag, const uint8_t *data,
+                           uint32_t &offset);
 
-   void FP_HP_extension(armbuildattrs::AttrType tag, const uint8_t *data,
-                        uint32_t &offset);
-
-   void ABI_FP_16bit_format(armbuildattrs::AttrType tag, const uint8_t *data,
-                            uint32_t &offset);
-
-   void MPextension_use(armbuildattrs::AttrType tag, const uint8_t *data,
-                        uint32_t &offset);
-
-   void DIV_use(armbuildattrs::AttrType tag, const uint8_t *data,
-                uint32_t &offset);
-
-   void DSP_extension(armbuildattrs::AttrType tag, const uint8_t *data,
+   void fpHpExtension(armbuildattrs::AttrType tag, const uint8_t *data,
                       uint32_t &offset);
 
-   void T2EE_use(armbuildattrs::AttrType tag, const uint8_t *data,
-                 uint32_t &offset);
+   void abiFp16bitFormat(armbuildattrs::AttrType tag, const uint8_t *data,
+                         uint32_t &offset);
 
-   void Virtualization_use(armbuildattrs::AttrType tag, const uint8_t *data,
-                           uint32_t &offset);
+   void mpExtensionUse(armbuildattrs::AttrType tag, const uint8_t *data,
+                       uint32_t &offset);
+
+   void divUse(armbuildattrs::AttrType tag, const uint8_t *data,
+               uint32_t &offset);
+
+   void dspExtension(armbuildattrs::AttrType tag, const uint8_t *data,
+                     uint32_t &offset);
+
+   void t2eeUse(armbuildattrs::AttrType tag, const uint8_t *data,
+                uint32_t &offset);
+
+   void virtualizationUse(armbuildattrs::AttrType tag, const uint8_t *data,
+                          uint32_t &offset);
 
    void nodefaults(armbuildattrs::AttrType tag, const uint8_t *data,
                    uint32_t &offset);
 
-   void ParseAttributeList(const uint8_t *data, uint32_t &offset,
+   void parseAttributeList(const uint8_t *data, uint32_t &offset,
                            uint32_t length);
 
-   void ParseIndexList(const uint8_t *data, uint32_t &offset,
+   void parseIndexList(const uint8_t *data, uint32_t &offset,
                        SmallVectorImpl<uint8_t> &indexList);
 
-   void ParseSubsection(const uint8_t *data, uint32_t length);
+   void parseSubsection(const uint8_t *data, uint32_t length);
 public:
    ARMAttributeParser(ScopedPrinter *printer)
       : m_printer(printer)
@@ -177,16 +176,16 @@ public:
    ARMAttributeParser() : m_printer(nullptr)
    {}
 
-   void Parse(ArrayRef<uint8_t> section, bool isLittle);
+   void parse(ArrayRef<uint8_t> section, bool isLittle);
 
    bool hasAttribute(unsigned tag) const
    {
-      return Attributes.count(tag);
+      return m_attributes.count(tag);
    }
 
    unsigned getAttributeValue(unsigned tag) const
    {
-      return Attributes.find(tag)->second;
+      return m_attributes.find(tag)->second;
    }
 };
 
