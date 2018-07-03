@@ -29,24 +29,24 @@ struct CachePruningPolicy
   /// directory too often. It does not impact the decision of which file to
   /// prune. A value of 0 forces the scan to occur. A value of None disables
   /// pruning.
-  std::optional<std::chrono::seconds> interval = std::chrono::seconds(1200);
+  std::optional<std::chrono::seconds> m_interval = std::chrono::seconds(1200);
 
   /// The expiration for a file. When a file hasn't been accessed for expiration
   /// seconds, it is removed from the cache. A value of 0 disables the
   /// expiration-based pruning.
-  std::chrono::seconds expiration = std::chrono::hours(7 * 24); // 1w
+  std::chrono::seconds m_expiration = std::chrono::hours(7 * 24); // 1w
 
   /// The maximum size for the cache directory, in terms of percentage of the
   /// available space on the the disk. Set to 100 to indicate no limit, 50 to
   /// indicate that the cache size will not be left over half the available disk
   /// space. A value over 100 will be reduced to 100. A value of 0 disables the
   /// percentage size-based pruning.
-  unsigned maxSizePercentageOfAvailableSpace = 75;
+  unsigned m_maxSizePercentageOfAvailableSpace = 75;
 
   /// The maximum size for the cache directory in bytes. A value over the amount
   /// of available space on the disk will be reduced to the amount of available
   /// space. A value of 0 disables the absolute size-based pruning.
-  uint64_t maxSizeBytes = 0;
+  uint64_t m_maxSizeBytes = 0;
 
   /// The maximum number of files in the cache directory. A value of 0 disables
   /// the number of files based pruning.
@@ -55,7 +55,7 @@ struct CachePruningPolicy
   /// diminishing returns on the effectiveness of the cache, and some file
   /// systems have a limit on how many files can be contained in a directory
   /// (notably ext4, which is limited to around 6000000 files).
-  uint64_t maxSizeFiles = 1000000;
+  uint64_t m_maxSizeFiles = 1000000;
 };
 
 /// Parse the given string as a cache pruning policy. Defaults are taken from a

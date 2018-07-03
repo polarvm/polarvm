@@ -111,7 +111,7 @@ public:
       return BranchProbability(m_denominator - m_numerator);
    }
 
-   raw_ostream &print(RawOutStream &outstream) const;
+   RawOutStream &print(RawOutStream &outstream) const;
 
    void dump() const;
 
@@ -243,7 +243,7 @@ public:
    }
 };
 
-inline raw_ostream &operator<<(RawOutStream &outstream, BranchProbability prob)
+inline RawOutStream &operator<<(RawOutStream &outstream, BranchProbability prob)
 {
    return prob.print(outstream);
 }

@@ -15,11 +15,20 @@
 #include "polar/global/DataTypes.h"
 
 namespace polar {
+
+// forward declare class with namespace
+namespace basic {
+class StringRef;
+template <typename T> class SmallVectorImpl;
+} // basic
+
 namespace utils {
 
-template <typename T> class SmallVectorImpl;
+
 class Error;
-class StringRef;
+
+using polar::basic::StringRef;
+using polar::basic::SmallVectorImpl;
 
 namespace zlib {
 

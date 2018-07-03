@@ -40,6 +40,8 @@ option(POLAR_BUILD_STATIC_STDLIB
    "Build static variants of the polarphp standard library"
    FALSE)
 
+option(POLAR_ENABLE_ZLIB "Use zlib for compression/decompression if available." ON)
+
 # In many cases, the CMake build system needs to determine whether to include
 # a directory, or perform other actions, based on whether the stdlib is
 # being built at all -- statically or dynamically. Please note that these
