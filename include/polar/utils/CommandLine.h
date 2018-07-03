@@ -1830,7 +1830,7 @@ public:
    {
       assert(m_storage != nullptr && "cmd::location(...) not specified for a command "
                                      "line option with external storage!");
-      m_storage->push_back(value);
+      m_storage->pushBack(value);
    }
 };
 
