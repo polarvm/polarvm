@@ -59,7 +59,7 @@ inline StringRef to_string_ref(ArrayRef<uint8_t> value)
 }
 
 /// Construct a string ref from an array ref of unsigned chars.
-inline ArrayRef<uint8_t> array_ref_from_string_ref(StringRef value)
+inline ArrayRef<uint8_t> arrayref_from_stringref(StringRef value)
 {
    return {value.getBytesBegin(), value.getBytesEnd()};
 }

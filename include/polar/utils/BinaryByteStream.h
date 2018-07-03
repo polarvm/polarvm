@@ -27,6 +27,8 @@
 namespace polar {
 namespace utils {
 
+using polar::basic::make_array_ref;
+
 /// \brief An implementation of BinaryStream which holds its entire data set
 /// in a single contiguous buffer.  BinaryByteStream guarantees that no read
 /// operation will ever incur a copy.  Note that BinaryByteStream does not
@@ -35,41 +37,58 @@ class BinaryByteStream : public BinaryStream
 {
 public:
    BinaryByteStream() = default;
-   BinaryByteStream(ArrayRef<uint8_t> Data, llvm::support::endianness Endian)
-      : Endian(Endian), Data(Data) {}
-   BinaryByteStream(StringRef Data, llvm::support::endianness Endian)
-      : Endian(Endian), Data(Data.bytes_begin(), Data.bytes_end()) {}
+   BinaryByteStream(ArrayRef<uint8_t> data, Endianness endian)
+      : m_endian(endian), m_data(data)
+   {}
 
-   llvm::support::endianness getEndian() const override { return Endian; }
+   BinaryByteStream(StringRef data, Endianness endian)
+      : m_endian(endian), m_data(data.getBytesBegin(), data.getBytesEnd())
+   {}
 
-   Error readBytes(uint32_t Offset, uint32_t Size,
-                   ArrayRef<uint8_t> &Buffer) override {
-      if (auto EC = checkOffsetForRead(Offset, Size))
-         return EC;
-      Buffer = Data.slice(Offset, Size);
-      return Error::success();
+   Endianness getEndian() const override
+   {
+      return m_endian;
    }
 
-   Error readLongestContiguousChunk(uint32_t Offset,
-                                    ArrayRef<uint8_t> &Buffer) override {
-      if (auto EC = checkOffsetForRead(Offset, 1))
-         return EC;
-      Buffer = Data.slice(Offset);
-      return Error::success();
+   Error readBytes(uint32_t offset, uint32_t size,
+                   ArrayRef<uint8_t> &buffer) override
+   {
+      if (auto errorCode = checkOffsetForRead(offset, size)) {
+         return errorCode;
+      }
+      buffer = m_data.slice(offset, size);
+      return Error::getSuccess();
    }
 
-   uint32_t getLength() override { return Data.size(); }
+   Error readLongestContiguousChunk(uint32_t offset,
+                                    ArrayRef<uint8_t> &buffer) override
+   {
+      if (auto errorCode = checkOffsetForRead(offset, 1)) {
+         return errorCode;
+      }
+      buffer = m_data.slice(offset);
+      return Error::getSuccess();
+   }
 
-   ArrayRef<uint8_t> data() const { return Data; }
+   uint32_t getLength() override
+   {
+      return m_data.getSize();
+   }
 
-   StringRef str() const {
-      const char *CharData = reinterpret_cast<const char *>(Data.data());
-      return StringRef(CharData, Data.size());
+   ArrayRef<uint8_t> getData() const
+   {
+      return m_data;
+   }
+
+   StringRef getStr() const
+   {
+      const char *charData = reinterpret_cast<const char *>(m_data.getData());
+      return StringRef(charData, m_data.getSize());
    }
 
 protected:
-   llvm::support::endianness Endian;
-   ArrayRef<uint8_t> Data;
+   Endianness m_endian;
+   ArrayRef<uint8_t> m_data;
 };
 
 /// \brief An implementation of BinaryStream whose data is backed by an llvm
@@ -78,10 +97,10 @@ protected:
 /// will never cause a copy.
 class MemoryBufferByteStream : public BinaryByteStream {
 public:
-   MemoryBufferByteStream(std::unique_ptr<MemoryBuffer> Buffer,
-                          llvm::support::endianness Endian)
-      : BinaryByteStream(Buffer->getBuffer(), Endian),
-        MemBuffer(std::move(Buffer)) {}
+   MemoryBufferByteStream(std::unique_ptr<MemoryBuffer> buffer,
+                          Endianness endian)
+      : BinaryByteStream(buffer->getBuffer(), endian),
+        MemBuffer(std::move(buffer)) {}
 
    std::unique_ptr<MemoryBuffer> MemBuffer;
 };
@@ -90,174 +109,226 @@ public:
 /// in a single contiguous buffer.  As with BinaryByteStream, the mutable
 /// version also guarantees that no read operation will ever incur a copy,
 /// and similarly it does not own the underlying buffer.
-class MutableBinaryByteStream : public WritableBinaryStream {
+class MutableBinaryByteStream : public WritableBinaryStream
+{
 public:
    MutableBinaryByteStream() = default;
-   MutableBinaryByteStream(MutableArrayRef<uint8_t> Data,
-                           llvm::support::endianness Endian)
-      : Data(Data), ImmutableStream(Data, Endian) {}
+   MutableBinaryByteStream(MutableArrayRef<uint8_t> data,
+                           Endianness endian)
+      : m_data(data), m_immutableStream(data, endian)
+   {}
 
-   llvm::support::endianness getEndian() const override {
-      return ImmutableStream.getEndian();
+   Endianness getEndian() const override
+   {
+      return m_immutableStream.getEndian();
    }
 
-   Error readBytes(uint32_t Offset, uint32_t Size,
-                   ArrayRef<uint8_t> &Buffer) override {
-      return ImmutableStream.readBytes(Offset, Size, Buffer);
+   Error readBytes(uint32_t offset, uint32_t size,
+                   ArrayRef<uint8_t> &buffer) override
+   {
+      return m_immutableStream.readBytes(offset, size, buffer);
    }
 
-   Error readLongestContiguousChunk(uint32_t Offset,
-                                    ArrayRef<uint8_t> &Buffer) override {
-      return ImmutableStream.readLongestContiguousChunk(Offset, Buffer);
+   Error readLongestContiguousChunk(uint32_t offset,
+                                    ArrayRef<uint8_t> &buffer) override
+   {
+      return m_immutableStream.readLongestContiguousChunk(offset, buffer);
    }
 
-   uint32_t getLength() override { return ImmutableStream.getLength(); }
-
-   Error writeBytes(uint32_t Offset, ArrayRef<uint8_t> Buffer) override {
-      if (Buffer.empty())
-         return Error::success();
-
-      if (auto EC = checkOffsetForWrite(Offset, Buffer.size()))
-         return EC;
-
-      uint8_t *DataPtr = const_cast<uint8_t *>(Data.data());
-      ::memcpy(DataPtr + Offset, Buffer.data(), Buffer.size());
-      return Error::success();
+   uint32_t getLength() override
+   {
+      return m_immutableStream.getLength();
    }
 
-   Error commit() override { return Error::success(); }
+   Error writeBytes(uint32_t offset, ArrayRef<uint8_t> buffer) override
+   {
+      if (buffer.empty()) {
+         return Error::getSuccess();
+      }
+      if (auto errorCode = checkOffsetForWrite(offset, buffer.getSize())) {
+         return errorCode;
+      }
+      uint8_t *dataPtr = const_cast<uint8_t *>(m_data.getData());
+      ::memcpy(dataPtr + offset, buffer.getData(), buffer.getSize());
+      return Error::getSuccess();
+   }
 
-   MutableArrayRef<uint8_t> data() const { return Data; }
+   Error commit() override
+   {
+      return Error::getSuccess();
+   }
+
+   MutableArrayRef<uint8_t> getData() const
+   {
+      return m_data;
+   }
 
 private:
-   MutableArrayRef<uint8_t> Data;
-   BinaryByteStream ImmutableStream;
+   MutableArrayRef<uint8_t> m_data;
+   BinaryByteStream m_immutableStream;
 };
 
 /// \brief An implementation of WritableBinaryStream which can write at its end
-/// causing the underlying data to grow.  This class owns the underlying data.
-class AppendingBinaryByteStream : public WritableBinaryStream {
-   std::vector<uint8_t> Data;
-   llvm::support::endianness Endian = llvm::support::little;
+/// causing the underlying data to grow.  This class owns the underlying m_data.
+class AppendingBinaryByteStream : public WritableBinaryStream
+{
+   std::vector<uint8_t> m_data;
+   Endianness m_endian = Endianness::Little;
 
 public:
    AppendingBinaryByteStream() = default;
-   AppendingBinaryByteStream(llvm::support::endianness Endian)
-      : Endian(Endian) {}
+   AppendingBinaryByteStream(Endianness endian)
+      : m_endian(endian)
+   {}
 
-   void clear() { Data.clear(); }
-
-   llvm::support::endianness getEndian() const override { return Endian; }
-
-   Error readBytes(uint32_t Offset, uint32_t Size,
-                   ArrayRef<uint8_t> &Buffer) override {
-      if (auto EC = checkOffsetForWrite(Offset, Buffer.size()))
-         return EC;
-
-      Buffer = makeArrayRef(Data).slice(Offset, Size);
-      return Error::success();
+   void clear()
+   {
+      m_data.clear();
    }
 
-   void insert(uint32_t Offset, ArrayRef<uint8_t> Bytes) {
-      Data.insert(Data.begin() + Offset, Bytes.begin(), Bytes.end());
+   Endianness getEndian() const override
+   {
+      return m_endian;
    }
 
-   Error readLongestContiguousChunk(uint32_t Offset,
-                                    ArrayRef<uint8_t> &Buffer) override {
-      if (auto EC = checkOffsetForWrite(Offset, 1))
-         return EC;
-
-      Buffer = makeArrayRef(Data).slice(Offset);
-      return Error::success();
+   Error readBytes(uint32_t offset, uint32_t size,
+                   ArrayRef<uint8_t> &buffer) override
+   {
+      if (auto errorCode = checkOffsetForWrite(offset, buffer.getSize())) {
+         return errorCode;
+      }
+      buffer = make_array_ref(m_data).slice(offset, size);
+      return Error::getSuccess();
    }
 
-   uint32_t getLength() override { return Data.size(); }
+   void insert(uint32_t offset, ArrayRef<uint8_t> bytes)
+   {
+      m_data.insert(m_data.begin() + offset, bytes.begin(), bytes.end());
+   }
 
-   Error writeBytes(uint32_t Offset, ArrayRef<uint8_t> Buffer) override {
-      if (Buffer.empty())
-         return Error::success();
+   Error readLongestContiguousChunk(uint32_t offset,
+                                    ArrayRef<uint8_t> &buffer) override
+   {
+      if (auto errorCode = checkOffsetForWrite(offset, 1)) {
+         return errorCode;
+      }
+      buffer = make_array_ref(m_data).slice(offset);
+      return Error::getSuccess();
+   }
 
+   uint32_t getLength() override
+   {
+      return m_data.size();
+   }
+
+   Error writeBytes(uint32_t offset, ArrayRef<uint8_t> buffer) override
+   {
+      if (buffer.empty()) {
+         return Error::getSuccess();
+      }
       // This is well-defined for any case except where offset is strictly
       // greater than the current length.  If offset is equal to the current
       // length, we can still grow.  If offset is beyond the current length, we
       // would have to decide how to deal with the intermediate uninitialized
       // bytes.  So we punt on that case for simplicity and just say it's an
       // error.
-      if (Offset > getLength())
-         return make_error<BinaryStreamError>(stream_error_code::invalid_offset);
+      if (offset > getLength()) {
+         return make_error<BinaryStreamError>(StreamErrorCode::invalid_offset);
+      }
+      uint32_t RequiredSize = offset + buffer.getSize();
+      if (RequiredSize > m_data.size()) {
+         m_data.resize(RequiredSize);
+      }
 
-      uint32_t RequiredSize = Offset + Buffer.size();
-      if (RequiredSize > Data.size())
-         Data.resize(RequiredSize);
-
-      ::memcpy(Data.data() + Offset, Buffer.data(), Buffer.size());
-      return Error::success();
+      ::memcpy(m_data.data() + offset, buffer.getData(), buffer.getSize());
+      return Error::getSuccess();
    }
 
-   Error commit() override { return Error::success(); }
+   Error commit() override
+   {
+      return Error::getSuccess();
+   }
 
    /// \brief Return the properties of this stream.
-   virtual BinaryStreamFlags getFlags() const override {
-      return BSF_Write | BSF_Append;
+   virtual BinaryStreamFlags getFlags() const override
+   {
+      return BinaryStreamFlags(polar::as_integer(BSF_Write) | polar::as_integer(BSF_Append));
    }
 
-   MutableArrayRef<uint8_t> data() { return Data; }
+   MutableArrayRef<uint8_t> getData()
+   {
+      return m_data;
+   }
 };
 
 /// \brief An implementation of WritableBinaryStream backed by an llvm
 /// FileOutputBuffer.
-class FileBufferByteStream : public WritableBinaryStream {
+class m_fileBufferByteStream : public WritableBinaryStream
+{
 private:
-   class StreamImpl : public MutableBinaryByteStream {
+   class Streamm_impl : public MutableBinaryByteStream
+   {
    public:
-      StreamImpl(std::unique_ptr<FileOutputBuffer> Buffer,
-                 llvm::support::endianness Endian)
+      Streamm_impl(std::unique_ptr<FileOutputBuffer> buffer,
+                   Endianness endian)
          : MutableBinaryByteStream(
-              MutableArrayRef<uint8_t>(Buffer->getBufferStart(),
-                                       Buffer->getBufferEnd()),
-              Endian),
-           FileBuffer(std::move(Buffer)) {}
+              MutableArrayRef<uint8_t>(buffer->getBufferStart(),
+                                       buffer->getBufferEnd()),
+              endian),
+           m_fileBuffer(std::move(buffer))
+      {}
 
       Error commit() override {
-         if (FileBuffer->commit())
+         if (m_fileBuffer->commit())
             return make_error<BinaryStreamError>(
-                     stream_error_code::filesystem_error);
-         return Error::success();
+                     StreamErrorCode::filesystem_error);
+         return Error::getSuccess();
       }
 
    private:
-      std::unique_ptr<FileOutputBuffer> FileBuffer;
+      std::unique_ptr<FileOutputBuffer> m_fileBuffer;
    };
 
 public:
-   FileBufferByteStream(std::unique_ptr<FileOutputBuffer> Buffer,
-                        llvm::support::endianness Endian)
-      : Impl(std::move(Buffer), Endian) {}
+   m_fileBufferByteStream(std::unique_ptr<FileOutputBuffer> buffer,
+                          Endianness endian)
+      : m_impl(std::move(buffer), endian)
+   {}
 
-   llvm::support::endianness getEndian() const override {
-      return Impl.getEndian();
+   Endianness getEndian() const override
+   {
+      return m_impl.getEndian();
    }
 
-   Error readBytes(uint32_t Offset, uint32_t Size,
-                   ArrayRef<uint8_t> &Buffer) override {
-      return Impl.readBytes(Offset, Size, Buffer);
+   Error readBytes(uint32_t offset, uint32_t size,
+                   ArrayRef<uint8_t> &buffer) override
+   {
+      return m_impl.readBytes(offset, size, buffer);
    }
 
-   Error readLongestContiguousChunk(uint32_t Offset,
-                                    ArrayRef<uint8_t> &Buffer) override {
-      return Impl.readLongestContiguousChunk(Offset, Buffer);
+   Error readLongestContiguousChunk(uint32_t offset,
+                                    ArrayRef<uint8_t> &buffer) override
+   {
+      return m_impl.readLongestContiguousChunk(offset, buffer);
    }
 
-   uint32_t getLength() override { return Impl.getLength(); }
-
-   Error writeBytes(uint32_t Offset, ArrayRef<uint8_t> Data) override {
-      return Impl.writeBytes(Offset, Data);
+   uint32_t getLength() override
+   {
+      return m_impl.getLength();
    }
 
-   Error commit() override { return Impl.commit(); }
+   Error writeBytes(uint32_t offset, ArrayRef<uint8_t> data) override
+   {
+      return m_impl.writeBytes(offset, data);
+   }
+
+   Error commit() override
+   {
+      return m_impl.commit();
+   }
 
 private:
-   StreamImpl Impl;
+   Streamm_impl m_impl;
 };
 
 

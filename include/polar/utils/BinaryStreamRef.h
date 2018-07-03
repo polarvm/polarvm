@@ -34,8 +34,8 @@ protected:
    explicit BinaryStreamRefBase(StreamType &borrowedImpl)
       : m_borrowedImpl(&borrowedImpl), m_viewOffset(0)
    {
-      if (!(m_borrowedImpl.getFlags() & BSF_Append)) {
-         m_length = m_borrowedImpl.getLength();
+      if (!(borrowedImpl.getFlags() & BSF_Append)) {
+         m_length = borrowedImpl.getLength();
       }
    }
 

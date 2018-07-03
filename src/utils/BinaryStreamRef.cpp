@@ -104,7 +104,7 @@ BinaryStreamRef::BinaryStreamRef(BinaryStream &stream)
 {}
 
 BinaryStreamRef::BinaryStreamRef(BinaryStream &stream, uint32_t offset,
-                                 Optional<uint32_t> length)
+                                 std::optional<uint32_t> length)
    : BinaryStreamRefBase(stream, offset, length)
 {}
 
@@ -168,8 +168,8 @@ WritableBinaryStreamRef::WritableBinaryStreamRef(MutableArrayRef<uint8_t> data,
 Error WritableBinaryStreamRef::writeBytes(uint32_t offset,
                                           ArrayRef<uint8_t> data) const
 {
-   if (auto errorCode = checkOffsetForWrite(offset, data.size())) {
-      return success;
+   if (auto errorCode = checkOffsetForWrite(offset, data.getSize())) {
+      return errorCode;
    }
    return m_borrowedImpl->writeBytes(m_viewOffset + offset, data);
 }
