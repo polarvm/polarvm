@@ -25,9 +25,9 @@
 ///   P(S) => P(S union pred(S))
 ///
 /// The minization algorithm uses this dependency information to attempt to
-/// eagerly prune large subsets of changes. As with \see deltaAlgorithm, the DAG
+/// eagerly prune large subsets of changes. As with \see DeltaAlgorithm, the DAG
 /// is not required to satisfy this property, but the algorithm will run
-/// substantially fewer tests with appropriate dependencies. \see deltaAlgorithm
+/// substantially fewer tests with appropriate dependencies. \see DeltaAlgorithm
 /// for more information on the properties which the predicate function itself
 /// should satisfy.
 ///
@@ -41,7 +41,7 @@
 namespace polar {
 namespace basic {
 
-/// deltaAlgorithm - Implements the delta debugging algorithm (A. Zeller '99)
+/// DeltaAlgorithm - Implements the delta debugging algorithm (A. Zeller '99)
 /// for minimizing arbitrary sets using a predicate function.
 ///
 /// The result of the algorithm is a subset of the input change set which is
@@ -60,7 +60,7 @@ namespace basic {
 /// requirements, and the algorithm will generally produce reasonable
 /// results. However, it may run substantially more tests than with a good
 /// predicate.
-class deltaAlgorithm
+class DeltaAlgorithm
 {
 public:
    using ChangeType = unsigned;
@@ -98,17 +98,18 @@ private:
                ChangeSetType &res);
 
 protected:
-   /// updatedsearchState - Callback used when the search state changes.
-   virtual void updatedsearchState(const ChangeSetType &changes,
-                                   const ChangeSetListType &sets) {}
+   /// updatedSearchState - Callback used when the search state changes.
+   virtual void updatedSearchState(const ChangeSetType &changes,
+                                   const ChangeSetListType &sets)
+   {}
 
    /// executeOneTest - Execute a single test predicate on the change set \p S.
    virtual bool executeOneTest(const ChangeSetType &changeSet) = 0;
 
-   deltaAlgorithm& operator=(const deltaAlgorithm&) = default;
+   DeltaAlgorithm& operator=(const DeltaAlgorithm&) = default;
 
 public:
-   virtual ~deltaAlgorithm();
+   virtual ~DeltaAlgorithm();
 
    /// run - Minimize the set \p Changes by executing \see executeOneTest() on
    /// subsets of changes and returning the smallest set which still satisfies
