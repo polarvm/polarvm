@@ -22,11 +22,17 @@
 // are "*", "?", "[<chars>]" and "[^<chars>]".
 
 namespace polar {
-namespace utils {
 
+namespace basic {
 class BitVector;
 template <typename T>
 class ArrayRef;
+} // basic
+
+namespace utils {
+
+using polar::basic::BitVector;
+using polar::basic::ArrayRef;
 
 class GlobPattern
 {

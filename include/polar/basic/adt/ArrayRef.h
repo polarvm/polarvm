@@ -471,7 +471,7 @@ public:
    MutableArrayRef<T> dropBack(size_t size = 1) const
    {
       assert(this->getSize() >= size && "Dropping more elements than exist");
-      return slice(0, this->getSize - size);
+      return slice(0, this->getSize() - size);
    }
    
    /// \brief Return a copy of *this with the first N elements satisfying the
