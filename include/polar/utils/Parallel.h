@@ -166,7 +166,7 @@ void parallel_sort(RandomAccessIterator start, RandomAccessIterator end,
 {
    TaskGroup taskGroup;
    parallel_quick_sort(start, end, comp, taskGroup,
-                       llvm::Log2_64(std::distance(start, end)) + 1);
+                       polar::utils::log2(std::distance(start, end)) + 1);
 }
 
 template <class IterTy, class FuncTy>
