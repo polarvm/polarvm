@@ -45,12 +45,13 @@ using uint24_t = Uint24;
 static_assert(sizeof(uint24_t) == 3, "sizeof(uint24_t) != 3");
 
 /// Needed by swapByteOrder().
-inline uint24_t getSwappedBytes(uint24_t c)
+inline uint24_t get_swapped_bytes(uint24_t c)
 {
    return uint24_t(c.m_bytes[2], c.m_bytes[1], c.m_bytes[0]);
 }
 
-class DataExtractor {
+class DataExtractor
+{
    StringRef m_data;
    uint8_t m_isLittleEndian;
    uint8_t m_addressSize;
@@ -200,7 +201,8 @@ public:
    ///
    /// @return
    ///     The extracted pointer value as a 64 integer.
-   uint64_t getAddress(uint32_t *offsetPtr) const {
+   uint64_t getAddress(uint32_t *offsetPtr) const
+   {
       return getUnsigned(offsetPtr, m_addressSize);
    }
 
@@ -430,7 +432,7 @@ public:
    ///     object, \b false otherwise.
    bool isValidOffset(uint32_t offset) const
    {
-      return m_data.size() > offset;
+      return m_data.getSize() > offset;
    }
 
    /// Test the availability of \a length bytes of data from \a offset.
@@ -455,7 +457,6 @@ public:
       return isValidOffsetForDataOfSize(offset, m_addressSize);
    }
 };
-
 
 } // utils
 } // polar
