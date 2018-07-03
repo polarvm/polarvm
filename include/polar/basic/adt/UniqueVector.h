@@ -78,7 +78,7 @@ public:
    /// operator[] - Returns a reference to the entry with the specified ID.
    const T &operator[](unsigned id) const
    {
-      assert(id - 1 < size() && "ID is 0 or out of range!");
+      assert(id - 1 < getSize() && "ID is 0 or out of range!");
       return m_vector[id - 1];
    }
    
