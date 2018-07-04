@@ -56,7 +56,7 @@ StringRef get_color_string(unsigned nodeNumber);
 
 namespace graphprogram {
 
-enum name {
+enum Name {
    DOT,
    FDP,
    NEATO,
@@ -66,8 +66,8 @@ enum name {
 
 } // end namespace graphprogram
 
-bool DisplayGraph(StringRef filename, bool wait = true,
-                  graphprogram::name program = graphprogram::DOT);
+bool display_graph(StringRef filename, bool wait = true,
+                  graphprogram::Name program = graphprogram::DOT);
 
 template<typename GraphType>
 class GraphWriter
@@ -358,10 +358,10 @@ RawOutStream &write_graph(RawOutStream &m_outstream, const GraphType &m_graph,
                           bool shortNames = false,
                           const Twine &title = "") {
    // Start the graph emission process...
-   GraphWriter<GraphType> W(m_outstream, m_graph, shortNames);
+   GraphWriter<GraphType> writer(m_outstream, m_graph, shortNames);
 
    // Emit the graph.
-   W.writeGraph(title.str());
+   writer.writeGraph(title.getStr());
 
    return m_outstream;
 }
@@ -394,13 +394,13 @@ std::string write_graph(const GraphType &graph, const Twine &name,
 template<typename GraphType>
 void view_graph(const GraphType &graph, const Twine &name,
                 bool shortNames = false, const Twine &title = "",
-                graphprogram::name program = graphprogram::DOT)
+                graphprogram::Name program = graphprogram::DOT)
 {
    std::string filename = write_graph(graph, name, shortNames, title);
    if (filename.empty()) {
       return;
    }
-   DisplayGraph(filename, false, program);
+   display_graph(filename, false, program);
 }
 
 } // utils

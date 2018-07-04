@@ -15,9 +15,15 @@
 #include "polar/global/DataTypes.h"
 
 namespace polar {
+
+// forard declare class with namespace
+namespace basic {
+template <typename T> class ArrayRef;
+} // basic
+
 namespace utils {
 
-template <typename T> class ArrayRef;
+using polar::basic::ArrayRef;
 
 class JamCRC
 {
