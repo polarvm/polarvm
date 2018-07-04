@@ -58,7 +58,7 @@ public:
   {
     /// \brief The lock was released successfully.
     Res_Success,
-    /// \brief Owner died while holding the lock.
+    /// \brief m_owner died while holding the lock.
     Res_OwnerDied,
     /// \brief Reached timeout while waiting for the owner to release the lock.
     Res_Timeout
@@ -69,7 +69,7 @@ private:
   SmallString<128> m_lockFileName;
   std::optional<polar::fs::TempFile> m_uniqueLockFile;
 
-  std::optional<std::pair<std::string, int> > Owner;
+  std::optional<std::pair<std::string, int> > m_owner;
   std::error_code m_errorCode;
   std::string m_errorDiagMsg;
 
@@ -108,7 +108,7 @@ public:
   void setError(const std::error_code &errorCode, StringRef errorMsg = "")
   {
     m_errorCode = errorCode;
-    m_errorDiagMsg = errorMsg.str();
+    m_errorDiagMsg = errorMsg.getStr();
   }
 };
 

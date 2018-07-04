@@ -25,7 +25,7 @@ int column_width(StringRef text) {
 #endif
 }
 
-bool isPrint(int ucs) {
+bool is_print(int ucs) {
 #if POLAR_ON_WIN32
    // Restrict characters that we'll try to print to the lower part of ASCII
    // except for the control characters (0x20 - 0x7E). In general one can not
