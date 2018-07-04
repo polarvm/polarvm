@@ -95,7 +95,7 @@ public:
    /// symbols from the library itself.
    ///
    /// It is safe to call this function multiple times for the same library.
-   static bool LoadLibraryPermanently(const char *filename,
+   static bool loadLibraryPermanently(const char *filename,
                                       std::string *errorMsg = nullptr)
    {
       return !getPermanentLibrary(filename, errorMsg).isValid();
