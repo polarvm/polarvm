@@ -17,7 +17,7 @@
 #include "polar/utils/Format.h"
 #include "polar/global/ManagedStatic.h"
 #include "polar/utils/Process.h"
-#include "polar/utils/yaml/Traits.h"
+#include "polar/utils/yaml/YamlTraits.h"
 #include "polar/utils/RawOutStream.h"
 #include <limits>
 #include <mutex>

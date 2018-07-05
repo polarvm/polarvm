@@ -20,9 +20,15 @@
 #include <vector>
 
 namespace polar {
+
+// forawrd declare class with namespace
+namespace basic {
+class StringRef;
+} // basic
+
 namespace utils {
 
-class StringRef;
+using polar::basic::StringRef;
 
 class TrigramIndex
 {
@@ -38,7 +44,7 @@ public:
    /// In this case isDefinitelyOut always returns false.
    bool isDefeated()
    {
-      return defeated;
+      return m_defeated;
    }
 private:
    // If true, the rules are too complicated for the check to work, and full

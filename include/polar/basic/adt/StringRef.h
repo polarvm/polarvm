@@ -198,13 +198,13 @@ public:
 
    // copy - Allocate copy in Allocator and return StringRef to it.
    template <typename Allocator>
-   POLAR_NODISCARD StringRef copy(Allocator &A) const
+   POLAR_NODISCARD StringRef copy(Allocator &allocator) const
    {
       // Don't request a length 0 copy from the allocator.
       if (empty()) {
          return StringRef();
       }
-      char *storage = A.template Allocate<char>(m_length);
+      char *storage = allocator.template allocate<char>(m_length);
       std::copy(begin(), end(), storage);
       return StringRef(storage, m_length);
    }

@@ -21,8 +21,8 @@
 #include "polar/utils/Allocator.h"
 #include "polar/utils/Endian.h"
 #include "polar/utils/SourceMgr.h"
-#include "polar/utils/yaml/Parser.h"
-#include "polar/utils/RawOutStream.h".h"
+#include "polar/utils/yaml/YamlParser.h"
+#include "polar/utils/RawOutStream.h"
 #include <cassert>
 #include <cctype>
 #include <cstddef>
@@ -246,7 +246,7 @@ struct DocumentListTraits
 };
 
 /// This class should be specialized by any type that needs to be converted
-/// to/from a YAML mapping in the case where the names of the keys are not known
+/// to/from a YAML mapping in the case where the names of the getKeys are not known
 /// in advance, e.g. a string map.
 template <typename T>
 struct CustomMappingTraits
@@ -649,7 +649,7 @@ struct unvalidatedMappingTraits
 class IO
 {
 public:
-   IO(void *m_context = nullptr);
+   IO(void *context = nullptr);
    virtual ~IO();
 
    virtual bool outputting() = 0;
@@ -670,7 +670,7 @@ public:
    virtual void endMapping() = 0;
    virtual bool preflightKey(const char*, bool, bool, bool &, void *&) = 0;
    virtual void postflightKey(void*) = 0;
-   virtual std::vector<StringRef> keys() = 0;
+   virtual std::vector<StringRef> getKeys() = 0;
 
    virtual void beginFlowMapping() = 0;
    virtual void endFlowMapping() = 0;
@@ -1005,7 +1005,7 @@ yamlize(IO &io, T &value, bool, EmptyContext &context) {
       io.endMapping();
    } else {
       io.beginMapping();
-      for (StringRef key : io.keys()) {
+      for (StringRef key : io.getKeys()) {
          CustomMappingTraits<T>::inputOne(io, key, value);
       }
       io.endMapping();
@@ -1306,7 +1306,7 @@ private:
 /// parser only lets you look at each node once.  The buffering layer lets
 /// you search and interate multiple times.  This is necessary because
 /// the mapRequired() method calls may not be in the same order
-/// as the keys in the document.
+/// as the getKeys in the document.
 ///
 class Input : public IO
 {
@@ -1334,7 +1334,7 @@ private:
    void endMapping() override;
    bool preflightKey(const char *, bool, bool, bool &, void *&) override;
    void postflightKey(void *) override;
-   std::vector<StringRef> keys() override;
+   std::vector<StringRef> getKeys() override;
    void beginFlowMapping() override;
    void endFlowMapping() override;
    unsigned beginSequence() override;
@@ -1514,7 +1514,7 @@ public:
    void endMapping() override;
    bool preflightKey(const char *key, bool, bool, bool &, void *&) override;
    void postflightKey(void *) override;
-   std::vector<StringRef> keys() override;
+   std::vector<StringRef> getKeys() override;
    void beginFlowMapping() override;
    void endFlowMapping() override;
    unsigned beginSequence() override;
