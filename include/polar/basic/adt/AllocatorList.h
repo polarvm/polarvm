@@ -148,7 +148,7 @@ private:
 
       reference operator*() const
       {
-         return BaseType::wrapped()->m_value;
+         return BaseType::getWrapped()->m_value;
       }
 
       pointer operator->() const
@@ -158,7 +158,7 @@ private:
 
       friend bool operator==(const IteratorImpl &lhs, const IteratorImpl &rhs)
       {
-         return lhs.wrapped() == rhs.wrapped();
+         return lhs.getWrapped() == rhs.getWrapped();
       }
 
       friend bool operator!=(const IteratorImpl &lhs, const IteratorImpl &rhs)
@@ -169,12 +169,12 @@ private:
 
 public:
    using Iterator = IteratorImpl<T, typename ListType::Iterator>;
-   using reverse_Iterator =
-   IteratorImpl<T, typename ListType::reverse_Iterator>;
-   using const_Iterator =
-   IteratorImpl<const T, typename ListType::const_Iterator>;
-   using const_reverse_Iterator =
-   IteratorImpl<const T, typename ListType::const_reverse_Iterator>;
+   using reverse_iterator =
+   IteratorImpl<T, typename ListType::reverse_iterator>;
+   using const_iterator =
+   IteratorImpl<const T, typename ListType::const_iterator>;
+   using const_reverse_iterator =
+   IteratorImpl<const T, typename ListType::const_reverse_iterator>;
 
    AllocatorList() = default;
    AllocatorList(AllocatorList &&other)
@@ -231,34 +231,34 @@ public:
       return Iterator(m_list.end());
    }
 
-   const_Iterator begin() const
+   const_iterator begin() const
    {
-      return const_Iterator(m_list.begin());
+      return const_iterator(m_list.begin());
    }
 
-   const_Iterator end() const
+   const_iterator end() const
    {
-      return const_Iterator(m_list.end());
+      return const_iterator(m_list.end());
    }
 
-   reverse_Iterator rbegin()
+   reverse_iterator rbegin()
    {
-      return reverse_Iterator(m_list.rbegin());
+      return reverse_iterator(m_list.rbegin());
    }
 
-   reverse_Iterator rend()
+   reverse_iterator rend()
    {
-      return reverse_Iterator(m_list.rend());
+      return reverse_iterator(m_list.rend());
    }
 
-   const_reverse_Iterator rbegin() const
+   const_reverse_iterator rbegin() const
    {
-      return const_reverse_Iterator(m_list.rbegin());
+      return const_reverse_iterator(m_list.rbegin());
    }
 
-   const_reverse_Iterator rend() const
+   const_reverse_iterator rend() const
    {
-      return const_reverse_Iterator(m_list.rend());
+      return const_reverse_iterator(m_list.rend());
    }
 
    T &back()
@@ -288,19 +288,19 @@ public:
 
    Iterator insert(Iterator iter, T &&value)
    {
-      return Iterator(m_list.insert(iter.wrapped(), *create(std::move(value))));
+      return Iterator(m_list.insert(iter.getWrapped(), *create(std::move(value))));
    }
 
    Iterator insert(Iterator iter, const T &value)
    {
-      return Iterator(m_list.insert(iter.wrapped(), *create(value)));
+      return Iterator(m_list.insert(iter.getWrapped(), *create(value)));
    }
 
    template <class Iterator>
    void insert(Iterator iter, Iterator first, Iterator last)
    {
       for (; first != last; ++first) {
-         m_list.insert(iter.wrapped(), *create(*first));
+         m_list.insert(iter.getWrapped(), *create(*first));
       }
    }
 
@@ -312,7 +312,7 @@ public:
    Iterator erase(Iterator first, Iterator last)
    {
       return Iterator(
-               m_list.eraseAndDispose(first.wrapped(), last.wrapped(), Disposer(*this)));
+               m_list.eraseAndDispose(first.getWrapped(), last.getWrapped(), Disposer(*this)));
    }
 
    void clear()

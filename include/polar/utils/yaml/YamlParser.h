@@ -63,7 +63,7 @@ namespace utils {
 class MemoryBufferRef;
 class SourceMgr;
 class RawOutStream;
-} // basic
+} // utils
 
 namespace yaml {
 

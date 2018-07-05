@@ -98,9 +98,13 @@ public:
    using const_pointer = typename OptionsType::const_pointer;
    using const_reference = typename OptionsType::const_reference;
    using iterator = IntrusiveListIterator<OptionsType, false, false>;
+   using Iterator = iterator;
    using const_iterator = IntrusiveListIterator<OptionsType, false, true>;
+   using ConstIterator = const_iterator;
    using reverse_iterator = IntrusiveListIterator<OptionsType, true, false>;
+   using ReverseIterator = reverse_iterator;
    using const_reverse_iterator = IntrusiveListIterator<OptionsType, true, true>;
+   using ConstReverseIterator = const_reverse_iterator;
    using size_type = size_t;
    using difference_type = ptrdiff_t;
    
