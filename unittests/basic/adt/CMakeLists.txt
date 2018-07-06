@@ -7,5 +7,6 @@ polar_add_unittest(PolarBaseLibTests BasicAdtTest
    IntrusiveListNodeBaseTest.cpp
    IntrusiveListNodeTest.cpp
    SmallVectorTest.cpp
+   BitMaskEnumTest.cpp
    )
 
