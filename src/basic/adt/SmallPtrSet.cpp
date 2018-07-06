@@ -171,10 +171,10 @@ void SmallPtrSetImplBase::copyFrom(const SmallPtrSetImplBase &other)
 {
    assert(&other != this && "Self-copy should be handled by the caller.");
 
-   if (isSmall() && other.isSmall())
+   if (isSmall() && other.isSmall()) {
       assert(m_curArraySize == other.m_curArraySize &&
              "Cannot assign sets with different small sizes");
-
+   }
    // If we're becoming small, prepare to insert into our stack space
    if (other.isSmall()) {
       if (!isSmall()) {
