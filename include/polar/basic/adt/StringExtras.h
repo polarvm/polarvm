@@ -394,7 +394,7 @@ inline size_t join_one_item_size(const char *str)
 template <typename T>
 inline size_t join_one_item_size(const T &str)
 {
-   return str.getSize();
+   return str.size();
 }
 
 inline size_t join_items_size()

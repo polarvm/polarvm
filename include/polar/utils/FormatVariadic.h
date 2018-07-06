@@ -105,23 +105,24 @@ public:
    
    void format(RawOutStream &outStream) const
    {
-      for (auto &replacement : m_replacements) {
-         if (replacement.m_type == ReplacementType::Empty)
-            continue;
-         if (replacement.m_type == ReplacementType::Literal) {
-            outStream << replacement.m_spec;
-            continue;
-         }
-         if (replacement.m_index >= m_adapters.size()) {
-            outStream << replacement.m_spec;
-            continue;
-         }
+      // unittest mark
+//      for (auto &replacement : m_replacements) {
+//         if (replacement.m_type == ReplacementType::Empty)
+//            continue;
+//         if (replacement.m_type == ReplacementType::Literal) {
+//            outStream << replacement.m_spec;
+//            continue;
+//         }
+//         if (replacement.m_index >= m_adapters.size()) {
+//            outStream << replacement.m_spec;
+//            continue;
+//         }
          
-         auto w = m_adapters[replacement.m_index];
+//         auto w = m_adapters[replacement.m_index];
          
-         FmtAlign align(*w, replacement.m_where, replacement.m_align);
-         align.format(outStream, replacement.m_options);
-      }
+//         FmtAlign align(*w, replacement.m_where, replacement.m_align);
+//         align.format(outStream, replacement.m_options);
+//      }
    }
    
    static std::vector<ReplacementItem> parseFormatString(StringRef fmt);
@@ -130,19 +131,21 @@ public:
    
    std::string getStr() const
    {
-      std::string result;
-      RawStringOutStream stream(result);
-      stream << *this;
-      stream.flush();
-      return result;
+      // unittest mark
+//      std::string result;
+//      RawStringOutStream stream(result);
+//      stream << *this;
+//      stream.flush();
+//      return result;
    }
    
    template <unsigned N> SmallString<N> getSmallStr() const
    {
-      SmallString<N> result;
-      RawSvectorOutStream stream(result);
-      stream << *this;
-      return result;
+      // unittest mark
+//      SmallString<N> result;
+//      RawSvectorOutStream stream(result);
+//      stream << *this;
+//      return result;
    }
    
    template <unsigned N> operator SmallString<N>() const
@@ -277,7 +280,8 @@ template <typename T> struct FormatProvider<FormatvObject<T>>
 {
    static void format(const FormatvObject<T> &value, RawOutStream &outStream, StringRef)
    {
-      outStream << value;
+      // unittest mark
+//      outStream << value;
    }
 };
 

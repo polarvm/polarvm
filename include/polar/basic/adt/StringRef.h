@@ -168,6 +168,14 @@ public:
       return m_length;
    }
 
+   /// size - Get the string size.
+   POLAR_NODISCARD
+   POLAR_ATTRIBUTE_ALWAYS_INLINE
+   size_t size() const
+   {
+      return m_length;
+   }
+
    /// front - Get the first character in the string.
    POLAR_NODISCARD
    char getFront() const

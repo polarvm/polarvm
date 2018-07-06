@@ -41,8 +41,9 @@ std::string Twine::getStr() const
 
 void Twine::toVector(SmallVectorImpl<char> &out) const
 {
-   RawSvectorOutStream outstream(out);
-   print(outstream);
+   // unittest mark
+//   RawSvectorOutStream outstream(out);
+//   print(outstream);
 }
 
 StringRef Twine::toNullTerminatedStringRef(SmallVectorImpl<char> &out) const
@@ -69,134 +70,136 @@ StringRef Twine::toNullTerminatedStringRef(SmallVectorImpl<char> &out) const
 void Twine::printOneChild(RawOutStream &outstream, Child ptr,
                           NodeKind kind) const
 {
-   switch (kind) {
-   case NodeKind::NullKind: break;
-   case NodeKind::EmptyKind: break;
-   case NodeKind::TwineKind:
-      ptr.m_twine->print(outstream);
-      break;
-   case NodeKind::CStringKind:
-      outstream << ptr.m_CString;
-      break;
-   case NodeKind::StdStringKind:
-      outstream << *ptr.m_stdString;
-      break;
-   case NodeKind::StringRefKind:
-      outstream << *ptr.m_stringRef;
-      break;
-   case NodeKind::SmallStringKind:
-      outstream << *ptr.m_smallString;
-      break;
-   case NodeKind::FormatvObjectKind:
-      outstream << *ptr.m_formatvObject;
-      break;
-   case NodeKind::CharKind:
-      outstream << ptr.m_character;
-      break;
-   case NodeKind::DecUIKind:
-      outstream << ptr.m_decUInt;
-      break;
-   case NodeKind::DecIKind:
-      outstream << ptr.m_decInt;
-      break;
-   case NodeKind::DecULKind:
-      outstream << *ptr.m_decULong;
-      break;
-   case NodeKind::DecLKind:
-      outstream << *ptr.m_decLong;
-      break;
-   case NodeKind::DecULLKind:
-      outstream << *ptr.m_decULongLong;
-      break;
-   case NodeKind::DecLLKind:
-      outstream << *ptr.m_decLongLong;
-      break;
-   case NodeKind::UHexKind:
-      outstream.writeHex(*ptr.m_uHex);
-      break;
-   }
+//   switch (kind) {
+//   case NodeKind::NullKind: break;
+//   case NodeKind::EmptyKind: break;
+//   case NodeKind::TwineKind:
+//      ptr.m_twine->print(outstream);
+//      break;
+//   case NodeKind::CStringKind:
+//      outstream << ptr.m_CString;
+//      break;
+//   case NodeKind::StdStringKind:
+//      outstream << *ptr.m_stdString;
+//      break;
+//   case NodeKind::StringRefKind:
+//      outstream << *ptr.m_stringRef;
+//      break;
+//   case NodeKind::SmallStringKind:
+//      outstream << *ptr.m_smallString;
+//      break;
+//   case NodeKind::FormatvObjectKind:
+//      outstream << *ptr.m_formatvObject;
+//      break;
+//   case NodeKind::CharKind:
+//      outstream << ptr.m_character;
+//      break;
+//   case NodeKind::DecUIKind:
+//      outstream << ptr.m_decUInt;
+//      break;
+//   case NodeKind::DecIKind:
+//      outstream << ptr.m_decInt;
+//      break;
+//   case NodeKind::DecULKind:
+//      outstream << *ptr.m_decULong;
+//      break;
+//   case NodeKind::DecLKind:
+//      outstream << *ptr.m_decLong;
+//      break;
+//   case NodeKind::DecULLKind:
+//      outstream << *ptr.m_decULongLong;
+//      break;
+//   case NodeKind::DecLLKind:
+//      outstream << *ptr.m_decLongLong;
+//      break;
+//   case NodeKind::UHexKind:
+//      outstream.writeHex(*ptr.m_uHex);
+//      break;
+//   }
 }
 
 void Twine::printOneChildRepr(RawOutStream &outstream, Child ptr,
-                              NodeKind kind) const {
-   switch (kind) {
-   case NodeKind::NullKind:
-      outstream << "null"; break;
-   case NodeKind::EmptyKind:
-      outstream << "empty"; break;
-   case NodeKind::TwineKind:
-      outstream << "rope:";
-      ptr.m_twine->printRepr(outstream);
-      break;
-   case NodeKind::CStringKind:
-      outstream << "cstring:\""
-                << ptr.m_CString << "\"";
-      break;
-   case NodeKind::StdStringKind:
-      outstream << "std::string:\""
-                << ptr.m_stdString << "\"";
-      break;
-   case NodeKind::StringRefKind:
-      outstream << "stringref:\""
-                << ptr.m_stringRef << "\"";
-      break;
-   case NodeKind::SmallStringKind:
-      outstream << "smallstring:\"" << *ptr.m_smallString << "\"";
-      break;
-   case NodeKind::FormatvObjectKind:
-      outstream << "formatv:\"" << *ptr.m_formatvObject << "\"";
-      break;
-   case NodeKind::CharKind:
-      outstream << "char:\"" << ptr.m_character << "\"";
-      break;
-   case NodeKind::DecUIKind:
-      outstream << "decUI:\"" << ptr.m_decUInt << "\"";
-      break;
-   case NodeKind::DecIKind:
-      outstream << "decI:\"" << ptr.m_decInt << "\"";
-      break;
-   case NodeKind::DecULKind:
-      outstream << "decUL:\"" << *ptr.m_decULong << "\"";
-      break;
-   case NodeKind::DecLKind:
-      outstream << "decL:\"" << *ptr.m_decLong << "\"";
-      break;
-   case NodeKind::DecULLKind:
-      outstream << "decULL:\"" << *ptr.m_decULongLong << "\"";
-      break;
-   case NodeKind::DecLLKind:
-      outstream << "decLL:\"" << *ptr.m_decLongLong << "\"";
-      break;
-   case NodeKind::UHexKind:
-      outstream << "uhex:\"" << ptr.m_uHex << "\"";
-      break;
-   }
+                              NodeKind kind) const
+{
+   // unittest mark
+//   switch (kind) {
+//   case NodeKind::NullKind:
+//      outstream << "null"; break;
+//   case NodeKind::EmptyKind:
+//      outstream << "empty"; break;
+//   case NodeKind::TwineKind:
+//      outstream << "rope:";
+//      ptr.m_twine->printRepr(outstream);
+//      break;
+//   case NodeKind::CStringKind:
+//      outstream << "cstring:\""
+//                << ptr.m_CString << "\"";
+//      break;
+//   case NodeKind::StdStringKind:
+//      outstream << "std::string:\""
+//                << ptr.m_stdString << "\"";
+//      break;
+//   case NodeKind::StringRefKind:
+//      outstream << "stringref:\""
+//                << ptr.m_stringRef << "\"";
+//      break;
+//   case NodeKind::SmallStringKind:
+//      outstream << "smallstring:\"" << *ptr.m_smallString << "\"";
+//      break;
+//   case NodeKind::FormatvObjectKind:
+//      outstream << "formatv:\"" << *ptr.m_formatvObject << "\"";
+//      break;
+//   case NodeKind::CharKind:
+//      outstream << "char:\"" << ptr.m_character << "\"";
+//      break;
+//   case NodeKind::DecUIKind:
+//      outstream << "decUI:\"" << ptr.m_decUInt << "\"";
+//      break;
+//   case NodeKind::DecIKind:
+//      outstream << "decI:\"" << ptr.m_decInt << "\"";
+//      break;
+//   case NodeKind::DecULKind:
+//      outstream << "decUL:\"" << *ptr.m_decULong << "\"";
+//      break;
+//   case NodeKind::DecLKind:
+//      outstream << "decL:\"" << *ptr.m_decLong << "\"";
+//      break;
+//   case NodeKind::DecULLKind:
+//      outstream << "decULL:\"" << *ptr.m_decULongLong << "\"";
+//      break;
+//   case NodeKind::DecLLKind:
+//      outstream << "decLL:\"" << *ptr.m_decLongLong << "\"";
+//      break;
+//   case NodeKind::UHexKind:
+//      outstream << "uhex:\"" << ptr.m_uHex << "\"";
+//      break;
+//   }
 }
 
 void Twine::print(RawOutStream &outstream) const
 {
-   printOneChild(outstream, m_lhs, getLhsKind());
-   printOneChild(outstream, m_rhs, getRhsKind());
+//   printOneChild(outstream, m_lhs, getLhsKind());
+//   printOneChild(outstream, m_rhs, getRhsKind());
 }
 
 void Twine::printRepr(RawOutStream &outstream) const
 {
-   outstream << "(Twine ";
-   printOneChildRepr(outstream, m_lhs, getLhsKind());
-   outstream << " ";
-   printOneChildRepr(outstream, m_rhs, getRhsKind());
-   outstream << ")";
+//   outstream << "(Twine ";
+//   printOneChildRepr(outstream, m_lhs, getLhsKind());
+//   outstream << " ";
+//   printOneChildRepr(outstream, m_rhs, getRhsKind());
+//   outstream << ")";
 }
 
 #if !defined(NDEBUG) || defined(POLAR_ENABLE_DUMP)
 POLAR_DUMP_METHOD void Twine::dump() const
 {
-   print(debug_stream());
+//   print(debug_stream());
 }
 
 POLAR_DUMP_METHOD void Twine::dumpRepr() const
 {
-   printRepr(debug_stream());
+//   printRepr(debug_stream());
 }
 #endif
 
