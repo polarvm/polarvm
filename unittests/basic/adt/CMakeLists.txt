@@ -16,5 +16,6 @@ polar_add_unittest(PolarBaseLibTests BasicAdtTest
    SmallStringTest.cpp
    SmallPtrSetTest.cpp
    SequenceTest.cpp
+   ScopeExitTest.cpp
    )
 

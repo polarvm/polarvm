@@ -33,7 +33,7 @@ public:
    {}
 
    ScopeExit(ScopeExit &&other)
-      : m_exitFunction(std::move(Rhs.m_exitFunction)), m_engaged(other.m_engaged)
+      : m_exitFunction(std::move(other.m_exitFunction)), m_engaged(other.m_engaged)
    {
       other.release();
    }
@@ -63,7 +63,7 @@ public:
 // Interface is specified by p0052r2.
 template <typename Callable>
 POLAR_NODISCARD internal::ScopeExit<typename std::decay<Callable>::type>
-make_ScopeExit(Callable &&func)
+make_scope_exit(Callable &&func)
 {
    return internal::ScopeExit<typename std::decay<Callable>::type>(
             std::forward<Callable>(func));
