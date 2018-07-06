@@ -299,16 +299,16 @@ auto reverse(
 ///   // R contains { 1, 3 }.
 /// \endcode
 template <typename WrappedIteratorT, typename PredicateT>
-class filter_iterator
+class FilterIterator
       : public IteratorAdaptorBase<
-      filter_iterator<WrappedIteratorT, PredicateT>, WrappedIteratorT,
+      FilterIterator<WrappedIteratorT, PredicateT>, WrappedIteratorT,
       typename std::common_type<
       std::forward_iterator_tag,
       typename std::iterator_traits<
       WrappedIteratorT>::iterator_category>::type>
 {
    using BaseT = IteratorAdaptorBase<
-   filter_iterator<WrappedIteratorT, PredicateT>, WrappedIteratorT,
+   FilterIterator<WrappedIteratorT, PredicateT>, WrappedIteratorT,
    typename std::common_type<
    std::forward_iterator_tag,
    typename std::iterator_traits<WrappedIteratorT>::iterator_category>::
@@ -331,7 +331,7 @@ class filter_iterator
    
    // Construct the begin iterator. The begin iterator requires to know where end
    // is, so that it can properly stop when it hits end.
-   filter_iterator(WrappedIteratorT begin, WrappedIteratorT end, PredicateT pred)
+   FilterIterator(WrappedIteratorT begin, WrappedIteratorT end, PredicateT pred)
       : BaseT(std::move(begin)),
         m_payload(PayloadType{std::move(end), std::move(pred)})
    {
@@ -340,13 +340,13 @@ class filter_iterator
    
    // Construct the end iterator. It's not incrementable, so Payload doesn't
    // have to be engaged.
-   filter_iterator(WrappedIteratorT end) : BaseT(end)
+   FilterIterator(WrappedIteratorT end) : BaseT(end)
    {}
    
 public:
    using BaseT::operator++;
    
-   filter_iterator &operator++()
+   FilterIterator &operator++()
    {
       BaseT::operator++();
       findNextValid();
@@ -354,30 +354,30 @@ public:
    }
    
    template <typename RT, typename PT>
-   friend IteratorRange<filter_iterator<internal::IterOfRange<RT>, PT>>
+   friend IteratorRange<FilterIterator<internal::IterOfRange<RT>, PT>>
    make_filter_range(RT &&, PT);
 };
 
 /// Convenience function that takes a range of elements and a predicate,
-/// and return a new filter_iterator range.
+/// and return a new FilterIterator range.
 ///
 /// FIXME: Currently if RangeT && is a rvalue reference to a temporary, the
 /// lifetime of that temporary is not kept by the returned range object, and the
 /// temporary is going to be dropped on the floor after the make_iterator_range
 /// full expression that contains this function call.
 template <typename RangeT, typename PredicateT>
-IteratorRange<filter_iterator<internal::IterOfRange<RangeT>, PredicateT>>
+IteratorRange<FilterIterator<internal::IterOfRange<RangeT>, PredicateT>>
 make_filter_range(RangeT &&range, PredicateT pred)
 {
    using FilterIteratorT =
-   filter_iterator<internal::IterOfRange<RangeT>, PredicateT>;
+   FilterIterator<internal::IterOfRange<RangeT>, PredicateT>;
    return make_range(FilterIteratorT(std::begin(std::forward<RangeT>(range)),
                                      std::end(std::forward<RangeT>(range)),
                                      std::move(pred)),
                      FilterIteratorT(std::end(std::forward<RangeT>(range))));
 }
 
-// forward declarations required by zip_shortest/zip_first
+// forward declarations required by ZipShortest/ZipFirst
 template <typename R, typename UnaryPredicate>
 bool all_of(R &&range, UnaryPredicate pred);
 
@@ -417,7 +417,7 @@ typename ZipTupleType<Iters...>::type *,
 typename ZipTupleType<Iters...>::type>;
 
 template <typename ZipType, typename... Iters>
-struct zip_common : public zip_traits<ZipType, Iters...> {
+struct ZipCommon : public zip_traits<ZipType, Iters...> {
    using Base = zip_traits<ZipType, Iters...>;
    using value_type = typename Base::value_type;
    
@@ -443,7 +443,7 @@ protected:
    }
    
 public:
-   zip_common(Iters &&... ts) : m_iterators(std::forward<Iters>(ts)...)
+   ZipCommon(Iters &&... ts) : m_iterators(std::forward<Iters>(ts)...)
    {}
    
    value_type operator*()
@@ -472,22 +472,22 @@ public:
 };
 
 template <typename... Iters>
-struct zip_first : public zip_common<zip_first<Iters...>, Iters...>
+struct ZipFirst : public ZipCommon<ZipFirst<Iters...>, Iters...>
 {
-   using Base = zip_common<zip_first<Iters...>, Iters...>;
+   using Base = ZipCommon<ZipFirst<Iters...>, Iters...>;
    
-   bool operator==(const zip_first<Iters...> &other) const {
+   bool operator==(const ZipFirst<Iters...> &other) const {
       return std::get<0>(this->iterators) == std::get<0>(other.iterators);
    }
    
-   zip_first(Iters &&... ts) : Base(std::forward<Iters>(ts)...) {}
+   ZipFirst(Iters &&... ts) : Base(std::forward<Iters>(ts)...) {}
 };
 
 template <typename... Iters>
-class zip_shortest : public zip_common<zip_shortest<Iters...>, Iters...>
+class ZipShortest : public ZipCommon<ZipShortest<Iters...>, Iters...>
 {
    template <size_t... Ns>
-   bool test(const zip_shortest<Iters...> &other, index_sequence<Ns...>) const
+   bool test(const ZipShortest<Iters...> &other, index_sequence<Ns...>) const
    {
       return all_of(std::initializer_list<bool>{std::get<Ns>(this->m_iterators) !=
                                                 std::get<Ns>(other.m_iterators)...},
@@ -495,12 +495,12 @@ class zip_shortest : public zip_common<zip_shortest<Iters...>, Iters...>
    }
    
 public:
-   using Base = zip_common<zip_shortest<Iters...>, Iters...>;
+   using Base = ZipCommon<ZipShortest<Iters...>, Iters...>;
    
-   zip_shortest(Iters &&... ts) : Base(std::forward<Iters>(ts)...)
+   ZipShortest(Iters &&... ts) : Base(std::forward<Iters>(ts)...)
    {}
    
-   bool operator==(const zip_shortest<Iters...> &other) const
+   bool operator==(const ZipShortest<Iters...> &other) const
    {
       return !test(other, index_sequence_for<Iters...>{});
    }
@@ -551,20 +551,20 @@ public:
 
 /// zip iterator for two or more iteratable types.
 template <typename T, typename U, typename... Args>
-internal::Zippy<internal::zip_shortest, T, U, Args...> zip(T &&t, U &&u,
+internal::Zippy<internal::ZipShortest, T, U, Args...> zip(T &&t, U &&u,
                                                            Args &&... args)
 {
-   return internal::Zippy<internal::zip_shortest, T, U, Args...>(
+   return internal::Zippy<internal::ZipShortest, T, U, Args...>(
             std::forward<T>(t), std::forward<U>(u), std::forward<Args>(args)...);
 }
 
 /// zip iterator that, for the sake of efficiency, assumes the first iteratee to
 /// be the shortest.
 template <typename T, typename U, typename... Args>
-internal::Zippy<internal::zip_first, T, U, Args...> zip_first(T &&t, U &&u,
+internal::Zippy<internal::ZipFirst, T, U, Args...> ZipFirst(T &&t, U &&u,
                                                               Args &&... args)
 {
-   return internal::Zippy<internal::zip_first, T, U, Args...>(
+   return internal::Zippy<internal::ZipFirst, T, U, Args...>(
             std::forward<T>(t), std::forward<U>(u), std::forward<Args>(args)...);
 }
 
@@ -1297,9 +1297,9 @@ private:
 };
 
 template <typename R>
-class enumerator {
+class Enumerator {
 public:
-   explicit enumerator(R &&m_range)
+   explicit Enumerator(R &&m_range)
       : m_range(std::forward<R>(m_range))
    {}
    
@@ -1335,9 +1335,9 @@ private:
 ///   Item 3 - D
 ///
 template <typename R>
-internal::enumerator<R> enumerate(R &&range)
+internal::Enumerator<R> enumerate(R &&range)
 {
-   return internal::enumerator<R>(std::forward<R>(range));
+   return internal::Enumerator<R>(std::forward<R>(range));
 }
 
 namespace internal {
