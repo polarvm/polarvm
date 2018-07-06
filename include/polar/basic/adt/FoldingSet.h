@@ -76,7 +76,7 @@ using polar::utils::BumpPtrAllocator;
 /// 1) If you have an existing node that you want add to the set but unsure
 /// that the node might already exist then call;
 ///
-///    MyNode *M = MyFoldingSet.getOrinsertNode(N);
+///    MyNode *M = MyFoldingSet.getOrInsertNode(N);
 ///
 /// If The result is equal to the input then the node has been inserted.
 /// Otherwise, the result is the node existing in the folding set, and the
@@ -225,10 +225,10 @@ protected:
    /// was removed or false if the node was not in the folding set.
    bool removeNode(Node *node);
 
-   /// getOrinsertNode - If there is an existing simple Node exactly
+   /// getOrInsertNode - If there is an existing simple Node exactly
    /// equal to the specified node, return it.  Otherwise, insert 'N' and return
    /// it instead.
-   Node *getOrinsertNode(Node *node);
+   Node *getOrInsertNode(Node *node);
 
    /// findNodeOrInsertPos - Look up the node specified by ID.  If it exists,
    /// return it.  If not, return the insertion token that will make insertion
@@ -524,12 +524,12 @@ public:
       return FoldingSetBase::removeNode(node);
    }
 
-   /// getOrinsertNode - If there is an existing simple Node exactly
+   /// getOrInsertNode - If there is an existing simple Node exactly
    /// equal to the specified node, return it.  Otherwise, insert 'N' and
    /// return it instead.
-   T *getOrinsertNode(T *node)
+   T *getOrInsertNode(T *node)
    {
-      return static_cast<T *>(FoldingSetBase::getOrinsertNode(node));
+      return static_cast<T *>(FoldingSetBase::getOrInsertNode(node));
    }
 
    /// findNodeOrInsertPos - Look up the node specified by ID.  If it exists,
@@ -552,7 +552,7 @@ public:
    /// it is not already in the folding set.
    void insertNode(T *node)
    {
-      T *inserted = getOrinsertNode(node);
+      T *inserted = getOrInsertNode(node);
       (void)inserted;
       assert(inserted == node && "Node already inserted!");
    }
@@ -706,12 +706,12 @@ public:
       return m_set.findNodeOrInsertPos(id, insertPos);
    }
 
-   /// getOrinsertNode - If there is an existing simple Node exactly
+   /// getOrInsertNode - If there is an existing simple Node exactly
    /// equal to the specified node, return it.  Otherwise, insert 'N' and
    /// return it instead.
-   T *getOrinsertNode(T *node)
+   T *getOrInsertNode(T *node)
    {
-      T *result = m_set.getOrinsertNode(node);
+      T *result = m_set.getOrInsertNode(node);
       if (result == node) {
          m_vector.push_back(node);
       }

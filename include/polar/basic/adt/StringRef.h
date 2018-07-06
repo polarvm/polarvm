@@ -101,8 +101,8 @@ public:
 
    /// Construct a string ref from an std::string.
    POLAR_ATTRIBUTE_ALWAYS_INLINE
-   /*implicit*/ StringRef(const std::string &Str)
-      : m_data(Str.data()), m_length(Str.length())
+   /*implicit*/ StringRef(const std::string &str)
+      : m_data(str.c_str()), m_length(str.length())
    {}
 
    static StringRef withNullAsEmpty(const char *data)
@@ -292,7 +292,7 @@ public:
    char operator[](size_t index) const
    {
       assert(index < m_length && "Invalid index!");
-      return m_data[m_length];
+      return m_data[index];
    }
 
    /// Disallow accidental assignment from a temporary std::string.
@@ -400,19 +400,19 @@ public:
       return findIf([func](char c) { return !func(c); }, from);
    }
 
-   /// Search for the first string \p Str in the string.
+   /// Search for the first string \p str in the string.
    ///
-   /// \returns The index of the first occurrence of \p Str, or npos if not
+   /// \returns The index of the first occurrence of \p str, or npos if not
    /// found.
    POLAR_NODISCARD
    size_t find(StringRef str, size_t from = 0) const;
 
-   /// Search for the first string \p Str in the string, ignoring case.
+   /// Search for the first string \p str in the string, ignoring case.
    ///
-   /// \returns The index of the first occurrence of \p Str, or npos if not
+   /// \returns The index of the first occurrence of \p str, or npos if not
    /// found.
    POLAR_NODISCARD
-   size_t findLower(StringRef Str, size_t from = 0) const;
+   size_t findLower(StringRef str, size_t from = 0) const;
 
    /// Search for the last character \p C in the string.
    ///
@@ -438,16 +438,16 @@ public:
    POLAR_NODISCARD
    size_t rfindLower(char character, size_t from = npos) const;
 
-   /// Search for the last string \p Str in the string.
+   /// Search for the last string \p str in the string.
    ///
-   /// \returns The index of the last occurrence of \p Str, or npos if not
+   /// \returns The index of the last occurrence of \p str, or npos if not
    /// found.
    POLAR_NODISCARD
    size_t rfind(StringRef str) const;
 
-   /// Search for the last string \p Str in the string, ignoring case.
+   /// Search for the last string \p str in the string, ignoring case.
    ///
-   /// \returns The index of the last occurrence of \p Str, or npos if not
+   /// \returns The index of the last occurrence of \p str, or npos if not
    /// found.
    POLAR_NODISCARD
    size_t rfindLower(StringRef str) const;
@@ -559,7 +559,7 @@ public:
       return count;
    }
 
-   /// Return the number of non-overlapped occurrences of \p Str in
+   /// Return the number of non-overlapped occurrences of \p str in
    /// the string.
    size_t count(StringRef str) const;
 
@@ -969,15 +969,15 @@ class StringLiteral : public StringRef
 {
 public:
    template <size_t N>
-   constexpr StringLiteral(const char (&Str)[N])
+   constexpr StringLiteral(const char (&str)[N])
 #if defined(__clang__) && __has_attribute(enable_if)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wgcc-compat"
-   __attribute((enable_if(__builtin_strlen(Str) == N - 1,
+   __attribute((enable_if(__builtin_strlen(str) == N - 1,
                           "invalid string literal")))
 #pragma clang diagnostic pop
 #endif
-      : StringRef(Str, N - 1) {
+      : StringRef(str, N - 1) {
    }
 };
 

@@ -44,12 +44,12 @@ using polar::basic::StringRef;
 using polar::basic::StringMap;
 
 #if defined(BYTE_ORDER) && defined(BIG_ENDIAN) && BYTE_ORDER == BIG_ENDIAN
-constexpr bool sg_isBigEndianHost = true;
+static constexpr bool sg_isBigEndianHost = true;
 #else
-constexpr bool sg_isBigEndianHost = false;
+static constexpr bool sg_isBigEndianHost = false;
 #endif
 
-static const bool sg_isLittleEndianHost = !sg_isBigEndianHost;
+static constexpr bool sg_isLittleEndianHost = !sg_isBigEndianHost;
 
 /// getDefaultTargetTriple() - Return the default target triple the compiler
 /// has been configured to produce code for.
