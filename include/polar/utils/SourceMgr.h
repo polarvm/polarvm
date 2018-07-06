@@ -58,42 +58,16 @@ private:
       /// The memory buffer for the file.
       std::unique_ptr<MemoryBuffer> m_buffer;
 
-      /// Helper type for m_offsetCache below: since we're storing many offsets
-      /// into relatively small files (often smaller than 2^8 or 2^16 bytes),
-      /// we select the offset vector element type dynamically based on the
-      /// size of m_buffer.
-      using VariableSizeOffsets = PointerUnion4<std::vector<uint8_t> *,
-      std::vector<uint16_t> *,
-      std::vector<uint32_t> *,
-      std::vector<uint64_t> *>;
-
-      /// Vector of offsets into m_buffer at which there are line-endings
-      /// (lazily populated). Once populated, the '\n' that marks the end of
-      /// line number N from [1..] is at m_buffer[m_offsetCache[N-1]]. Since
-      /// these offsets are in sorted (ascending) order, they can be
-      /// binary-searched for the first one after any given offset (eg. an
-      /// offset corresponding to a particular SMLocation).
-      mutable VariableSizeOffsets m_offsetCache;
-
-      /// Populate \c m_offsetCache and look up a given \p Ptr in it, assuming
-      /// it points somewhere into \c m_buffer. The static type parameter \p T
-      /// must be an unsigned integer type from uint{8,16,32,64}_t large
-      /// enough to store offsets inside \c m_buffer.
-      template<typename T>
-      unsigned getLineNumber(const char *Ptr) const;
-
       /// This is the location of the parent include, or null if at the top level.
       SMLocation m_includeLoc;
-
-      SrcBuffer() = default;
-      SrcBuffer(SrcBuffer &&);
-      SrcBuffer(const SrcBuffer &) = delete;
-      SrcBuffer &operator=(const SrcBuffer &) = delete;
-      ~SrcBuffer();
    };
 
    /// This is all of the buffers that we are reading from.
    std::vector<SrcBuffer> m_buffers;
+
+   /// This is a cache for line number queries, its implementation is really
+   /// private to SourceMgr.cpp.
+   mutable void *m_lineNoCache = nullptr;
 
    // This is the list of directories we should search for include files in.
    std::vector<std::string> m_includeDirectories;
@@ -110,7 +84,7 @@ public:
    SourceMgr() = default;
    SourceMgr(const SourceMgr &) = delete;
    SourceMgr &operator=(const SourceMgr &) = delete;
-   ~SourceMgr() = default;
+   ~SourceMgr();
 
    void setIncludeDirs(const std::vector<std::string> &dirs)
    {
@@ -182,17 +156,17 @@ public:
    /// If no file is found, this returns 0, otherwise it returns the buffer ID
    /// of the stacked file. The full path to the included file can be found in
    /// \p IncludedFile.
-   unsigned AddIncludeFile(const std::string &filename, SMLocation includeLoc,
+   unsigned addIncludeFile(const std::string &filename, SMLocation includeLoc,
                            std::string &includedFile);
 
    /// Return the ID of the buffer containing the specified location.
    ///
    /// 0 is returned if the buffer is not found.
-   unsigned FindBufferContainingLoc(SMLocation location) const;
+   unsigned findBufferContainingLoc(SMLocation location) const;
 
    /// Find the line number for the specified location in the specified file.
    /// This is not a fast method.
-   unsigned FindLineNumber(SMLocation location, unsigned bufferID = 0) const
+   unsigned findLineNumber(SMLocation location, unsigned bufferID = 0) const
    {
       return getLineAndColumn(location, bufferID).first;
    }
@@ -240,7 +214,7 @@ public:
    ///
    /// \param m_includeLoc The location of the include.
    /// \param OS the raw_ostream to print on.
-   void pintIncludeStack(SMLocation includeLoc, RawOutStream &outStream) const;
+   void printIncludeStack(SMLocation includeLoc, RawOutStream &outStream) const;
 };
 
 /// Represents a single fixit, a replacement of one range of text with another.
