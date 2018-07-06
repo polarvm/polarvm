@@ -17,7 +17,8 @@ using namespace polar::basic;
 
 namespace {
 
-TEST(StringExtrasTest, Join) {
+TEST(StringExtrasTest, Join)
+{
   std::vector<std::string> Items;
   EXPECT_EQ("", join(Items.begin(), Items.end(), " <sep> "));
 
@@ -32,7 +33,8 @@ TEST(StringExtrasTest, Join) {
             join(Items.begin(), Items.end(), " <sep> "));
 }
 
-TEST(StringExtrasTest, JoinItems) {
+TEST(StringExtrasTest, JoinItems)
+{
   const char *Foo = "foo";
   std::string Bar = "bar";
   StringRef Baz = "baz";
@@ -56,7 +58,8 @@ TEST(StringExtrasTest, JoinItems) {
   EXPECT_EQ("foo/bar/baz/x", join_items('/', Foo, Bar, Baz, X));
 }
 
-TEST(StringExtrasTest, ToAndFromHex) {
+TEST(StringExtrasTest, ToAndFromHex)
+{
   std::vector<uint8_t> OddBytes = {0x5, 0xBD, 0x0D, 0x3E, 0xCD};
   std::string OddStr = "05BD0D3ECD";
   StringRef OddData(reinterpret_cast<const char *>(OddBytes.data()),
@@ -72,7 +75,8 @@ TEST(StringExtrasTest, ToAndFromHex) {
   EXPECT_EQ(EvenData, from_hex(EvenStr));
 }
 
-TEST(StringExtrasTest, to_float) {
+TEST(StringExtrasTest, to_float)
+{
   float F;
   EXPECT_TRUE(to_float("4.7", F));
   EXPECT_FLOAT_EQ(4.7f, F);
@@ -90,7 +94,8 @@ TEST(StringExtrasTest, to_float) {
   EXPECT_FLOAT_EQ(4.7f, F); // F should be unchanged
 }
 
-TEST(StringExtrasTest, printLowerCase) {
+TEST(StringExtrasTest, printLowerCase)
+{
    // unittest mark
 //  std::string str;
 //  RawStringOutStream OS(str);

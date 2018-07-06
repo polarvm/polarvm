@@ -13,5 +13,6 @@ polar_add_unittest(PolarBaseLibTests BasicAdtTest
    DenseSetTest.cpp
    FunctionRefTest.cpp
    StringExtrasTest.cpp
+   SmallStringTest.cpp
    )
 
