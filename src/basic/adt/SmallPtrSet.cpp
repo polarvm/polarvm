@@ -43,7 +43,8 @@ void SmallPtrSetImplBase::shrinkAndClear()
    // Install the new array.  Clear all the buckets to empty.
    m_curArray = (const void**)malloc(sizeof(void*) * m_curArraySize);
    if (m_curArray == nullptr) {
-      report_bad_alloc_error("Allocation of SmallPtrSet bucket array failed.");
+      // unittest mark
+      // report_bad_alloc_error("Allocation of SmallPtrSet bucket array failed.");
    }
    memset(m_curArray, -1, m_curArraySize*sizeof(void*));
 }
@@ -115,7 +116,8 @@ void SmallPtrSetImplBase::grow(unsigned newSize)
    // Install the new array.  Clear all the buckets to empty.
    const void **newBuckets = (const void**) malloc(sizeof(void*) * newSize);
    if (newBuckets == nullptr) {
-      report_bad_alloc_error("Allocation of SmallPtrSet bucket array failed.");
+      // unittest mark
+      // report_bad_alloc_error("Allocation of SmallPtrSet bucket array failed.");
    }
    // Reset member only if memory was allocated successfully
    m_curArray = newBuckets;
@@ -149,7 +151,8 @@ SmallPtrSetImplBase::SmallPtrSetImplBase(const void **smallStorage,
    } else {
       m_curArray = (const void**)malloc(sizeof(void*) * that.m_curArraySize);
       if (m_curArray == nullptr) {
-         report_bad_alloc_error("Allocation of SmallPtrSet bucket array failed.");
+         // unittest mark
+         // report_bad_alloc_error("Allocation of SmallPtrSet bucket array failed.");
       }
    }
    // Copy over the that array.
@@ -191,7 +194,8 @@ void SmallPtrSetImplBase::copyFrom(const SmallPtrSetImplBase &other)
          m_curArray = temp;
       }
       if (m_curArray == nullptr) {
-         report_bad_alloc_error("Allocation of SmallPtrSet bucket array failed.");
+         // unittest mark
+         // report_bad_alloc_error("Allocation of SmallPtrSet bucket array failed.");
       }
    }
    copyHelper(other);
