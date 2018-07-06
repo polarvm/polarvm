@@ -33,6 +33,7 @@ namespace basic {
 
 using polar::utils::should_reverse_iterate;
 using polar::utils::AlignedCharArrayUnion;
+using polar::utils::IsPodLike;
 
 namespace internal {
 
@@ -154,7 +155,7 @@ public:
          return;
       }
       const KeyType emptyKey = getEmptyKey(), tombstoneKey = getTombstoneKey();
-      if (isPodLike<KeyType>::value && isPodLike<ValueType>::value) {
+      if (IsPodLike<KeyType>::value && IsPodLike<ValueType>::value) {
          // Use a simpler loop when these are trivial types.
          for (BucketType *ptr = getBuckets(), *end = getBucketsEnd(); ptr != end; ++ptr) {
             ptr->getFirst() = emptyKey;
@@ -469,7 +470,7 @@ protected:
       setNumEntries(other.getNumEntries());
       setNumTombstones(other.getNumTombstones());
 
-      if (isPodLike<KeyType>::value && isPodLike<ValueType>::value) {
+      if (IsPodLike<KeyType>::value && IsPodLike<ValueType>::value) {
          memcpy(getBuckets(), other.getBuckets(),
                 getNumBuckets() * sizeof(BucketType));
       } else {
@@ -796,7 +797,7 @@ public:
    {
       this->incrementEpoch();
       other.incrementEpoch();
-      std::swap(m_buckets, other.Buckets);
+      std::swap(m_buckets, other.m_buckets);
       std::swap(m_numEntries, other.m_numEntries);
       std::swap(m_numTombstones, other.m_numTombstones);
       std::swap(m_numBuckets, other.m_numBuckets);
@@ -823,7 +824,7 @@ public:
    {
       this->destroyAll();
       operator delete(m_buckets);
-      if (allocateBuckets(other.NumBuckets)) {
+      if (allocateBuckets(other.m_numBuckets)) {
          this->BaseType::copyFrom(other);
       } else {
          m_numEntries = 0;
@@ -1150,7 +1151,7 @@ public:
 
    void shrinkAndClear()
    {
-      unsigned oldSize = this->size();
+      unsigned oldSize = this->getSize();
       this->destroyAll();
 
       // Reduce the number of buckets.

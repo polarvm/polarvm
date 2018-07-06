@@ -277,9 +277,9 @@ public:
    }
 };
 
-/// SmallVectorTemplateBase<isPodLike = false> - This is where we put method
+/// SmallVectorTemplateBase<IsPodLike = false> - This is where we put method
 /// implementations that are designed to work with non-POD-like T's.
-template <typename T, bool isPodLike>
+template <typename T, bool IsPodLike>
 class SmallVectorTemplateBase : public SmallVectorTemplateCommon<T>
 {
 protected:
@@ -359,8 +359,8 @@ public:
 };
 
 // Define this out-of-line to dissuade the C++ compiler from inlining it.
-template <typename T, bool isPodLike>
-void SmallVectorTemplateBase<T, isPodLike>::grow(size_t minSize)
+template <typename T, bool IsPodLike>
+void SmallVectorTemplateBase<T, IsPodLike>::grow(size_t minSize)
 {
    size_t curCapacity = this->getCapacity();
    size_t curSize =this-> getSize();
@@ -390,7 +390,7 @@ void SmallVectorTemplateBase<T, isPodLike>::grow(size_t minSize)
 }
 
 
-/// SmallVectorTemplateBase<isPodLike = true> - This is where we put method
+/// SmallVectorTemplateBase<IsPodLike = true> - This is where we put method
 /// implementations that are designed to work with POD-like T's.
 template <typename T>
 class SmallVectorTemplateBase<T, true> : public SmallVectorTemplateCommon<T>
@@ -474,9 +474,9 @@ public:
 /// This class consists of common code factored out of the SmallVector class to
 /// reduce code duplication based on the SmallVector 'N' template parameter.
 template <typename T>
-class SmallVectorImpl : public SmallVectorTemplateBase<T, utils::is_pod_like<T>::value>
+class SmallVectorImpl : public SmallVectorTemplateBase<T, utils::IsPodLike<T>::value>
 {
-   using SuperClass = SmallVectorTemplateBase<T, utils::is_pod_like<T>::value>;
+   using SuperClass = SmallVectorTemplateBase<T, utils::IsPodLike<T>::value>;
 
 public:
    using iterator = typename SuperClass::iterator;
@@ -486,7 +486,7 @@ public:
 protected:
    // Default ctor - Initialize to empty.
    explicit SmallVectorImpl(unsigned N)
-      : SmallVectorTemplateBase<T, utils::is_pod_like<T>::value>(N*sizeof(T))
+      : SmallVectorTemplateBase<T, utils::IsPodLike<T>::value>(N*sizeof(T))
    {
    }
 

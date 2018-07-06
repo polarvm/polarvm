@@ -212,12 +212,6 @@ struct PointerIntPairInfo
    }
 };
 
-template <typename T> struct isPodLike;
-template <typename PointerTypeype, unsigned IntBits, typename IntType>
-struct isPodLike<PointerIntPair<PointerTypeype, IntBits, IntType>>
-{
-   static const bool value = true;
-};
 
 // Provide specialization of DenseMapInfo for PointerIntPair.
 template <typename PointerTypeype, unsigned IntBits, typename IntType>
@@ -256,6 +250,14 @@ struct DenseMapInfo<PointerIntPair<PointerTypeype, IntBits, IntType>>
 namespace utils {
 
 using polar::basic::PointerIntPair;
+
+template <typename T> struct IsPodLike;
+template <typename PointerTypeype, unsigned IntBits, typename IntType>
+struct IsPodLike<PointerIntPair<PointerTypeype, IntBits, IntType>>
+{
+   static const bool value = true;
+};
+
 
 // Teach SmallPtrSet that PointerIntPair is "basically a pointer".
 template <typename PointerTypeype, unsigned IntBits, typename IntType,

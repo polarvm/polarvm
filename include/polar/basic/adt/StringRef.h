@@ -1027,15 +1027,18 @@ inline std::string &operator+=(std::string &buffer, StringRef string)
 POLAR_NODISCARD
 HashCode hash_value(StringRef str);
 
+} // basic
+
+namespace utils {
 // StringRefs can be treated like a POD type.
-template <typename T> struct isPodLike;
+template <typename T> struct IsPodLike;
 template <>
-struct isPodLike<StringRef>
+struct IsPodLike<StringRef>
 {
    static const bool value = true;
 };
+} // utils
 
-} // basic
 } // polar
 
 #endif // POLAR_BASIC_ADT_STRINGREF_H

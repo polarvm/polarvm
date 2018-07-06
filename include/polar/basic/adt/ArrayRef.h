@@ -669,8 +669,8 @@ inline bool operator!=(ArrayRef<T> lhs, ArrayRef<T> rhs)
 namespace utils {
 
 // ArrayRefs can be treated like a POD type.
-template <typename T> struct is_pod_like;
-template <typename T> struct is_pod_like<polar::basic::ArrayRef<T>>
+template <typename T> struct IsPodLike;
+template <typename T> struct IsPodLike<polar::basic::ArrayRef<T>>
 {
    static const bool value = true;
 };

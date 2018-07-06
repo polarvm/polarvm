@@ -12,7 +12,8 @@
 #ifndef POLAR_BASIC_ADT_EPOCH_TRACKER_H
 #define POLAR_BASIC_ADT_EPOCH_TRACKER_H
 
-#include "polar/global/AbiBreaking.h"
+// unittest mark
+// #include "polar/global/AbiBreaking.h"
 #include <cstdint>
 
 namespace polar {

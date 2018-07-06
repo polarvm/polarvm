@@ -295,15 +295,21 @@ template<typename T> struct DenseMapInfo<ImmutableList<T>>
       return lhs == rhs;
    }
 };
+} // basic
 
-template <typename T> struct isPodLike;
+namespace utils {
+
+using polar::basic::ImmutableList;
+
+template <typename T> struct IsPodLike;
 template <typename T>
-struct isPodLike<ImmutableList<T>>
+struct IsPodLike<ImmutableList<T>>
 {
    static const bool value = true;
 };
 
-} // basic
+} // utils
+
 } // polar
 
 #endif // POLAR_BASIC_ADT_IMMUTABLE_LIST_H
