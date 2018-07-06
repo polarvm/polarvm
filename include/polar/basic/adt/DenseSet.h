@@ -96,7 +96,7 @@ public:
 
    size_type getSize() const
    {
-      return m_theMap.size();
+      return m_theMap.getSize();
    }
 
    size_t getMemorySize() const

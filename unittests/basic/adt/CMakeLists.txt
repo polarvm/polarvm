@@ -10,5 +10,6 @@ polar_add_unittest(PolarBaseLibTests BasicAdtTest
    BitMaskEnumTest.cpp
    FoldingSetTest.cpp
    DenseMapTest.cpp
+   DenseSetTest.cpp
    )
 
