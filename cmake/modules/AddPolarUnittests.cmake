@@ -34,14 +34,14 @@ function(polar_add_unittest test_suite test_name)
    
    set(POLAR_REQUIRES_RTTI OFF)
    
-   list(APPEND POLAR_LINK_COMPONENTS Utils) # gtest needs it for raw_ostream
+   #list(APPEND POLAR_LINK_COMPONENTS Utils) # gtest needs it for raw_ostream
    polar_add_executable(${test_name} IGNORE_EXTERNALIZE_DEBUGINFO NO_INSTALL_RPATH ${ARGN})
    set(outdir ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
    polar_set_output_directory(${test_name} BINARY_DIR ${outdir} LIBRARY_DIR ${outdir})
    # libpthreads overrides some standard library symbols, so main
    # executable must be linked with it in order to provide consistent
    # API for all shared libaries loaded by this executable.
-   target_link_libraries(${test_name} PRIVATE ${POLAR_TEMP_GTEST_LIBS} ${POLAR_PTHREAD_LIB})
+   target_link_libraries(${test_name} PRIVATE ${POLAR_TEMP_GTEST_LIBS} PolarBasic ${POLAR_PTHREAD_LIB})
 
    add_dependencies(${test_suite} ${test_name})
    get_target_property(test_suite_folder ${test_suite} FOLDER)

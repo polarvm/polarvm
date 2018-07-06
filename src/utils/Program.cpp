@@ -14,7 +14,7 @@
 //===          independent code.
 //===----------------------------------------------------------------------===//
 
-#include "polar/utils/Program.h"
+#include "polar/utils/program.h"
 #include "polar/basic/adt/StringRef.h"
 #include "polar/global/PolarConfig.h"
 #include <system_error>
@@ -48,5 +48,24 @@ int execute_and_wait(StringRef program, const char **args, const char **envp,
    return -1;
 }
 
-} // utils
+ProcessInfo execute_no_wait(StringRef program, const char **args,
+                            const char **envp,
+                            ArrayRef<std::optional<StringRef>> redirects,
+                            unsigned memoryLimit, std::string *errMsg,
+                            bool *executionFailed)
+{
+   assert(redirects.empty() || redirects.getSize() == 3);
+   ProcessInfo processInfo;
+   if (executionFailed) {
+       *executionFailed = false;
+   }
+   if (!execute(processInfo, program, args, envp, redirects, memoryLimit, errMsg)) {
+      if (executionFailed) {
+         *executionFailed = true;
+      }
+   }
+   return processInfo;
+}
+
+} // sys
 } // polar

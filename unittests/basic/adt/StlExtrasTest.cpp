@@ -402,5 +402,3 @@ TEST(StlExtrasTest, testADLTest)
    polar::basic::for_each(s, [&count](int) { ++count; });
    EXPECT_EQ(5, count);
 }
-
-

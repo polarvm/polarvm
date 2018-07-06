@@ -617,10 +617,13 @@ class concat_iterator
             &concat_iterator::incrementHelper<Ns>...};
       
       // Loop over them, and stop as soon as we succeed at incrementing one.
-      for (auto &IncrementHelperFn : IncrementHelperFns)
-         if ((this->*IncrementHelperFn)())
+      for (auto &IncrementHelperFn : IncrementHelperFns) {
+         if ((this->*IncrementHelperFn)()) {
             return;
-      polar_unreachable("Attempted to increment an end concat iterator!");
+         }
+      }
+      // unittest mark
+      // polar_unreachable("Attempted to increment an end concat iterator!");
    }
    
    /// Returns null if the specified iterator is at the end. Otherwise,
@@ -646,11 +649,13 @@ class concat_iterator
             &concat_iterator::getHelper<Ns>...};
       
       // Loop over them, and return the first result we find.
-      for (auto &GetHelperFn : GetHelperFns)
-         if (ValueT *P = (this->*GetHelperFn)())
-            return *P;
-      
-      polar_unreachable("Attempted to get a pointer from an end concat iterator!");
+      for (auto &GetHelperFn : GetHelperFns) {
+         if (ValueT *ptr = (this->*GetHelperFn)()) {
+            return *ptr;
+         }
+      }
+      // unittest mark
+      // polar_unreachable("Attempted to get a pointer from an end concat iterator!");
    }
    
 public:
@@ -916,20 +921,20 @@ template <typename IteratorTy>
 inline void sort(IteratorTy start, IteratorTy end)
 {
 #ifdef EXPENSIVE_CHECKS
-  std::mt19937 generator(std::random_device{}());
-  std::shuffle(start, End, Generator);
+   std::mt19937 generator(std::random_device{}());
+   std::shuffle(start, End, Generator);
 #endif
-  std::sort(start, end);
+   std::sort(start, end);
 }
 
 template <typename IteratorTy, typename Compare>
 inline void sort(IteratorTy start, IteratorTy end, Compare comp)
 {
 #ifdef EXPENSIVE_CHECKS
-  std::mt19937 generator(std::random_device{}());
-  std::shuffle(start, end, generator);
+   std::mt19937 generator(std::random_device{}());
+   std::shuffle(start, end, generator);
 #endif
-  std::sort(start, end, comp);
+   std::sort(start, end, comp);
 }
 
 //===----------------------------------------------------------------------===//
@@ -943,7 +948,7 @@ void DeleteContainerPointers(Container &container)
 {
    for (auto item : container) {
       delete item;
-   }      
+   }
    container.clear();
 }
 
@@ -1294,7 +1299,7 @@ private:
 template <typename R>
 class enumerator {
 public:
-   explicit enumerator(R &&m_range) 
+   explicit enumerator(R &&m_range)
       : m_range(std::forward<R>(m_range))
    {}
    

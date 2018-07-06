@@ -42,11 +42,23 @@ if(UNIX)
    list(APPEND POLAR_UTILS_SOURCES _platform/WatchDogUnix.cpp)
 endif()
 
-polar_add_library(PolarUtils
-   ${POLAR_UTILS_SOURCES} $<TARGET_OBJECTS:PolarGlobal> $<TARGET_OBJECTS:PolarBasic>
-   ADDITIONAL_HEADER_DIRS
-   Unix
-   Windows
-   ${POLAR_MAIN_INCLUDE_DIR}/polar/utils
-   LINK_LIBS ${system_libs}
+set(POLAR_UTILS_SOURCES
+   ErrorHandling.cpp
+   ErrorType.cpp
+   Signals.cpp
+   CommandLine.cpp
+   Path.cpp
+   _platform/PathUnix.cpp
+   _platform/SignalsUnix.cpp
+   FileUtils.cpp
+   TargetParser.cpp
    )
+
+#polar_add_library(PolarUtils
+#   ${POLAR_UTILS_SOURCES}
+#   ADDITIONAL_HEADER_DIRS
+#   Unix
+#   Windows
+#   ${POLAR_MAIN_INCLUDE_DIR}/polar/utils
+#   LINK_LIBS ${system_libs} PolarGlobal PolarBasic
+#   )

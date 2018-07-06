@@ -1,13 +1,13 @@
-// This source file is part of the polarphp.org open source project
-//
-// Copyright (c) 2017 - 2018 polarPHP software foundation
-// Copyright (c) 2017 - 2018 zzu_softboy <zzu_softboy@163.com>
-// Licensed under Apache License v2.0 with Runtime Library Exception
-//
-// See http://polarphp.org/LICENSE.txt for license information
-// See http://polarphp.org/CONTRIBUTORS.txt for the list of polarPHP project authors
-//
-// Created by softboy on 2018/06/06.
+//// This source file is part of the polarphp.org open source project
+////
+//// Copyright (c) 2017 - 2018 polarPHP software foundation
+//// Copyright (c) 2017 - 2018 zzu_softboy <zzu_softboy@163.com>
+//// Licensed under Apache License v2.0 with Runtime Library Exception
+////
+//// See http://polarphp.org/LICENSE.txt for license information
+//// See http://polarphp.org/CONTRIBUTORS.txt for the list of polarPHP project authors
+////
+//// Created by softboy on 2018/06/06.
 
 #include "polar/basic/adt/ArrayRef.h"
 #include "gtest/gtest.h"
@@ -128,7 +128,7 @@ TEST(ArrayRefTest, testDropWhile)
              arrayRef1.dropWhile([](const int &N) { return N > 0; }));
 }
 
-TEST(ArrayRefTest, testDropUntil) 
+TEST(ArrayRefTest, testDropUntil)
 {
    static const int theNumbers[] = {1, 3, 5, 8, 10, 11};
    ArrayRef<int> arrayRef1(theNumbers);
@@ -140,7 +140,7 @@ TEST(ArrayRefTest, testDropUntil)
    EXPECT_EQ(arrayRef1, arrayRef1.dropUntil([](const int &N) { return N > 0; }));
 }
 
-TEST(ArrayRefTest, testTakeBack) 
+TEST(ArrayRefTest, testTakeBack)
 {
    static const int theNumbers[] = {4, 8, 15, 16, 23, 42};
    ArrayRef<int> arrayRef1(theNumbers);
@@ -148,7 +148,7 @@ TEST(ArrayRefTest, testTakeBack)
    EXPECT_TRUE(arrayRef1.takeBack().equals(arrayRef2));
 }
 
-TEST(ArrayRefTest, testTakeFront) 
+TEST(ArrayRefTest, testTakeFront)
 {
    static const int theNumbers[] = {4, 8, 15, 16, 23, 42};
    ArrayRef<int> arrayRef1(theNumbers);
@@ -180,7 +180,7 @@ TEST(ArrayRefTest, testTakeUntil)
              arrayRef1.takeUntil([](const int &N) { return N > 0; }));
 }
 
-TEST(ArrayRefTest, testEquals) 
+TEST(ArrayRefTest, testEquals)
 {
    static const int A1[] = {1, 2, 3, 4, 5, 6, 7, 8};
    ArrayRef<int> arrayRef1(A1);
@@ -220,19 +220,19 @@ TEST(ArrayRefTest, testConstConvert)
    a = ArrayRef<int *>(A);
 }
 
-static std::vector<int> ReturnTest12() 
-{ 
-   return {1, 2}; 
+static std::vector<int> ReturnTest12()
+{
+   return {1, 2};
 }
 
-static void ArgTest12(ArrayRef<int> A) 
+static void ArgTest12(ArrayRef<int> A)
 {
    EXPECT_EQ(2U, A.getSize());
    EXPECT_EQ(1, A[0]);
    EXPECT_EQ(2, A[1]);
 }
 
-TEST(ArrayRefTest, testInitializerList) 
+TEST(ArrayRefTest, testInitializerList)
 {
    std::initializer_list<int> init_list = { 0, 1, 2, 3, 4 };
    ArrayRef<int> A = init_list;
@@ -257,7 +257,7 @@ TEST(ArrayRefTest, testEmptyInitializerList)
 }
 
 // Test that makeArrayRef works on ArrayRef (no-op)
-TEST(ArrayRefTest, testMakeArrayRef) 
+TEST(ArrayRefTest, testMakeArrayRef)
 {
    static const int A1[] = {1, 2, 3, 4, 5, 6, 7, 8};
    

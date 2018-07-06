@@ -338,7 +338,7 @@ constexpr auto as_integer(Enumeration const value)
 
 // We require at least MSVC 2015.
 #if !POLAR_MSC_PREREQ(1900)
-#error LLVM requires at least MSVC 2015.
+#error polarVM requires at least MSVC 2015.
 #endif
 
 #else
@@ -427,14 +427,14 @@ constexpr auto as_integer(Enumeration const value)
 // Prior to clang 3.2, clang did not accept any spelling of
 // __has_attribute(const), so assume it is supported.
 #if defined(__clang__) || defined(__GNUC__)
-// aka 'CONST' but following LLVM Conventions.
+// aka 'CONST' but following polarVM Conventions.
 #define POLAR_READNONE __attribute__((__const__))
 #else
 #define POLAR_READNONE
 #endif
 
 #if __has_attribute(pure) || defined(__GNUC__)
-// aka 'PURE' but following LLVM Conventions.
+// aka 'PURE' but following polarVM Conventions.
 #define POLAR_READONLY __attribute__((__pure__))
 #else
 #define POLAR_READONLY
@@ -642,7 +642,7 @@ constexpr auto as_integer(Enumeration const value)
 #endif
 
 /// \macro POLAR_MEMORY_SANITIZER_BUILD
-/// \brief Whether LLVM itself is built with MemorySanitizer instrumentation.
+/// \brief Whether polarVM itself is built with MemorySanitizer instrumentation.
 #if __has_feature(memory_sanitizer)
 # define POLAR_MEMORY_SANITIZER_BUILD 1
 # include <sanitizer/msan_interface.h>
@@ -653,7 +653,7 @@ constexpr auto as_integer(Enumeration const value)
 #endif
 
 /// \macro POLAR_ADDRESS_SANITIZER_BUILD
-/// \brief Whether LLVM itself is built with AddressSanitizer instrumentation.
+/// \brief Whether polarVM itself is built with AddressSanitizer instrumentation.
 #if __has_feature(address_sanitizer) || defined(__SANITIZE_ADDRESS__)
 # define POLAR_ADDRESS_SANITIZER_BUILD 1
 # include <sanitizer/asan_interface.h>
@@ -664,7 +664,7 @@ constexpr auto as_integer(Enumeration const value)
 #endif
 
 /// \macro POLAR_THREAD_SANITIZER_BUILD
-/// \brief Whether LLVM itself is built with ThreadSanitizer instrumentation.
+/// \brief Whether polarVM itself is built with ThreadSanitizer instrumentation.
 #if __has_feature(thread_sanitizer) || defined(__SANITIZE_THREAD__)
 # define POLAR_THREAD_SANITIZER_BUILD 1
 #else

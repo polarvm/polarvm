@@ -16,7 +16,6 @@
 #include <cassert>
 
 namespace polar {
-
 static const ManagedStaticBase *sg_staticList = nullptr;
 static std::mutex *sg_managedStaticMutex = nullptr;
 static std::once_flag sg_mutexInitFlag;

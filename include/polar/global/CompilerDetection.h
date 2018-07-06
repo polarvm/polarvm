@@ -1295,11 +1295,11 @@
 #   define POLAR_WARNING_DISABLE_DEPRECATED
 #endif
 
-#define POLAR_UNREACHABLE() \
-   do {\
-   POLAR_ASSERT_X(false, "POLAR_UNREACHABLE()", "POLAR_UNREACHABLE was reached");\
-   POLAR_UNREACHABLE_IMPL();\
-   } while (0)
+#define POLAR_UNREACHABLE()
+//   do {\
+//   POLAR_ASSERT_X(false, "POLAR_UNREACHABLE()", "POLAR_UNREACHABLE was reached");\
+//   POLAR_UNREACHABLE_IMPL();\
+//   } while (0)
 
 #define POLAR_ASSUME(Expr) \
    do {\
