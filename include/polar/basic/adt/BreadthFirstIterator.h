@@ -9,8 +9,8 @@
 //
 // Created by softboy on 2018/06/29.
 
-#ifndef POLAR_BASIC_ADT_BREADTHFIRSTITERATOR_H
-#define POLAR_BASIC_ADT_BREADTHFIRSTITERATOR_H
+#ifndef POLAR_BASIC_ADT_BREADTHFIRSTITERATOR_head
+#define POLAR_BASIC_ADT_BREADTHFIRSTITERATOR_head
 
 #include "polar/basic/adt/GraphTraits.h"
 #include "polar/basic/adt/SmallPtrSet.h"
@@ -48,7 +48,7 @@ class BreadthFirstIterator
    using super = std::iterator<std::forward_iterator_tag, typename GT::NodeRef>;
 
    using NodeRef = typename GT::NodeRef;
-   using childIterTy = typename GT::childItereratorType;
+   using childIterTy = typename GT::ChildIteratorType;
 
    // First element is the node reference, second is the next child to visit.
    using QueueElement = std::pair<NodeRef, std::optional<childIterTy>>;
@@ -63,11 +63,11 @@ class BreadthFirstIterator
 private:
    inline BreadthFirstIterator(NodeRef node)
    {
-      this->Visited.insert(node);
+      this->m_visited.insert(node);
       m_level = 0;
 
       // Also, insert a dummy node as marker.
-      m_visitQueue.push(QueueElement(std::nullopt, std::nullopt));
+      m_visitQueue.push(std::make_optional(QueueElement{node, std::nullopt}));
       m_visitQueue.push(std::nullopt);
    }
 
@@ -76,9 +76,9 @@ private:
    inline void toNext()
    {
       std::optional<QueueElement> m_head = m_visitQueue.front();
-      QueueElement H = m_head.getValue();
-      NodeRef node = H.first;
-      std::optional<childIterTy> &childIter = H.second;
+      QueueElement head = m_head.value();
+      NodeRef node = head.first;
+      std::optional<childIterTy> &childIter = head.second;
 
       if (!childIter) {
          childIter.emplace(GT::childBegin(node));
@@ -86,7 +86,7 @@ private:
       while (*childIter != GT::childEnd(node)) {
          NodeRef next = *(*childIter)++;
          // Already visited?
-         if (this->Visited.insert(next).second) {
+         if (this->m_visited.insert(next).second) {
             m_visitQueue.push(QueueElement(next, std::nullopt));
          }
       }
@@ -188,4 +188,4 @@ IteratorRange<BreadthFirstIterator<T>> breadth_first(const T &graph)
 } // basic
 } // polar
 
-#endif // POLAR_BASIC_ADT_BREADTHFIRSTITERATOR_H
+#endif // POLAR_BASIC_ADT_BREADTHFIRSTITERATOR_head

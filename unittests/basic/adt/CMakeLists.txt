@@ -1,9 +1,12 @@
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
 polar_add_unittest(PolarBaseLibTests BasicAdtTest
    ApIntTest.cpp
    ApSIntTest.cpp
    ApFloatTest.cpp
    BitVectorTest.cpp
    BumpPtrListTest.cpp
+   BreadthFirstIteratorTest
    HashingTest.cpp
    StlExtrasTest.cpp
    ArrayRefTest.cpp
@@ -24,5 +27,6 @@ polar_add_unittest(PolarBaseLibTests BasicAdtTest
    StringRefTest.cpp
    StringSwitchTest.cpp
    TripleTest.cpp
+   TestGraph.h
    )
 
