@@ -554,7 +554,7 @@ public:
    /// return the limit value.  This causes the value to saturate to the limit.
    uint64_t getLimitedValue(uint64_t limit = UINT64_MAX) const
    {
-      return ugt(limit) ? limit : getZExtValue();
+      return ugt(limit) ? limit : getZeroExtValue();
    }
 
    /// \brief Check if the ApInt consists of a repeated bit pattern.
@@ -1260,7 +1260,7 @@ public:
    /// \returns true if *this == Val
    bool operator==(uint64_t Val) const
    {
-      return (isSingleWord() || getActiveBits() <= 64) && getZExtValue() == Val;
+      return (isSingleWord() || getActiveBits() <= 64) && getZeroExtValue() == Val;
    }
 
    /// \brief Equality comparison.
@@ -1327,7 +1327,7 @@ public:
    bool ult(uint64_t rhs) const
    {
       // Only need to check active bits if not a single word.
-      return (isSingleWord() || getActiveBits() <= 64) && getZExtValue() < rhs;
+      return (isSingleWord() || getActiveBits() <= 64) && getZeroExtValue() < rhs;
    }
 
    /// \brief Signed less than comparison
@@ -1417,7 +1417,7 @@ public:
    bool ugt(uint64_t rhs) const
    {
       // Only need to check active bits if not a single word.
-      return (!isSingleWord() && getActiveBits() > 64) || getZExtValue() > rhs;
+      return (!isSingleWord() && getActiveBits() > 64) || getZeroExtValue() > rhs;
    }
 
    /// \brief Signed greather than comparison
@@ -1766,7 +1766,7 @@ public:
    /// This method attempts to return the value of this ApInt as a zero extended
    /// uint64_t. The bitwidth must be <= 64 or the value must fit within a
    /// uint64_t. Otherwise an assertion will result.
-   uint64_t getZExtValue() const
+   uint64_t getZeroExtValue() const
    {
       if (isSingleWord()) {
          return m_intValue.m_value;
@@ -1846,7 +1846,7 @@ public:
    unsigned countTrailingZeros() const
    {
       if (isSingleWord()) {
-         return std::min(unsigned(count_leading_zeros(m_intValue.m_value)), m_bitWidth);
+         return std::min(unsigned(count_trailing_zeros(m_intValue.m_value)), m_bitWidth);
       }
       return countTrailingZerosSlowCase();
    }
@@ -1862,7 +1862,7 @@ public:
    unsigned countTrailingOnes() const
    {
       if (isSingleWord()) {
-         return count_leading_ones(m_intValue.m_value);
+         return count_trailing_ones(m_intValue.m_value);
       }
       return countTrailingOnesSlowCase();
    }

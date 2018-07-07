@@ -1,4 +1,7 @@
 polar_add_unittest(PolarBaseLibTests BasicAdtTest
+   ApIntTest.cpp
+   ApSIntTest.cpp
+   ApFloatTest.cpp
    BitVectorTest.cpp
    HashingTest.cpp
    StlExtrasTest.cpp
@@ -19,5 +22,6 @@ polar_add_unittest(PolarBaseLibTests BasicAdtTest
    ScopeExitTest.cpp
    StringRefTest.cpp
    StringSwitchTest.cpp
+   TripleTest.cpp
    )
 

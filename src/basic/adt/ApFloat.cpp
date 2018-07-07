@@ -3716,7 +3716,7 @@ void IEEEFloat::toString(SmallVectorImpl<char> &str, unsigned formatPrecision,
       // significand <- significand / 10
       ApInt::udivrem(significand, ten, significand, digit);
 
-      unsigned d = digit.getZExtValue();
+      unsigned d = digit.getZeroExtValue();
 
       // Drop trailing zeros.
       if (inTrail && !d) {

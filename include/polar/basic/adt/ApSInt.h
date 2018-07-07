@@ -98,7 +98,7 @@ public:
    int64_t getExtValue() const
    {
       assert(getMinSignedBits() <= 64 && "Too many bits for int64_t");
-      return isSigned() ? getSignExtValue() : getZExtValue();
+      return isSigned() ? getSignExtValue() : getZeroExtValue();
    }
 
    ApSInt trunc(uint32_t width) const

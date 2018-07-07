@@ -1872,7 +1872,7 @@ uint64_t ApInt::urem(uint64_t rhs) const
 
    if (this->ult(rhs)) {
       // X % Y ===> X, iff X < Y
-      return getZExtValue();
+      return getZeroExtValue();
    }
 
    if (*this == rhs) {
@@ -2020,7 +2020,7 @@ void ApInt::udivrem(const ApInt &lhs, uint64_t rhs, ApInt &quotient,
    }
 
    if (lhs.ult(rhs)) {
-      remainder = lhs.getZExtValue(); // X % Y ===> X, iff X < Y
+      remainder = lhs.getZeroExtValue(); // X % Y ===> X, iff X < Y
       quotient = 0;                   // X / Y ===> 0, iff X < Y
       return;
    }
@@ -2279,7 +2279,7 @@ void ApInt::toString(SmallVectorImpl<char> &str, unsigned radix,
 
       uint64_t num;
       if (!isSigned) {
-         num = getZExtValue();
+         num = getZeroExtValue();
       } else {
          int64_t intValue = getSignExtValue();
          if (intValue >= 0) {
