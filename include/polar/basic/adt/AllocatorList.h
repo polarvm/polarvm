@@ -283,7 +283,7 @@ public:
 
    template <class... Ts> Iterator emplace(Iterator iter, Ts &&... values)
    {
-      return Iterator(m_list.insert(iter.wrapped(), *create(std::forward<Ts>(values)...)));
+      return Iterator(m_list.insert(iter.getWrapped(), *create(std::forward<Ts>(values)...)));
    }
 
    Iterator insert(Iterator iter, T &&value)
@@ -296,8 +296,8 @@ public:
       return Iterator(m_list.insert(iter.getWrapped(), *create(value)));
    }
 
-   template <class Iterator>
-   void insert(Iterator iter, Iterator first, Iterator last)
+   template <class OtherIterType>
+   void insert(Iterator iter, OtherIterType first, OtherIterType last)
    {
       for (; first != last; ++first) {
          m_list.insert(iter.getWrapped(), *create(*first));
@@ -306,7 +306,7 @@ public:
 
    Iterator erase(Iterator iter)
    {
-      return Iterator(m_list.eraseAndDispose(iter.wrapped(), Disposer(*this)));
+      return Iterator(m_list.eraseAndDispose(iter.getWrapped(), Disposer(*this)));
    }
 
    Iterator erase(Iterator first, Iterator last)

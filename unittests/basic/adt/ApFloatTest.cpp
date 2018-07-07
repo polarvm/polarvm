@@ -4031,5 +4031,4 @@ TEST(ApFloatTest, testPPCDoubleDoubleFrexp)
 
 }
 
-
 } // anonymous namespace

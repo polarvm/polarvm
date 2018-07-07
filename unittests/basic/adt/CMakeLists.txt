@@ -3,6 +3,7 @@ polar_add_unittest(PolarBaseLibTests BasicAdtTest
    ApSIntTest.cpp
    ApFloatTest.cpp
    BitVectorTest.cpp
+   BumpPtrListTest.cpp
    HashingTest.cpp
    StlExtrasTest.cpp
    ArrayRefTest.cpp
