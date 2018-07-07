@@ -9,7 +9,6 @@
 //
 // Created by softboy on 2018/07/06.
 
-
 #include "polar/basic/adt/SmallPtrSet.h"
 #include "polar/basic/adt/PointerIntPair.h"
 #include "polar/utils/PointerLikeTypeTraits.h"
@@ -22,16 +21,14 @@ namespace {
 TEST(SmallPtrSetTest, Assignment)
 {
    int buf[8];
-   for (int i = 0; i < 8; ++i)
+   for (int i = 0; i < 8; ++i) {
       buf[i] = 0;
-
+   }
    SmallPtrSet<int *, 4> s1 = {&buf[0], &buf[1]};
    SmallPtrSet<int *, 4> s2;
    (s2 = s1).insert(&buf[2]);
-
    // Self assign as well.
    (s2 = s2).insert(&buf[3]);
-
    s1 = s2;
    EXPECT_EQ(4U, s1.getSize());
    for (int i = 0; i < 8; ++i) {
@@ -57,12 +54,11 @@ TEST(SmallPtrSetTest, Assignment)
 TEST(SmallPtrSetTest, GrowthTest) {
    int i;
    int buf[8];
-   for(i=0; i<8; ++i) buf[i]=0;
-
-
+   for(i=0; i<8; ++i) {
+      buf[i]=0;
+   }
    SmallPtrSet<int *, 4> s;
    typedef SmallPtrSet<int *, 4>::iterator iter;
-
    s.insert(&buf[0]);
    s.insert(&buf[1]);
    s.insert(&buf[2]);
@@ -70,20 +66,24 @@ TEST(SmallPtrSetTest, GrowthTest) {
    EXPECT_EQ(4U, s.getSize());
 
    i = 0;
-   for(iter I=s.begin(), E=s.end(); I!=E; ++I, ++i)
+   for(iter I=s.begin(), E=s.end(); I!=E; ++I, ++i) {
       (**I)++;
-   EXPECT_EQ(4, i);
-   for(i=0; i<8; ++i)
-      EXPECT_EQ(i<4?1:0,buf[i]);
+   }
 
+   EXPECT_EQ(4, i);
+   for(i=0; i<8; ++i) {
+      EXPECT_EQ(i<4?1:0,buf[i]);
+   }
    s.insert(&buf[4]);
    s.insert(&buf[5]);
    s.insert(&buf[6]);
    s.insert(&buf[7]);
 
    i = 0;
-   for(iter I=s.begin(), E=s.end(); I!=E; ++I, ++i)
+   for(iter I=s.begin(), E=s.end(); I!=E; ++I, ++i) {
       (**I)++;
+   }
+
    EXPECT_EQ(8, i);
    s.erase(&buf[4]);
    s.erase(&buf[5]);
@@ -127,30 +127,33 @@ TEST(SmallPtrSetTest, CopyAndMoveTest) {
 
    SmallPtrSet<int *, 4> s2(s1);
    EXPECT_EQ(4U, s2.getSize());
-   for (int i = 0; i < 8; ++i)
-      if (i < 4)
+   for (int i = 0; i < 8; ++i) {
+      if (i < 4) {
          EXPECT_TRUE(s2.count(&buf[i]));
-      else
+      } else {
          EXPECT_FALSE(s2.count(&buf[i]));
-
+      }
+   }
    s1 = s2;
    EXPECT_EQ(4U, s1.getSize());
    EXPECT_EQ(4U, s2.getSize());
-   for (int i = 0; i < 8; ++i)
-      if (i < 4)
+   for (int i = 0; i < 8; ++i) {
+      if (i < 4) {
          EXPECT_TRUE(s1.count(&buf[i]));
-      else
+      } else {
          EXPECT_FALSE(s1.count(&buf[i]));
-
+      }
+   }
    SmallPtrSet<int *, 4> s3(std::move(s1));
    EXPECT_EQ(4U, s3.getSize());
    EXPECT_TRUE(s1.empty());
-   for (int i = 0; i < 8; ++i)
-      if (i < 4)
+   for (int i = 0; i < 8; ++i) {
+      if (i < 4) {
          EXPECT_TRUE(s3.count(&buf[i]));
-      else
+      }  else {
          EXPECT_FALSE(s3.count(&buf[i]));
-
+      }
+   }
    // Move assign into the moved-from object. Also test move of a non-small
    // container.
    s3.insert(&buf[4]);
