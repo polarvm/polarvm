@@ -13,6 +13,7 @@
 #define POLAR_BASIC_ADT_AP_SINT_H
 
 #include "polar/basic/adt/ApInt.h"
+#include "polar/basic/adt/StringRef.h"
 
 namespace polar {
 namespace basic {
