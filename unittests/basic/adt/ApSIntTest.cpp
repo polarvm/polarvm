@@ -44,7 +44,7 @@ TEST(ApSIntTest, testMoveTest)
    EXPECT_EQ(Bits, A.getRawData()); // Verify that "wide" was really moved.
 }
 
-TEST(ApSIntTest, get)
+TEST(ApSIntTest, testGet)
 {
    EXPECT_TRUE(ApSInt::get(7).isSigned());
    EXPECT_EQ(64u, ApSInt::get(7).getBitWidth());
@@ -56,7 +56,7 @@ TEST(ApSIntTest, get)
    EXPECT_EQ(UINT64_C(0) - 7, ApSInt::get(-7).getZeroExtValue());
 }
 
-TEST(ApSIntTest, getUnsigned)
+TEST(ApSIntTest, testGetUnsigned)
 {
    EXPECT_TRUE(ApSInt::getUnsigned(7).isUnsigned());
    EXPECT_EQ(64u, ApSInt::getUnsigned(7).getBitWidth());
@@ -68,7 +68,7 @@ TEST(ApSIntTest, getUnsigned)
    EXPECT_EQ(UINT64_C(0) - 7, ApSInt::getUnsigned(-7).getZeroExtValue());
 }
 
-TEST(ApSIntTest, getExtValue)
+TEST(ApSIntTest, testGetExtValue)
 {
    EXPECT_TRUE(ApSInt(ApInt(3, 7), true).isUnsigned());
    EXPECT_TRUE(ApSInt(ApInt(3, 7), false).isSigned());
@@ -84,7 +84,7 @@ TEST(ApSIntTest, getExtValue)
    EXPECT_EQ(-7, ApSInt(ApInt(4, -7), false).getExtValue());
 }
 
-TEST(ApSIntTest, compareValues) {
+TEST(ApSIntTest, testCompareValues) {
    auto U = [](uint64_t V) { return ApSInt::getUnsigned(V); };
    auto S = [](int64_t V) { return ApSInt::get(V); };
 
@@ -149,7 +149,7 @@ TEST(ApSIntTest, compareValues) {
    EXPECT_TRUE(ApSInt::compareValues(U(8), S(-7).trunc(32)) > 0);
 }
 
-TEST(ApSIntTest, FromString)
+TEST(ApSIntTest, testFromString)
 {
    EXPECT_EQ(ApSInt("1").getExtValue(), 1);
    EXPECT_EQ(ApSInt("-1").getExtValue(), -1);
@@ -160,7 +160,7 @@ TEST(ApSIntTest, FromString)
 
 #if defined(GTEST_HAS_DEATH_TEST) && defined(POLAR_DEBUG_MODE)
 
-TEST(ApSIntTest, StringDeath) {
+TEST(ApSIntTest, testStringDeath) {
    EXPECT_DEATH(ApSInt(""), "Invalid string length");
    EXPECT_DEATH(ApSInt("1a"), "Invalid character in digit string");
 }
