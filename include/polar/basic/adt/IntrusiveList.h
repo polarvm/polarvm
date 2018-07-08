@@ -76,8 +76,9 @@ struct IntrusiveListNoAllocTraits
 /// Specialize this for to use callbacks for when nodes change their list
 /// membership.
 template <typename NodeTypeype>
-struct IntrusiveListCallbackTraits {
-   void addNodeTypeoList(NodeTypeype *) {}
+struct IntrusiveListCallbackTraits
+{
+   void addNodeToList(NodeTypeype *) {}
    void removeNodeFromList(NodeTypeype *) {}
    
    /// Callback before transferring nodes to this list.
@@ -288,7 +289,7 @@ public:
    
    iterator insert(iterator where, pointer newValue)
    {
-      this->addNodeTypeoList(newValue); // Notify traits that we added a node...
+      this->addNodeToList(newValue); // Notify traits that we added a node...
       return BaseListType::insert(where, *newValue);
    }
    
@@ -297,7 +298,8 @@ public:
       return this->insert(where, new value_type(newValue));
    }
    
-   iterator insertAfter(iterator where, pointer newValue) {
+   iterator insertAfter(iterator where, pointer newValue)
+   {
       if (empty()) {
          return insert(begin(), newValue);
       } else {
@@ -541,7 +543,8 @@ public:
    }
 };
 
-template <typename T, class... Options> using ilist = PurelyIntrusiveList<T, Options...>;
+template <typename T, class... Options>
+using IntrusiveList = PurelyIntrusiveList<T, Options...>;
 
 } // basic
 } // polar

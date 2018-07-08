@@ -126,12 +126,12 @@ enum CPUArch
    v8_M_Main= 17,  // v8_M_Main AArch32
 };
 
-enum CPUArchProfile {               // (=7), uleb128
+enum CPUArchprofile {               // (=7), uleb128
    Not_Applicable          = 0,      // pre v7, or cross-profile code
-   ApplicationProfile      = (0x41), // 'A' (e.g. for Cortex A8)
-   RealTimeProfile         = (0x52), // 'R' (e.g. for Cortex R4)
-   MicroControllerProfile  = (0x4D), // 'M' (e.g. for Cortex M3)
-   SystemProfile           = (0x53)  // 'S' Application or real-time profile
+   Applicationprofile      = (0x41), // 'A' (e.g. for Cortex A8)
+   RealTimeprofile         = (0x52), // 'R' (e.g. for Cortex R4)
+   MicroControllerprofile  = (0x4D), // 'M' (e.g. for Cortex M3)
+   Systemprofile           = (0x53)  // 'S' Application or real-time profile
 };
 
 // The following have a lot of common use cases

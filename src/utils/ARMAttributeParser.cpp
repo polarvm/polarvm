@@ -42,7 +42,7 @@ ARMAttributeParser::sm_displayRoutines[] = {
    { armbuildattrs::CPU_raw_name, &ARMAttributeParser::stringAttribute, },
    { armbuildattrs::CPU_name, &ARMAttributeParser::stringAttribute },
    ATTRIBUTE_HANDLER(CPU_arch, cpuArch),
-   ATTRIBUTE_HANDLER(CPU_arch_profile, cpuArchProfile),
+   ATTRIBUTE_HANDLER(CPU_arch_profile, cpuArchprofile),
    ATTRIBUTE_HANDLER(ARM_ISA_use, armIsaUse),
    ATTRIBUTE_HANDLER(THUMB_ISA_use, thumbIsaUse),
    ATTRIBUTE_HANDLER(FP_arch, fpArch),
@@ -162,7 +162,7 @@ void ARMAttributeParser::cpuArch(AttrType tag, const uint8_t *data,
    printAttribute(tag, value, valueDesc);
 }
 
-void ARMAttributeParser::cpuArchProfile(AttrType tag, const uint8_t *data,
+void ARMAttributeParser::cpuArchprofile(AttrType tag, const uint8_t *data,
                                         uint32_t &offset)
 {
    uint64_t encoded = parseInteger(data, offset);

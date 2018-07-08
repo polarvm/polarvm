@@ -423,7 +423,7 @@ public:
       return ApSInt(ApInt(64, value), true);
    }
 
-   /// Profile - Used to insert ApSInt objects, or objects that contain ApSInt
+   /// profile - Used to insert ApSInt objects, or objects that contain ApSInt
    ///  objects, into FoldingSets.
    void profile(FoldingSetNodeId& id) const;
 };

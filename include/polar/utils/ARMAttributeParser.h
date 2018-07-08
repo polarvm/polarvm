@@ -56,7 +56,7 @@ class ARMAttributeParser
    void cpuArch(armbuildattrs::AttrType tag, const uint8_t *data,
                 uint32_t &offset);
 
-   void cpuArchProfile(armbuildattrs::AttrType tag, const uint8_t *data,
+   void cpuArchprofile(armbuildattrs::AttrType tag, const uint8_t *data,
                        uint32_t &offset);
 
    void armIsaUse(armbuildattrs::AttrType tag, const uint8_t *data,

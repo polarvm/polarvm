@@ -33,7 +33,7 @@ struct ImutKeyValueInfo
    using DataType = const S;
    using DataTypeRef = const S&;
 
-   static inline KeyTypeRef getKeyOfValueue(ValueTypeRef value)
+   static inline KeyTypeRef getKeyOfValue(ValueTypeRef value)
    {
       return value.first;
    }
@@ -65,8 +65,8 @@ struct ImutKeyValueInfo
    }
 };
 
-template <typename KeyType, typename ValueType,
-          typename ValInfo = ImutKeyValueInfo<KeyType,ValueType>>
+template <typename KeyT, typename ValueT,
+          typename ValInfo = ImutKeyValueInfo<KeyT, ValueT>>
 class ImmutableMap
 {
 public:
@@ -340,8 +340,8 @@ public:
 };
 
 // NOTE: This will possibly become the new implementation of ImmutableMap some day.
-template <typename KeyType, typename ValueType,
-          typename ValInfo = ImutKeyValueInfo<KeyType,ValueType>>
+template <typename KeyT, typename ValueT,
+          typename ValInfo = ImutKeyValueInfo<KeyT, ValueT>>
 class ImmutableMapRef
 {
 public:
@@ -371,8 +371,8 @@ public:
       }
    }
 
-   explicit ImmutableMapRef(const ImmutableMap<KeyType, ValueType> &other,
-                            typename ImmutableMap<KeyType, ValueType>::Factory &factory)
+   explicit ImmutableMapRef(const ImmutableMap<KeyT, ValueT> &other,
+                            typename ImmutableMap<KeyT, ValueT>::Factory &factory)
       : m_root(other.getRootWithoutRetain()),
         m_factory(factory.getTreeFactory())
    {
@@ -447,9 +447,9 @@ public:
       return m_root ? m_root->contains(key) : false;
    }
 
-   ImmutableMap<KeyType, ValueType> asImmutableMap() const
+   ImmutableMap<KeyT, ValueT> asImmutableMap() const
    {
-      return ImmutableMap<KeyType, ValueType>(m_factory->getCanonicalTree(m_root));
+      return ImmutableMap<KeyT, ValueT>(m_factory->getCanonicalTree(m_root));
    }
 
    bool operator==(const ImmutableMapRef &other) const

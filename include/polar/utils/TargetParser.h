@@ -130,8 +130,8 @@ enum class EndianKind
    BIG
 };
 
-// v6/v7/v8 Profile
-enum class ProfileKind
+// v6/v7/v8 profile
+enum class profileKind
 {
    INVALID = 0, A, R, M
 };
@@ -171,7 +171,7 @@ unsigned parse_arch_ext(StringRef ArchExt);
 ArchKind parse_cpu_arch(StringRef CPU);
 ISAKind parse_arch_isa(StringRef Arch);
 EndianKind parse_arch_endian(StringRef Arch);
-ProfileKind parse_arch_profile(StringRef Arch);
+profileKind parse_arch_profile(StringRef Arch);
 unsigned parse_arch_version(StringRef Arch);
 
 StringRef compute_default_target_abi(const Triple &TT, StringRef CPU);
@@ -198,7 +198,7 @@ enum ArchExtKind : unsigned
    AEK_FP =          1 << 3,
    AEK_SIMD =        1 << 4,
    AEK_FP16 =        1 << 5,
-   AEK_PROFILE =     1 << 6,
+   AEK_profile =     1 << 6,
    AEK_RAS =         1 << 7,
    AEK_LSE =         1 << 8,
    AEK_SVE =         1 << 9,
@@ -241,7 +241,7 @@ unsigned parse_arch_ext(StringRef ArchExt);
 ArchKind parse_cpu_arch(StringRef CPU);
 arm::ISAKind parse_arch_isa(StringRef Arch);
 arm::EndianKind parse_arch_endian(StringRef Arch);
-arm::ProfileKind parse_arch_profile(StringRef Arch);
+arm::profileKind parse_arch_profile(StringRef Arch);
 unsigned parse_arch_version(StringRef Arch);
 
 } // namespace AArch64

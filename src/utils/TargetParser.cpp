@@ -498,7 +498,7 @@ bool aarch64::get_extension_features(unsigned Extensions,
       Features.push_back("+dotprod");
    if (Extensions & aarch64::AEK_FP16)
       Features.push_back("+fullfp16");
-   if (Extensions & aarch64::AEK_PROFILE)
+   if (Extensions & aarch64::AEK_profile)
       Features.push_back("+spe");
    if (Extensions & aarch64::AEK_RAS)
       Features.push_back("+ras");
@@ -807,8 +807,8 @@ arm::EndianKind arm::parse_arch_endian(StringRef arch)
    return arm::EndianKind::INVALID;
 }
 
-// Profile A/R/M
-arm::ProfileKind arm::parse_arch_profile(StringRef arch)
+// profile A/R/M
+arm::profileKind arm::parse_arch_profile(StringRef arch)
 {
    arch = get_canonical_arch_name(arch);
    switch (parse_arch(arch)) {
@@ -817,10 +817,10 @@ arm::ProfileKind arm::parse_arch_profile(StringRef arch)
    case arm::ArchKind::ARMV7EM:
    case arm::ArchKind::ARMV8MMainline:
    case arm::ArchKind::ARMV8MBaseline:
-      return arm::ProfileKind::M;
+      return arm::profileKind::M;
    case arm::ArchKind::ARMV7R:
    case arm::ArchKind::ARMV8R:
-      return arm::ProfileKind::R;
+      return arm::profileKind::R;
    case arm::ArchKind::ARMV7A:
    case arm::ArchKind::ARMV7VE:
    case arm::ArchKind::ARMV7K:
@@ -828,7 +828,7 @@ arm::ProfileKind arm::parse_arch_profile(StringRef arch)
    case arm::ArchKind::ARMV8_1A:
    case arm::ArchKind::ARMV8_2A:
    case arm::ArchKind::ARMV8_3A:
-      return arm::ProfileKind::A;
+      return arm::profileKind::A;
    case arm::ArchKind::ARMV2:
    case arm::ArchKind::ARMV2A:
    case arm::ArchKind::ARMV3:
@@ -847,7 +847,7 @@ arm::ProfileKind arm::parse_arch_profile(StringRef arch)
    case arm::ArchKind::IWMMXT2:
    case arm::ArchKind::XSCALE:
    case arm::ArchKind::INVALID:
-      return arm::ProfileKind::INVALID;
+      return arm::profileKind::INVALID;
    }
    polar_unreachable("Unhandled architecture");
 }
@@ -907,7 +907,7 @@ StringRef arm::compute_default_target_abi(const Triple &triple, StringRef cpu) {
    if (triple.isOSBinFormatMachO()) {
       if (triple.getEnvironment() == Triple::EnvironmentType::EABI ||
           triple.getOS() == Triple::OSType::UnknownOS ||
-          arm::parse_arch_profile(archName) == arm::ProfileKind::M) {
+          arm::parse_arch_profile(archName) == arm::profileKind::M) {
          return "aapcs";
       }
       if (triple.isWatchABI()) {
@@ -1000,8 +1000,8 @@ arm::EndianKind aarch64::parse_arch_endian(StringRef arch)
    return arm::parse_arch_endian(arch);
 }
 
-// Profile A/R/M
-arm::ProfileKind aarch64::parse_arch_profile(StringRef arch)
+// profile A/R/M
+arm::profileKind aarch64::parse_arch_profile(StringRef arch)
 {
    return arm::parse_arch_profile(arch);
 }

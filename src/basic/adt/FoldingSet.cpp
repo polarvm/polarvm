@@ -469,7 +469,7 @@ bool FoldingSetBase::removeNode(Node *node) {
 FoldingSetBase::Node *FoldingSetBase::getOrInsertNode(FoldingSetBase::Node *node)
 {
    FoldingSetNodeId id;
-   getNodeProfile(node, id);
+   getNodeprofile(node, id);
    void *ip;
    if (Node *end = findNodeOrInsertPos(id, ip)) {
       return end;

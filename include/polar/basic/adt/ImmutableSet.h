@@ -59,27 +59,27 @@ public:
    ///  is NULL if there is no left subtree.
    ImutAVLTree *getLeft() const
    {
-      return left;
+      return m_left;
    }
 
    /// Return a pointer to the right subtree.  This value is
    ///  NULL if there is no right subtree.
    ImutAVLTree *getRight() const
    {
-      return right;
+      return m_right;
    }
 
    /// getHeight - Returns the height of the tree.  A tree with no subtrees
    ///  has a height of 1.
    unsigned getHeight() const
    {
-      return height;
+      return m_height;
    }
 
    /// getValue - Returns the data value associated with the tree node.
    const ValueType& getValue() const
    {
-      return value;
+      return m_value;
    }
 
    /// find - Finds the subtree associated with the specified key value.
@@ -88,10 +88,10 @@ public:
    {
       ImutAVLTree *temp = this;
       while (temp) {
-         KeyTypeRef CurrentKey = ImutInfo::keyOfValue(temp->getValue());
-         if (ImutInfo::isEqual(key, CurrentKey)) {
+         KeyTypeRef currentKey = ImutInfo::getKeyOfValue(temp->getValue());
+         if (ImutInfo::isEqual(key, currentKey)) {
             return temp;
-         } else if (ImutInfo::isLess(key, CurrentKey)) {
+         } else if (ImutInfo::isLess(key, currentKey)) {
             temp = temp->getLeft();
          } else {
             temp = temp->getRight();
@@ -150,13 +150,13 @@ public:
    bool isElementEqual(ValueTypeRef value) const
    {
       // Compare the keys.
-      if (!ImutInfo::isEqual(ImutInfo::keyOfValue(getValue()),
-                             ImutInfo::keyOfValue(value))) {
+      if (!ImutInfo::isEqual(ImutInfo::getKeyOfValue(getValue()),
+                             ImutInfo::getKeyOfValue(value))) {
          return false;
       }
       // Also compare the data values.
-      if (!ImutInfo::isDataEqual(ImutInfo::dataOfValue(getValue()),
-                                 ImutInfo::dataOfValue(value))) {
+      if (!ImutInfo::isDataEqual(ImutInfo::getDataOfValue(getValue()),
+                                 ImutInfo::getDataOfValue(value))) {
          return false;
       }
       return true;
@@ -217,7 +217,7 @@ public:
       if (ImutAVLTree* lhs = getLeft()) {
          lhs->foreach(callback);
       }
-      callback(value);
+      callback(m_value);
       if (ImutAVLTree* rhs = getRight()) {
          rhs->foreach(callback);
       }
@@ -243,14 +243,14 @@ public:
              && "Balancing invariant violated");
 
       assert((!getLeft() ||
-              ImutInfo::isLess(ImutInfo::keyOfValue(getLeft()->getValue()),
-                               ImutInfo::keyOfValue(getValue()))) &&
+              ImutInfo::isLess(ImutInfo::getKeyOfValue(getLeft()->getValue()),
+                               ImutInfo::getKeyOfValue(getValue()))) &&
              "Value in left child is not less that current value");
 
 
       assert(!(getRight() ||
-               ImutInfo::isLess(ImutInfo::keyOfValue(getValue()),
-                                ImutInfo::keyOfValue(getRight()->getValue()))) &&
+               ImutInfo::isLess(ImutInfo::getKeyOfValue(getValue()),
+                                ImutInfo::getKeyOfValue(getRight()->getValue()))) &&
              "Current value is not less that value of right child");
 
       return getHeight();
@@ -358,7 +358,7 @@ private:
       }
       // Compute digest of stored data.
       FoldingSetNodeId id;
-      ImutInfo::Profile(id, value);
+      ImutInfo::profile(id, value);
       digest += id.computeHash();
 
       if (right) {
@@ -617,7 +617,7 @@ protected:
          TreeType *lrl = getLeft(lr);
          TreeType *lrr = getRight(lr);
 
-         return createNode(createNode(ll, l, lrl), lr, createNode(lrr, value, right));
+         return createNode(createNode(ll, left, lrl), lr, createNode(lrr, value, right));
       }
 
       if (hr > hl + 2) {
@@ -627,14 +627,14 @@ protected:
          TreeType *rr = getRight(right);
 
          if (getHeight(rr)>= getHeight(rl)) {
-            return createNode(createNode(l, value, rl), r, rr);
+            return createNode(createNode(left, value, rl), right, rr);
          }
          assert(!isEmpty(rl) && "RL cannot be empty because it has a height>= 1");
 
          TreeType *rll = getLeft(rl);
          TreeType *rlr = getRight(rl);
 
-         return createNode(createNode(left, value, rll), rl, createNode(rlr, r, rr));
+         return createNode(createNode(left, value, rll), rl, createNode(rlr, right, rr));
       }
 
       return createNode(left, value, right);
@@ -650,8 +650,8 @@ protected:
       }
       assert(!tree->isMutable());
 
-      KeyTypeRef key = ImutInfo::keyOfValue(value);
-      KeyTypeRef kCurrent = ImutInfo::keyOfValue(getValue(tree));
+      KeyTypeRef key = ImutInfo::getKeyOfValue(value);
+      KeyTypeRef kCurrent = ImutInfo::getKeyOfValue(getValue(tree));
 
       if (ImutInfo::isEqual(key, kCurrent)) {
          return createNode(getLeft(tree), value, getRight(tree));
@@ -672,7 +672,7 @@ protected:
          return tree;
       }
       assert(!tree->isMutable());
-      KeyTypeRef kCurrent = ImutInfo::keyOfValue(getValue(tree));
+      KeyTypeRef kCurrent = ImutInfo::getKeyOfValue(getValue(tree));
       if (ImutInfo::isEqual(key, kCurrent)) {
          return combineTrees(getLeft(tree), getRight(tree));
       } else if (ImutInfo::isLess(key, kCurrent)) {
@@ -831,7 +831,9 @@ public:
          m_stack.back() |= VisitedRight;
          break;
       default:
-         polar_unreachable("Unreachable.");
+         // unittest mark
+         // polar_unreachable("Unreachable.");
+         break;
       }
    }
 
@@ -869,7 +871,9 @@ public:
          skipToParent();
          break;
       default:
-         polar_unreachable("Unreachable.");
+         // unittest mark
+         // polar_unreachable("Unreachable.");
+         break;
       }
       return *this;
    }
@@ -886,7 +890,7 @@ public:
       case VisitedLeft:
          m_stack.back() &= ~Flags; // Set state to "VisitedNone."
          if (TreeType *leftTree = current->getLeft()) {
-            m_stack.push_back(reinterpret_cast<uintptr_t>(L) | VisitedRight);
+            m_stack.push_back(reinterpret_cast<uintptr_t>(leftTree) | VisitedRight);
          }
          break;
       case VisitedRight:
@@ -897,7 +901,9 @@ public:
          }
          break;
       default:
-         polar_unreachable("Unreachable.");
+         // unittest mark
+         // polar_unreachable("Unreachable.");
+         break;
       }
       return *this;
    }
@@ -996,14 +1002,14 @@ struct ImutAVLValueIterator
 };
 
 //===----------------------------------------------------------------------===//
-// Trait classes for Profile information.
+// Trait classes for profile information.
 //===----------------------------------------------------------------------===//
 
 /// Generic profile template.  The default behavior is to invoke the
 /// profile method of an object.  Specializations for primitive integers
 /// and generic handling of pointers is done below.
 template <typename T>
-struct ImutProfileInfo {
+struct ImutprofileInfo {
    using ValueType = const T;
    using ValueTypeRef = const T&;
 
@@ -1013,37 +1019,37 @@ struct ImutProfileInfo {
    }
 };
 
-/// Profile traits for integers.
+/// profile traits for integers.
 template <typename T>
-struct ImutProfileInteger {
+struct ImutprofileInteger {
    using ValueType = const T;
    using ValueTypeRef = const T&;
 
-   static void Profile(FoldingSetNodeId &id, ValueTypeRef other)
+   static void profile(FoldingSetNodeId &id, ValueTypeRef other)
    {
-      id.AddInteger(other);
+      id.addInteger(other);
    }
 };
 
-#define PROFILE_INTEGER_INFO(X)\
-   template<> struct ImutProfileInfo<X> : ImutProfileInteger<X> {};
+#define profile_INTEGER_INFO(X)\
+   template<> struct ImutprofileInfo<X> : ImutprofileInteger<X> {};
 
-PROFILE_INTEGER_INFO(char)
-PROFILE_INTEGER_INFO(unsigned char)
-PROFILE_INTEGER_INFO(short)
-PROFILE_INTEGER_INFO(unsigned short)
-PROFILE_INTEGER_INFO(unsigned)
-PROFILE_INTEGER_INFO(signed)
-PROFILE_INTEGER_INFO(long)
-PROFILE_INTEGER_INFO(unsigned long)
-PROFILE_INTEGER_INFO(long long)
-PROFILE_INTEGER_INFO(unsigned long long)
+profile_INTEGER_INFO(char)
+profile_INTEGER_INFO(unsigned char)
+profile_INTEGER_INFO(short)
+profile_INTEGER_INFO(unsigned short)
+profile_INTEGER_INFO(unsigned)
+profile_INTEGER_INFO(signed)
+profile_INTEGER_INFO(long)
+profile_INTEGER_INFO(unsigned long)
+profile_INTEGER_INFO(long long)
+profile_INTEGER_INFO(unsigned long long)
 
-#undef PROFILE_INTEGER_INFO
+#undef profile_INTEGER_INFO
 
-/// Profile traits for booleans.
+/// profile traits for booleans.
 template <>
-struct ImutProfileInfo<bool>
+struct ImutprofileInfo<bool>
 {
    using ValueType = const bool;
    using ValueTypeRef = const bool&;
@@ -1057,7 +1063,7 @@ struct ImutProfileInfo<bool>
 /// Generic profile trait for pointer types.  We treat pointers as
 /// references to unique objects.
 template <typename T>
-struct ImutProfileInfo<T*>
+struct ImutprofileInfo<T*>
 {
    using ValueType = const T*;
    using ValueTypeRef = ValueType;
@@ -1071,7 +1077,7 @@ struct ImutProfileInfo<T*>
 //===----------------------------------------------------------------------===//
 // Trait classes that contain element comparison operators and type
 //  definitions used by ImutAVLTree, ImmutableSet, and ImmutableMap.  These
-//  inherit from the profile traits (ImutProfileInfo) to include operations
+//  inherit from the profile traits (ImutprofileInfo) to include operations
 //  for element profiling.
 //===----------------------------------------------------------------------===//
 
@@ -1079,21 +1085,21 @@ struct ImutProfileInfo<T*>
 ///   elements of immutable containers that defaults to using
 ///   std::equal_to<> and std::less<> to perform comparison of elements.
 template <typename T>
-struct ImutContainerInfo : public ImutProfileInfo<T>
+struct ImutContainerInfo : public ImutprofileInfo<T>
 {
-   using ValueType = typename ImutProfileInfo<T>::ValueType;
-   using ValueTypeRef = typename ImutProfileInfo<T>::ValueTypeRef;
+   using ValueType = typename ImutprofileInfo<T>::ValueType;
+   using ValueTypeRef = typename ImutprofileInfo<T>::ValueTypeRef;
    using KeyType = ValueType;
    using KeyTypeRef = ValueTypeRef;
    using DataType = bool;
    using DataTypeRef = bool;
 
-   static KeyTypeRef keyOfValue(ValueTypeRef data)
+   static KeyTypeRef getKeyOfValue(ValueTypeRef data)
    {
       return data;
    }
 
-   static DataTypeRef dataOfValue(ValueTypeRef)
+   static DataTypeRef getDataOfValue(ValueTypeRef)
    {
       return true;
    }
@@ -1118,21 +1124,21 @@ struct ImutContainerInfo : public ImutProfileInfo<T>
 ///  as references to unique objects.  Pointers are thus compared by
 ///  their addresses.
 template <typename T>
-struct ImutContainerInfo<T*> : public ImutProfileInfo<T*>
+struct ImutContainerInfo<T*> : public ImutprofileInfo<T*>
 {
-   using ValueType = typename ImutProfileInfo<T*>::ValueType;
-   using ValueTypeRef = typename ImutProfileInfo<T*>::ValueTypeRef;
+   using ValueType = typename ImutprofileInfo<T*>::ValueType;
+   using ValueTypeRef = typename ImutprofileInfo<T*>::ValueTypeRef;
    using KeyType = ValueType;
    using KeyTypeRef = ValueTypeRef;
    using DataType = bool;
    using DataTypeRef = bool;
 
-   static KeyTypeRef keyOfValue(ValueTypeRef value)
+   static KeyTypeRef getKeyOfValue(ValueTypeRef value)
    {
       return value;
    }
 
-   static DataTypeRef dataOfValue(ValueTypeRef)
+   static DataTypeRef getDataOfValue(ValueTypeRef)
    {
       return true;
    }
@@ -1180,9 +1186,11 @@ public:
       }
    }
 
-   ImmutableSet(const ImmutableSet &other) : m_root(X.m_root)
+   ImmutableSet(const ImmutableSet &other) : m_root(other.m_root)
    {
-      if (m_root) { m_root->retain(); }
+      if (m_root) {
+         m_root->retain();
+      }
    }
 
    ~ImmutableSet()
@@ -1195,13 +1203,13 @@ public:
    ImmutableSet &operator=(const ImmutableSet &other)
    {
       if (m_root != other.m_root) {
-         if (X.m_root) {
+         if (other.m_root) {
             other.m_root->retain();
          }
          if (m_root) {
             m_root->release();
          }
-         m_root = X.m_root;
+         m_root = other.m_root;
       }
       return *this;
    }
@@ -1323,7 +1331,7 @@ public:
    {
       if (m_root) {
          Callback callback;
-         Root->foreach(callback);
+         m_root->foreach(callback);
       }
    }
 
@@ -1357,7 +1365,7 @@ public:
       id.addPointer(set.m_root);
    }
 
-   void Profile(FoldingSetNodeId &id) const
+   void profile(FoldingSetNodeId &id) const
    {
       return profile(id, *this);
    }
@@ -1440,7 +1448,7 @@ public:
 
    ImmutableSetRef add(ValueTypeRef value)
    {
-      return ImmutableSetRef(Factory->add(m_root, value), m_factory);
+      return ImmutableSetRef(m_factory->add(m_root, value), m_factory);
    }
 
    ImmutableSetRef remove(ValueTypeRef value)

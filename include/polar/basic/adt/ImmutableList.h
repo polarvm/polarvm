@@ -229,7 +229,7 @@ public:
 
    POLAR_NODISCARD ImmutableList<T> concat(const T &head, ImmutableList<T> tail)
    {
-      // Profile the new list to see if it already exists in our cache.
+      // profile the new list to see if it already exists in our cache.
       FoldingSetNodeId id;
       void* insertPos;
 
