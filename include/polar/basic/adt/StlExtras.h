@@ -325,7 +325,7 @@ class FilterIterator
    void findNextValid()
    {
       assert(m_payload && "Payload should be engaged when findNextValid is called");
-      while (this->I != m_payload->m_end && !m_payload->m_pred(*this->m_iter))
+      while (this->m_iter != m_payload->m_end && !m_payload->m_pred(*this->m_iter))
          BaseT::operator++();
    }
    
@@ -476,8 +476,9 @@ struct ZipFirst : public ZipCommon<ZipFirst<Iters...>, Iters...>
 {
    using Base = ZipCommon<ZipFirst<Iters...>, Iters...>;
    
-   bool operator==(const ZipFirst<Iters...> &other) const {
-      return std::get<0>(this->iterators) == std::get<0>(other.iterators);
+   bool operator==(const ZipFirst<Iters...> &other) const
+   {
+      return std::get<0>(this->m_iterators) == std::get<0>(other.m_iterators);
    }
    
    ZipFirst(Iters &&... ts) : Base(std::forward<Iters>(ts)...) {}
@@ -552,7 +553,7 @@ public:
 /// zip iterator for two or more iteratable types.
 template <typename T, typename U, typename... Args>
 internal::Zippy<internal::ZipShortest, T, U, Args...> zip(T &&t, U &&u,
-                                                           Args &&... args)
+                                                          Args &&... args)
 {
    return internal::Zippy<internal::ZipShortest, T, U, Args...>(
             std::forward<T>(t), std::forward<U>(u), std::forward<Args>(args)...);
@@ -561,8 +562,8 @@ internal::Zippy<internal::ZipShortest, T, U, Args...> zip(T &&t, U &&u,
 /// zip iterator that, for the sake of efficiency, assumes the first iteratee to
 /// be the shortest.
 template <typename T, typename U, typename... Args>
-internal::Zippy<internal::ZipFirst, T, U, Args...> ZipFirst(T &&t, U &&u,
-                                                              Args &&... args)
+internal::Zippy<internal::ZipFirst, T, U, Args...>
+zip_first(T &&t, U &&u, Args &&... args)
 {
    return internal::Zippy<internal::ZipFirst, T, U, Args...>(
             std::forward<T>(t), std::forward<U>(u), std::forward<Args>(args)...);

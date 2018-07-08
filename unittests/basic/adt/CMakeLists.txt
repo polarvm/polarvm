@@ -22,6 +22,7 @@ polar_add_unittest(PolarBaseLibTests BasicAdtTest
    IntEqClassesTest.cpp
    IntervalMapTest.cpp
    IntrusiveRefCntPtrTest.cpp
+   IteratorTest.cpp
    SmallVectorTest.cpp
    BitMaskEnumTest.cpp
    FoldingSetTest.cpp
