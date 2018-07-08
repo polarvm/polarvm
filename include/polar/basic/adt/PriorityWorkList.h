@@ -71,7 +71,7 @@ public:
    /// Returns the number of elements in the worklist.
    size_type size() const
    {
-      return m_map.size();
+      return m_map.getSize();
    }
 
    /// Count the number of elements of a given key in the PriorityWorklist.
@@ -97,17 +97,17 @@ public:
       auto insertResult = m_map.insert({item, m_vector.size()});
       if (insertResult.second) {
          // Fresh value, just append it to the vector.
-         m_vector.push_back(X);
+         m_vector.push_back(item);
          return true;
       }
 
       auto &index = insertResult.first->second;
-      assert(V[index] == X && "Value not actually at index in map!");
+      assert(m_vector[index] == item && "Value not actually at index in map!");
       if (index != (ptrdiff_t)(m_vector.size() - 1)) {
          // If the element isn't at the back, null it out and append a fresh one.
-         V[index] = T();
+         m_vector[index] = T();
          index = (ptrdiff_t)m_vector.size();
-         m_vector.push_back(X);
+         m_vector.push_back(item);
       }
       return false;
    }
@@ -127,7 +127,7 @@ public:
       m_vector.insert(m_vector.end(), std::begin(input), std::end(input));
       // Now walk backwards fixing up the index map and deleting any duplicates.
       for (ptrdiff_t i = m_vector.size() - 1; i >= startIndex; --i) {
-         auto insertResult = m_map.insert({V[i], i});
+         auto insertResult = m_map.insert({m_vector[i], i});
          if (insertResult.second) {
             continue;
          }
@@ -135,7 +135,7 @@ public:
          // move it up.
          ptrdiff_t &index = insertResult.first->second;
          if (index < startIndex) {
-            m_value[index] = T();
+            m_vector[index] = T();
             index = i;
             continue;
          }
@@ -147,7 +147,7 @@ public:
    }
 
    /// Remove the last element of the PriorityWorklist.
-   void pop_back()
+   void popBack()
    {
       assert(!empty() && "Cannot remove an element when empty!");
       assert(back() != T() && "Cannot have a null element at the back!");
@@ -184,7 +184,7 @@ public:
             m_vector.pop_back();
          } while (!m_vector.empty() && m_vector.back() == T());
       } else {
-         m_value[iter->second] = T();
+         m_vector[iter->second] = T();
       }
       m_map.erase(iter);
       return true;
@@ -207,7 +207,7 @@ public:
    bool eraseIf(UnaryPredicate pred)
    {
       typename VectorType::iterator end =
-            remove_if(m_value, TestAndEraseFromMap<UnaryPredicate>(pred, m_map));
+            remove_if(m_vector, TestAndEraseFromMap<UnaryPredicate>(pred, m_map));
       if (end == m_vector.end()) {
          return false;
       }
@@ -257,7 +257,7 @@ private:
             // Skip null values in the PriorityWorklist.
             return false;
          }
-         if (pred(arg)) {
+         if (m_pred(arg)) {
             m_map.erase(arg);
             return true;
          }
@@ -269,7 +269,7 @@ private:
    MapType m_map;
 
    /// The vector of elements in insertion order.
-   VectorType m_value;
+   VectorType m_vector;
 };
 
 /// A version of \c PriorityWorklist that selects small size optimized data
@@ -283,7 +283,7 @@ public:
    SmallPriorityWorkList() = default;
 };
 
-} // utils
+} // basic
 } // polar
 
 #endif // POLAR_BASIC_ADT_PRIORITY_WORKLIST_H
