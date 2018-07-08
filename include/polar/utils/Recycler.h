@@ -52,7 +52,7 @@ class Recycler
 
    void push(FreeNode *node)
    {
-      node->Next = m_freeList;
+      node->m_next = m_freeList;
       m_freeList = node;
       __asan_poison_memory_region(node, Size);
    }

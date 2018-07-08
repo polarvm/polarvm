@@ -795,13 +795,13 @@ public:
    /// @param Size Number of elements in node.
    /// @param Node Subtree to insert.
    /// @param Stop Last key in subtree.
-   void insert(unsigned i, unsigned size, NodeRef node, KeyType stop)
+   void insert(unsigned i, unsigned size, NodeRef node, KeyType stopValue)
    {
       assert(size < N && "branch node overflow");
       assert(i <= size && "Bad insert position");
       this->shift(i, size);
       subtree(i) = node;
-      stop(i) = stop;
+      stop(i) = stopValue;
    }
 };
 
@@ -1151,14 +1151,14 @@ private:
 
    void switchRootToBranch()
    {
-      getRootLeaf().~getRootLeaf();
+      getRootLeaf().~RootLeaf();
       m_height = 1;
       new (&getRootBranchData()) RootBranchData();
    }
 
    void switchRootTogetLeaf()
    {
-      getRootBranchData().~getRootBranchData();
+      getRootBranchData().~RootBranchData();
       m_height = 0;
       new(&getRootLeaf()) RootLeaf();
    }
@@ -1185,7 +1185,7 @@ public:
    ~IntervalMap()
    {
       clear();
-      getRootLeaf().~getRootLeaf();
+      getRootLeaf().~RootLeaf();
    }
 
    /// empty -  Return true when no intervals are mapped.
@@ -1652,7 +1652,7 @@ void IntervalMap<KeyType, ValueType, N, Traits>::
 ConstIterator::pathFillFind(KeyType value)
 {
    intervalmapimpl::NodeRef nodeRef = m_path.subtree(m_path.getHeight());
-   for (unsigned i = m_map->height - m_path.getHeight() - 1; i; --i) {
+   for (unsigned i = m_map->m_height - m_path.getHeight() - 1; i; --i) {
       unsigned p = nodeRef.get<Branch>().safeFind(0, value);
       m_path.push(nodeRef, p);
       nodeRef = nodeRef.subtree(p);
@@ -1722,7 +1722,7 @@ class IntervalMap<KeyType, ValueType, N, Traits>::Iterator : public ConstIterato
    explicit Iterator(IntervalMap &map) : ConstIterator(map)
    {}
 
-   void setNodestop(unsigned level, KeyType stop);
+   void setNodeStop(unsigned level, KeyType stop);
    bool insertNode(unsigned level, intervalmapimpl::NodeRef node, KeyType stop);
    template <typename NodeType> bool overflow(unsigned level);
    void treeInsert(KeyType a, KeyType b, ValueType y);
@@ -1768,7 +1768,7 @@ public:
       this->unsafeStop() = b;
       // Update keys in branch nodes as well.
       if (this->m_path.atLastEntry(this->m_path.getHeight())) {
-         setNodestop(this->m_path.getHeight(), b);
+         setNodeStop(this->m_path.getHeight(), b);
       }
    }
 
@@ -1823,7 +1823,7 @@ bool IntervalMap<KeyType, ValueType, N, Traits>::
 Iterator::canCoalesceLeft(KeyType start, ValueType value)
 {
    using namespace intervalmapimpl;
-   Path &path = this->path;
+   Path &path = this->m_path;
    if (!this->branched()) {
       unsigned i = path.getLeafOffset();
       RootLeaf &node = path.getLeaf<RootLeaf>();
@@ -1852,7 +1852,7 @@ bool IntervalMap<KeyType, ValueType, N, Traits>::
 Iterator::canCoalesceRight(KeyType stop, ValueType value)
 {
    using namespace intervalmapimpl;
-   Path &path = this->path;
+   Path &path = this->m_path;
    unsigned i = path.getLeafOffset() + 1;
    if (!this->branched()) {
       if (i >= path.getLeafSize())
@@ -1871,10 +1871,10 @@ Iterator::canCoalesceRight(KeyType stop, ValueType value)
    return false;
 }
 
-/// setNodestop - Update the stop key of the current node at level and above.
+/// setNodeStop - Update the stop key of the current node at level and above.
 template <typename KeyType, typename ValueType, unsigned N, typename Traits>
 void IntervalMap<KeyType, ValueType, N, Traits>::
-Iterator::setNodestop(unsigned level, KeyType stop)
+Iterator::setNodeStop(unsigned level, KeyType stop)
 {
    // There are no references to the root node, so nothing to update.
    if (!level) {
@@ -1988,7 +1988,7 @@ Iterator::insertNode(unsigned level, intervalmapimpl::NodeRef node, KeyType stop
    path.node<Branch>(level).insert(path.offset(level), path.size(level), node, stop);
    path.setSize(level, path.size(level) + 1);
    if (path.atLastEntry(level)) {
-      setNodestop(level, stop);
+      setNodeStop(level, stop);
    }
    path.reset(level + 1);
    return splitRoot;
@@ -2050,7 +2050,7 @@ Iterator::treeInsert(KeyType a, KeyType b, ValueType y)
             if (Traits::stopLess(b, curLeaf.start(0)) &&
                 (y != curLeaf.value(0) || !Traits::adjacent(b, curLeaf.start(0)))) {
                // Easy, just extend sibLeaf and we're done.
-               setNodestop(path.getHeight(), sibLeaf.stop(sibOfs) = b);
+               setNodeStop(path.getHeight(), sibLeaf.stop(sibOfs) = b);
                return;
             } else {
                // We have both left and right coalescing. Erase the old sibLeaf entry
@@ -2083,7 +2083,7 @@ Iterator::treeInsert(KeyType a, KeyType b, ValueType y)
 
    // Insert was the last node entry, update stops.
    if (grow) {
-      setNodestop(path.getHeight(), b);
+      setNodeStop(path.getHeight(), b);
    }
 }
 
@@ -2128,7 +2128,7 @@ Iterator::treeErase(bool updateRoot)
    path.setSize(im.m_height, newSize);
    // When we erase the last entry, update stop and move to a legal position.
    if (path.getLeafOffset() == newSize) {
-      setNodestop(im.m_height, node.stop(newSize - 1));
+      setNodeStop(im.m_height, node.stop(newSize - 1));
       path.moveRight(im.m_height);
    } else if (updateRoot && path.atBegin()) {
       im.getRootBranchStart() = path.getLeaf<Leaf>().start(0);
@@ -2170,7 +2170,7 @@ Iterator::eraseNode(unsigned level)
          path.setSize(level, newSize);
          // If we removed the last branch, update stop and move to a legal pos.
          if (path.offset(level) == newSize) {
-            setNodestop(level, parent.stop(newSize - 1));
+            setNodeStop(level, parent.stop(newSize - 1));
             path.moveRight(level);
          }
       }
