@@ -195,6 +195,12 @@ public:
       return end() - begin();
    }
 
+   POLAR_ATTRIBUTE_ALWAYS_INLINE
+   size_type size() const
+   {
+      return getSize();
+   }
+
    size_type getMaxSize() const
    {
       return size_type(-1) / sizeof(T);

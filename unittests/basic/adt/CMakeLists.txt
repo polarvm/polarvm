@@ -4,13 +4,18 @@ polar_add_unittest(PolarBaseLibTests BasicAdtTest
    ApIntTest.cpp
    ApSIntTest.cpp
    ApFloatTest.cpp
+   ArrayRefTest.cpp
    BitVectorTest.cpp
+   BitMaskEnumTest.cpp
    BumpPtrListTest.cpp
    BreadthFirstIteratorTest.cpp
+   DenseMapTest.cpp
+   DenseSetTest.cpp
    EquivalenceClassesTest.cpp
-   HashingTest.cpp
+   FunctionRefTest.cpp
+   FoldingSetTest.cpp
    StlExtrasTest.cpp
-   ArrayRefTest.cpp
+   HashingTest.cpp
    IntrusiveListBaseTest.cpp
    IntrusiveListNodeBaseTest.cpp
    IntrusiveListNodeTest.cpp
@@ -23,12 +28,9 @@ polar_add_unittest(PolarBaseLibTests BasicAdtTest
    IntervalMapTest.cpp
    IntrusiveRefCntPtrTest.cpp
    IteratorTest.cpp
+   MappedIteratorTest.cpp
+   MapVectorTest.cpp
    SmallVectorTest.cpp
-   BitMaskEnumTest.cpp
-   FoldingSetTest.cpp
-   DenseMapTest.cpp
-   DenseSetTest.cpp
-   FunctionRefTest.cpp
    StringExtrasTest.cpp
    SmallStringTest.cpp
    SmallPtrSetTest.cpp

@@ -49,7 +49,7 @@ public:
    VectorType takeVector()
    {
       m_map.clear();
-      return std::move(Vector);
+      return std::move(m_vector);
    }
 
    size_type size() const
