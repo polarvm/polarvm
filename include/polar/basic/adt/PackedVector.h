@@ -32,7 +32,7 @@ protected:
    {
       T value = T();
       for (unsigned i = 0; i != BitNum; ++i) {
-         value = T(value | ((m_bits[(idx << (BitNum-1)) + i] ? 1UL : 0UL) << i));
+         value = T(value | ((bits[(idx << (BitNum-1)) + i] ? 1UL : 0UL) << i));
       }
       return value;
    }
@@ -41,7 +41,7 @@ protected:
    {
       assert((value >> BitNum) == 0 && "value is too big");
       for (unsigned i = 0; i != BitNum; ++i) {
-         m_bits[(idx << (BitNum-1)) + i] = value & (T(1) << i);
+         bits[(idx << (BitNum-1)) + i] = value & (T(1) << i);
       }
    }
 };
@@ -50,27 +50,27 @@ template <typename T, unsigned BitNum, typename BitVectorTy>
 class PackedVectorBase<T, BitNum, BitVectorTy, true>
 {
 protected:
-   static T getValue(const BitVectorTy &m_bits, unsigned idx)
+   static T getValue(const BitVectorTy &bits, unsigned idx)
    {
       T value = T();
       for (unsigned i = 0; i != BitNum-1; ++i) {
-         value = T(val | ((m_bits[(idx << (BitNum-1)) + i] ? 1UL : 0UL) << i));
+         value = T(value | ((bits[(idx << (BitNum-1)) + i] ? 1UL : 0UL) << i));
       }
-      if (m_bits[(idx << (BitNum-1)) + BitNum-1]) {
+      if (bits[(idx << (BitNum-1)) + BitNum-1]) {
          value = ~value;
       }
       return value;
    }
 
-   static void setValue(BitVectorTy &m_bits, unsigned idx, T val)
+   static void setValue(BitVectorTy &bits, unsigned idx, T value)
    {
       if (value < 0) {
          value = ~value;
-         m_bits.set((idx << (BitNum-1)) + BitNum-1);
+         bits.set((idx << (BitNum-1)) + BitNum-1);
       }
       assert((value >> (BitNum-1)) == 0 && "value is too big");
       for (unsigned i = 0; i != BitNum-1; ++i) {
-         m_bits[(idx << (BitNum-1)) + i] = value & (T(1) << i);
+         bits[(idx << (BitNum-1)) + i] = value & (T(1) << i);
       }
    }
 };
@@ -102,13 +102,13 @@ public:
 
       Reference &operator=(T value)
       {
-         m_vector.setValue(m_vector.m_bits, idx, value);
+         m_vector.setValue(m_vector.m_bits, m_idx, value);
          return *this;
       }
 
       operator T() const
       {
-         return m_vector.getValue(m_vector.m_bits, idx);
+         return m_vector.getValue(m_vector.m_bits, m_idx);
       }
    };
 
