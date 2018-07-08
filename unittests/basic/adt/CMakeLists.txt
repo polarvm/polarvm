@@ -14,6 +14,8 @@ polar_add_unittest(PolarBaseLibTests BasicAdtTest
    IntrusiveListBaseTest.cpp
    IntrusiveListNodeBaseTest.cpp
    IntrusiveListNodeTest.cpp
+   IntrusiveListIteratorTest.cpp
+   IntrusiveListSentienelTest.cpp
    SmallVectorTest.cpp
    BitMaskEnumTest.cpp
    FoldingSetTest.cpp
