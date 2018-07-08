@@ -47,6 +47,7 @@ polar_add_unittest(PolarBaseLibTests BasicAdtTest
    StringSwitchTest.cpp
    SccIteratorTest.cpp
    SetVectorTest.cpp
+   SimpleIntrusiveListTest.cpp
    TripleTest.cpp
    TestGraph.h
    )

@@ -350,12 +350,13 @@ public:
    ///
    /// \pre \c this and \p RHS are sorted.
    ///@{
-   void merge(SimpleIntrusiveList &rhs)
+   void merge(SimpleIntrusiveList &other)
    {
-      merge(rhs, std::less<T>());
+      merge(other, std::less<T>());
    }
    
-   template <class Compare> void merge(SimpleIntrusiveList &rhs, Compare comp);
+   template <class Compare>
+   void merge(SimpleIntrusiveList &other, Compare comp);
    ///@}
    
    /// Sort the list.
@@ -371,26 +372,27 @@ public:
 
 template <class T, class... Options>
 template <class Compare>
-void SimpleIntrusiveList<T, Options...>::merge(SimpleIntrusiveList &rhs, Compare comp)
+void SimpleIntrusiveList<T, Options...>::merge(SimpleIntrusiveList &other, Compare comp)
 {
-   if (this == &rhs || rhs.empty()) {
+   if (this == &other || other.empty()) {
       return;
    }
    iterator leftIter = begin(), leftIterEnd = end();
-   iterator rightIter = rhs.begin(), rightIterEnd = rhs.end();
-   while (leftIterEnd != leftIterEnd) {
+   iterator rightIter = other.begin(), rightIterEnd = other.end();
+   while (leftIter != leftIterEnd) {
       if (comp(*rightIter, *leftIter)) {
          // Transfer a run of at least size 1 from RHS to LHS.
-         iterator RunStart = rightIter++;
+         iterator runStart = rightIter++;
          rightIter = std::find_if(rightIter, rightIterEnd, [&](reference refvalue) { return !comp(refvalue, *leftIter); });
-         splice(leftIter, rhs, RunStart, rightIter);
-         if (rightIter == rightIterEnd)
+         splice(leftIter, other, runStart, rightIter);
+         if (rightIter == rightIterEnd) {
             return;
+         }
       }
       ++leftIter;
    }
    // Transfer the remaining RHS nodes once LHS is finished.
-   splice(leftIterEnd, rhs, rightIter, rightIterEnd);
+   splice(leftIterEnd, other, rightIter, rightIterEnd);
 }
 
 template <class T, class... Options>
