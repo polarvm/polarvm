@@ -171,9 +171,10 @@ public:
    }
 
    /// Remove an item from the set vector.
-   bool remove(const value_type &value) {
+   bool remove(const value_type &value)
+   {
       if (m_set.erase(value)) {
-         typename m_vectortype::iterator iter = find(m_vector, value);
+         typename vector_type::iterator iter = find(m_vector, value);
          assert(iter != m_vector.end() && "Corrupted SetVector instances!");
          m_vector.erase(iter);
          return true;
@@ -195,7 +196,7 @@ public:
       // std:vector.erase(const_iterator) as defined in C++11. This is for
       // compatibility with non-standard libstdc++ up to 4.8 (fixed in 4.9).
       auto niter = m_vector.begin();
-      std::advance(niter, std::distance<iterator>(NI, iter));
+      std::advance(niter, std::distance<iterator>(niter, iter));
       return m_vector.erase(niter);
    }
 
