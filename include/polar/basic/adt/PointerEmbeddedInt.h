@@ -88,6 +88,12 @@ public:
    }
 };
 
+} // basic
+
+namespace utils {
+
+using polar::basic::PointerEmbeddedInt;
+
 // Provide pointer like traits to support use with pointer unions and sum
 // types.
 template <typename IntType, int Bits>
@@ -107,11 +113,15 @@ struct PointerLikeTypeTraits<PointerEmbeddedInt<IntType, Bits>>
 
    static inline T getFromVoidPointer(const void *ptr)
    {
-      return T(reinterpret_cast<uintptr_t>(P), typename T::RawValueTag());
+      return T(reinterpret_cast<uintptr_t>(ptr), typename T::RawValueTag());
    }
 
    enum { NumLowBitsAvailable = T::Shift };
 };
+
+} // utils
+
+namespace basic {
 
 // Teach DenseMap how to use PointerEmbeddedInt objects as keys if the Int type
 // itself can be a key.
