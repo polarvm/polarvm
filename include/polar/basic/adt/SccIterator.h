@@ -154,7 +154,7 @@ void SccIterator<GraphT, GT>::dfsVisitOne(NodeRef node)
    ++m_visitNum;
    m_nodeVisitNumbers[node] = m_visitNum;
    m_sccNodeStack.push_back(node);
-   m_visitStack.push_back(StackElement(node, GT::child_begin(node), m_visitNum));
+   m_visitStack.push_back(StackElement(node, GT::childBegin(node), m_visitNum));
 #if 0 // Enable if needed when debugging.
    dbgs() << "TarjanSCC: m_node " << node <<
              " : m_visitNum = " << m_visitNum << "\n";
@@ -165,7 +165,7 @@ template <class GraphT, class GT>
 void SccIterator<GraphT, GT>::dfsVisitChildren()
 {
    assert(!m_visitStack.empty());
-   while (m_visitStack.back().m_nextChild != GT::child_end(m_visitStack.back().m_node)) {
+   while (m_visitStack.back().m_nextChild != GT::childEnd(m_visitStack.back().m_node)) {
       // TOS has at least one more child so continue DFS
       NodeRef childN = *m_visitStack.back().m_nextChild++;
       typename DenseMap<NodeRef, unsigned>::iterator Visited =
@@ -192,7 +192,7 @@ template <class GraphT, class GT> void SccIterator<GraphT, GT>::getNextScc()
       // Pop the leaf on top of the m_visitStack.
       NodeRef visitingN = m_visitStack.back().m_node;
       unsigned minVisitNum = m_visitStack.back().m_minVisited;
-      assert(m_visitStack.back().m_nextChild == GT::child_end(visitingN));
+      assert(m_visitStack.back().m_nextChild == GT::childEnd(visitingN));
       m_visitStack.pop_back();
 
       // Propagate MinVisitNum to parent so we can detect the SCC starting node.
@@ -227,7 +227,7 @@ bool SccIterator<GraphT, GT>::hasLoop() const
    if (m_currentScc.size() > 1)
       return true;
    NodeRef node = m_currentScc.front();
-   for (ChildItTy citer = GT::child_begin(node), cend = GT::child_end(node); citer != cend;
+   for (ChildItTy citer = GT::childBegin(node), cend = GT::childEnd(node); citer != cend;
         ++citer) {
       if (*citer == node) {
          return true;
