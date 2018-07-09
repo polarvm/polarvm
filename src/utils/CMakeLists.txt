@@ -60,8 +60,8 @@ set(POLAR_UTILS_SOURCES
    CircleRawOutStream.cpp;
 #   CommandLine.cpp;
 #   Compression.cpp;
-#   ConvertUtf.cpp;
-#   ConvertUtfWrapper.cpp;
+   ConvertUtf.cpp;
+   ConvertUtfWrapper.cpp;
 #   CrashRecoveryContext.cpp;
 #   DataExtractor.cpp;
 #   Debug.cpp;
@@ -109,7 +109,7 @@ set(POLAR_UTILS_SOURCES
    TargetParser.cpp;
 #   Timer.cpp;
 #   ToolOutputFile.cpp;
-#   Unicode.cpp;
+   Unicode.cpp;
 #   Valgrind.cpp;
 #   yaml/YamlParser.cpp;
 #   yaml/YamlTraits.cpp;
