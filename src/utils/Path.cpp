@@ -1262,12 +1262,13 @@ Expected<TempFile> TempFile::create(const Twine &model, unsigned mode)
 
    TempFile ret(resultPath, fd);
 #ifndef POLAR_ON_WIN32
-   if (sys::remove_file_on_signal(resultPath)) {
-      // Make sure we delete the file when RemoveFileOnSignal fails.
-      polar::utils::consume_error(ret.discard());
-      std::error_code errorCode(ErrorCode::operation_not_permitted);
-      return error_code_to_error(errorCode);
-   }
+   // unitest mark
+//   if (sys::remove_file_on_signal(resultPath)) {
+//      // Make sure we delete the file when RemoveFileOnSignal fails.
+//      polar::utils::consume_error(ret.discard());
+//      std::error_code errorCode(ErrorCode::operation_not_permitted);
+//      return error_code_to_error(errorCode);
+//   }
 #endif
    return std::move(ret);
 }

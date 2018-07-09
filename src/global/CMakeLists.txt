@@ -4,6 +4,4 @@ polar_collect_files(
    DIR ${CMAKE_CURRENT_SOURCE_DIR}
    OUTPUT_VAR POLAR_GLOABL_SOURCES)
 
-message(${POLAR_GLOABL_SOURCES})
-
 add_library(PolarGlobal STATIC ${POLAR_GLOABL_SOURCES})
