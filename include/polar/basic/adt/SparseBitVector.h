@@ -29,6 +29,7 @@ using polar::utils::count_trailing_zeros;
 using polar::utils::count_trailing_ones;
 using polar::utils::count_leading_ones;
 using polar::utils::count_leading_zeros;
+using polar::utils::RawOutStream;
 
 /// SparseBitVector is an implementation of a bitvector that is sparse by only
 /// storing the elements that have non-zero bits set.  In order to make this
@@ -156,7 +157,8 @@ public:
             return i * BITWORD_SIZE + count_trailing_zeros(m_bits[i]);
          }
       }
-      polar_unreachable("Illegal empty element");
+      // unittest mark
+      // polar_unreachable("Illegal empty element");
    }
 
    /// findLast - Returns the index of the last set bit.
@@ -169,7 +171,8 @@ public:
                   count_leading_zeros(m_bits[idx]) - 1;
          }
       }
-      polar_unreachable("Illegal empty element");
+      // unittest mark
+      // polar_unreachable("Illegal empty element");
    }
 
    /// findNext - Returns the index of the next set bit starting from the
@@ -940,19 +943,20 @@ operator-(const SparseBitVector<ElementSize> &lhs,
 
 // Dump a SparseBitVector to a stream
 template <unsigned ElementSize>
-void dump(const SparseBitVector<ElementSize> &vector, raw_ostream &out)
+void dump(const SparseBitVector<ElementSize> &vector, RawOutStream &out)
 {
-   out << "[";
+   // unittest mark
+//   out << "[";
 
-   typename SparseBitVector<ElementSize>::iterator bi = vector.begin(),
-         be = vector.end();
-   if (bi != be) {
-      out << *bi;
-      for (++bi; bi != be; ++bi) {
-         out << " " << *bi;
-      }
-   }
-   out << "]\n";
+//   typename SparseBitVector<ElementSize>::iterator bi = vector.begin(),
+//         be = vector.end();
+//   if (bi != be) {
+//      out << *bi;
+//      for (++bi; bi != be; ++bi) {
+//         out << " " << *bi;
+//      }
+//   }
+//   out << "]\n";
 }
 
 } // basic

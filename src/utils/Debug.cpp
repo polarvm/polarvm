@@ -138,7 +138,7 @@ void debug_user_sig_handler(void *cookie)
 {
    // This is a bit sneaky.  Since this is under #ifndef NDEBUG, we
    // know that debug mode is enabled and dbgs() really is a
-   // circular_raw_ostream.  If NDEBUG is defined, then dbgs() ==
+   // circular_RawOutStream.  If NDEBUG is defined, then dbgs() ==
    // errs() but this will never be invoked.
    CircularRawOutStream &dbgout =
          static_cast<CircularRawOutStream &>(debug_stream());

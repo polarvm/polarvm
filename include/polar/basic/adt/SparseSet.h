@@ -126,7 +126,7 @@ class SparseSet
                  !std::numeric_limits<SparseT>::is_signed,
                  "SparseT must be an unsigned integer type");
 
-   using KeyT = typename KeyFunctorT::argument_type;
+   using KeyT = typename KeyFunctorT::ArgumentType;
    using DenseT = SmallVector<ValueT, 8>;
    using size_type = unsigned;
    DenseT m_dense;
@@ -291,7 +291,7 @@ public:
       if (iter != end()) {
          return std::make_pair(iter, false);
       }
-      m_sparse[Idx] = size();
+      m_sparse[idx] = size();
       m_dense.push_back(value);
       return std::make_pair(end() - 1, true);
    }

@@ -38,33 +38,39 @@ private:
    int value;
 
 public:
-   Constructable() : constructed(true), value(0) {
+   Constructable() : constructed(true), value(0)
+   {
       ++numConstructorCalls;
    }
 
-   Constructable(int val) : constructed(true), value(val) {
+   Constructable(int val) : constructed(true), value(val)
+   {
       ++numConstructorCalls;
    }
 
-   Constructable(const Constructable & src) : constructed(true) {
+   Constructable(const Constructable & src) : constructed(true)
+   {
       value = src.value;
       ++numConstructorCalls;
       ++numCopyConstructorCalls;
    }
 
-   Constructable(Constructable && src) : constructed(true) {
+   Constructable(Constructable && src) : constructed(true)
+   {
       value = src.value;
       ++numConstructorCalls;
       ++numMoveConstructorCalls;
    }
 
-   ~Constructable() {
+   ~Constructable()
+   {
       EXPECT_TRUE(constructed);
       ++numDestructorCalls;
       constructed = false;
    }
 
-   Constructable & operator=(const Constructable & src) {
+   Constructable & operator=(const Constructable & src)
+   {
       EXPECT_TRUE(constructed);
       value = src.value;
       ++numAssignmentCalls;
@@ -72,7 +78,8 @@ public:
       return *this;
    }
 
-   Constructable & operator=(Constructable && src) {
+   Constructable & operator=(Constructable && src)
+   {
       EXPECT_TRUE(constructed);
       value = src.value;
       ++numAssignmentCalls;
@@ -80,11 +87,13 @@ public:
       return *this;
    }
 
-   int getValue() const {
+   int getValue() const
+   {
       return abs(value);
    }
 
-   static void reset() {
+   static void reset()
+   {
       numConstructorCalls = 0;
       numMoveConstructorCalls = 0;
       numCopyConstructorCalls = 0;
@@ -94,40 +103,49 @@ public:
       numCopyAssignmentCalls = 0;
    }
 
-   static int getNumConstructorCalls() {
+   static int getNumConstructorCalls()
+   {
       return numConstructorCalls;
    }
 
-   static int getNumMoveConstructorCalls() {
+   static int getNumMoveConstructorCalls()
+   {
       return numMoveConstructorCalls;
    }
 
-   static int getNumCopyConstructorCalls() {
+   static int getNumCopyConstructorCalls()
+   {
       return numCopyConstructorCalls;
    }
 
-   static int getNumDestructorCalls() {
+   static int getNumDestructorCalls()
+   {
       return numDestructorCalls;
    }
 
-   static int getNumAssignmentCalls() {
+   static int getNumAssignmentCalls()
+   {
       return numAssignmentCalls;
    }
 
-   static int getNumMoveAssignmentCalls() {
+   static int getNumMoveAssignmentCalls()
+   {
       return numMoveAssignmentCalls;
    }
 
-   static int getNumCopyAssignmentCalls() {
+   static int getNumCopyAssignmentCalls()
+   {
       return numCopyAssignmentCalls;
    }
 
-   friend bool operator==(const Constructable & c0, const Constructable & c1) {
+   friend bool operator==(const Constructable & c0, const Constructable & c1)
+   {
       return c0.getValue() == c1.getValue();
    }
 
    friend bool POLAR_ATTRIBUTE_UNUSED
-   operator!=(const Constructable & c0, const Constructable & c1) {
+   operator!=(const Constructable & c0, const Constructable & c1)
+   {
       return c0.getValue() != c1.getValue();
    }
 };
@@ -140,7 +158,8 @@ int Constructable::numAssignmentCalls;
 int Constructable::numCopyAssignmentCalls;
 int Constructable::numMoveAssignmentCalls;
 
-struct NonCopyable {
+struct NonCopyable
+{
    NonCopyable() {}
    NonCopyable(NonCopyable &&) {}
    NonCopyable &operator=(NonCopyable &&) { return *this; }
@@ -155,7 +174,8 @@ POLAR_ATTRIBUTE_USED void CompileTest()
    V.resize(42);
 }
 
-class SmallVectorTestBase : public testing::Test {
+class SmallVectorTestBase : public testing::Test
+{
 protected:
    void SetUp() override { Constructable::reset(); }
 
@@ -195,7 +215,8 @@ protected:
 
 // Test fixture class
 template <typename VectorT>
-class SmallVectorTest : public SmallVectorTestBase {
+class SmallVectorTest : public SmallVectorTestBase
+{
 protected:
    VectorT theVector;
    VectorT otherVector;

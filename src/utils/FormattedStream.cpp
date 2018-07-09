@@ -53,7 +53,7 @@ void update_position(std::pair<unsigned, unsigned> &position, const char *ptr, s
 void FormattedRawOutStream::computePosition(const char *ptr, size_t size)
 {
    // If our previous scan pointer is inside the buffer, assume we already
-   // scanned those bytes. This depends on raw_ostream to not change our buffer
+   // scanned those bytes. This depends on RawOutStream to not change our buffer
    // in unexpected ways.
    if (ptr <= m_scanned && m_scanned <= ptr + size) {
       // Scan all characters added since our last scan to determine the new

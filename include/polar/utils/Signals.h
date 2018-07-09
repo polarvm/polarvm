@@ -56,7 +56,7 @@ void print_stack_trace_on_error_signal(StringRef argv0,
 /// Disable all system dialog boxes that appear when the process crashes.
 void disable_system_dialogs_on_crash();
 
-/// Print the stack trace using the given \c raw_ostream object.
+/// Print the stack trace using the given \c RawOutStream object.
 void print_stack_trace(RawOutStream &outStream);
 
 // Run all registered signal handlers.

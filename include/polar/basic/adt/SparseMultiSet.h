@@ -118,7 +118,7 @@ class SparseMultiSet
       }
    };
 
-   using KeyT = typename KeyFunctorT::argument_type;
+   using KeyT = typename KeyFunctorT::ArgumentType;
    using DenseT = SmallVector<SMSNode, 8>;
    DenseT m_dense;
    SparseT *m_sparse = nullptr;
@@ -134,7 +134,7 @@ class SparseMultiSet
 
    unsigned sparseIndex(const ValueT &value) const
    {
-      assert(m_valIndexOf(value) < Universe &&
+      assert(m_valIndexOf(value) < m_universe &&
              "Invalid key in set. Did object mutate?");
       return m_valIndexOf(value);
    }
@@ -290,7 +290,7 @@ public:
 
       reference operator*() const
       {
-         assert(isKeyed() && m_sms->sparseIndex(m_sms->m_dense[m_idx].m_data) == SparseIdx &&
+         assert(isKeyed() && m_sms->sparseIndex(m_sms->m_dense[m_idx].m_data) == m_sparseIdx &&
                 "Dereferencing iterator of invalid key or index");
 
          return m_sms->m_dense[m_idx].m_data;
@@ -472,7 +472,7 @@ public:
    {
       iterator iter = find(key);
       if (iter != end()) {
-         iter = iterator(this, iter.getPrev(), m_keyIndexOf(Key));
+         iter = iterator(this, iter.getPrev(), m_keyIndexOf(key));
       }
       return iter;
    }
@@ -498,7 +498,7 @@ public:
       if (iter == end()) {
          // Make a singleton list
          m_sparse[idx] = nodeIdx;
-         m_dense[NodeIdx].m_prev = nodeIdx;
+         m_dense[nodeIdx].m_prev = nodeIdx;
          return iterator(this, nodeIdx, idx);
       }
 

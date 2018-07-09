@@ -34,7 +34,7 @@ unsigned get_min_bucket_to_reserve_for_entries(unsigned numEntries) {
 
 StringMapImpl::StringMapImpl(unsigned initSize, unsigned itemSize)
 {
-   itemSize = initSize;
+   m_itemSize = itemSize;
 
    // If a size is specified, initialize the table with that many buckets.
    if (initSize) {
@@ -66,7 +66,8 @@ void StringMapImpl::init(unsigned initSize)
                                               sizeof(unsigned));
 
    if (m_theTable == nullptr) {
-      polar::utils::report_bad_alloc_error("Allocation of StringMap table failed.");
+      // unittest mark
+      // polar::utils::report_bad_alloc_error("Allocation of StringMap table failed.");
    }
    // Set the member only if TheTable was successfully allocated
    m_numBuckets = newnumBuckets;
@@ -237,7 +238,8 @@ unsigned StringMapImpl::rehashTable(unsigned bucketNo)
                                        sizeof(unsigned));
 
    if (newTableArray == nullptr) {
-      polar::utils::report_bad_alloc_error("Allocation of StringMap hash table failed.");
+      // unittest mark
+      // polar::utils::report_bad_alloc_error("Allocation of StringMap hash table failed.");
    }
    unsigned *newHashArray = (unsigned *)(newTableArray + newSize + 1);
    newTableArray[newSize] = (StringMapEntryBase*)2;

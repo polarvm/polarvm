@@ -213,7 +213,7 @@ public:
    /// custom formatted message.
    ///
    /// \param m_includeLoc The location of the include.
-   /// \param OS the raw_ostream to print on.
+   /// \param OS the RawOutStream to print on.
    void printIncludeStack(SMLocation includeLoc, RawOutStream &outStream) const;
 };
 
@@ -263,7 +263,7 @@ public:
 };
 
 /// Instances of this class encapsulate one diagnostic report, allowing
-/// printing to a raw_ostream as a caret diagnostic.
+/// printing to a RawOutStream as a caret diagnostic.
 class SMDiagnostic
 {
    const SourceMgr *m_sourceMgr = nullptr;

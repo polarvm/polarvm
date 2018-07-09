@@ -99,7 +99,7 @@ extern bool g_enableDebugBuffering;
 extern bool sg_enableDebugBuffering;
 
 
-/// debug_stream() - This returns a reference to a raw_ostream for debugging
+/// debug_stream() - This returns a reference to a RawOutStream for debugging
 /// messages.  If debugging is disabled it returns errs().  Use it
 /// like: debug_stream() << "foo" << "bar";
 RawOutStream &debug_stream();

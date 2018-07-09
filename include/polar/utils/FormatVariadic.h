@@ -251,7 +251,7 @@ public:
 //      implementation should write the formatted text into `Stream`.
 //   2. If there is a suitable template specialization of FormatProvider<>
 //      for type T containing a method whose signature is:
-//      void format(const T &Obj, raw_ostream &Stream, StringRef Options)
+//      void format(const T &Obj, RawOutStream &Stream, StringRef Options)
 //      Then this method is invoked as described in Step 1.
 //
 // If a match cannot be found through either of the above methods, a compiler

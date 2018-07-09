@@ -24,7 +24,7 @@
 namespace polar {
 namespace utils {
 
-class raw_ostream;
+class RawOutStream;
 
 // This class represents Block frequency as a 64-bit value.
 class BlockFrequency

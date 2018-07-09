@@ -193,7 +193,7 @@ public:
    /// StringMapEntry object.
    const char *getKeyData() const
    {
-      return reinterpret_cast<const char*>(this + 1 );
+      return reinterpret_cast<const char*>(this + 1);
    }
 
    StringRef first() const
@@ -213,10 +213,10 @@ public:
       // terminator.
       unsigned allocSize = static_cast<unsigned>(sizeof(StringMapEntry))+
             keyLength+1;
-      unsigned Alignment = alignof(StringMapEntry);
+      unsigned alignment = alignof(StringMapEntry);
 
       StringMapEntry *newItem =
-            static_cast<StringMapEntry*>(allocator.allocate(allocSize, Alignment));
+            static_cast<StringMapEntry*>(allocator.allocate(allocSize, alignment));
 
       if (newItem == nullptr) {
          // unittest mark
@@ -441,7 +441,7 @@ public:
    {
       const_iterator iter = find(key);
       if (iter != end()) {
-         return iter->second;
+         return iter->m_second;
       }
       return ValueType();
    }

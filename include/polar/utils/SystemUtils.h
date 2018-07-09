@@ -14,7 +14,7 @@
 
 class RawOutStream;
 
-/// Determine if the raw_ostream provided is connected to a terminal. If so,
+/// Determine if the RawOutStream provided is connected to a terminal. If so,
 /// generate a warning message to errs() advising against display of bitcode
 /// and return true. Otherwise just return false.
 /// @brief Check for output written to a console

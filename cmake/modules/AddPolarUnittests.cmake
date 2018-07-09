@@ -34,7 +34,7 @@ function(polar_add_unittest test_suite test_name)
    
    set(POLAR_REQUIRES_RTTI OFF)
    
-   #list(APPEND POLAR_LINK_COMPONENTS Utils) # gtest needs it for raw_ostream
+   #list(APPEND POLAR_LINK_COMPONENTS Utils) # gtest needs it for RawOutStream
    polar_add_executable(${test_name} IGNORE_EXTERNALIZE_DEBUGINFO NO_INSTALL_RPATH ${ARGN})
    set(outdir ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
    polar_set_output_directory(${test_name} BINARY_DIR ${outdir} LIBRARY_DIR ${outdir})
