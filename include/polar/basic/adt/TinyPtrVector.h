@@ -45,7 +45,7 @@ public:
 
    ~TinyPtrVector()
    {
-      if (VecTy *vector = m_value.template dyn<VecTy*>()) {
+      if (VecTy *vector = m_value.template dynamicCast<VecTy*>()) {
          delete vector;
       }
    }
@@ -344,7 +344,7 @@ public:
    iterator erase(iterator startIter, iterator endIter)
    {
       assert(startIter >= begin() && "Range to erase is out of bounds.");
-      assert(startIter <= end && "Trying to erase invalid range.");
+      assert(startIter <= endIter && "Trying to erase invalid range.");
       assert(endIter <= end() && "Trying to erase past the end.");
 
       if (m_value.template is<EltTy>()) {
