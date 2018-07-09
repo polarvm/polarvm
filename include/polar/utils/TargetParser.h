@@ -198,7 +198,7 @@ enum ArchExtKind : unsigned
    AEK_FP =          1 << 3,
    AEK_SIMD =        1 << 4,
    AEK_FP16 =        1 << 5,
-   AEK_profile =     1 << 6,
+   AEK_PROFILE =     1 << 6,
    AEK_RAS =         1 << 7,
    AEK_LSE =         1 << 8,
    AEK_SVE =         1 << 9,

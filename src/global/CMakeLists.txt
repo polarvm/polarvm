@@ -7,4 +7,3 @@ polar_collect_files(
 message(${POLAR_GLOABL_SOURCES})
 
 add_library(PolarGlobal STATIC ${POLAR_GLOABL_SOURCES})
-#target_include_directories(PolarGlobal PUBLIC ${POLAR_MAIN_INCLUDE_DIR}/polar/global)

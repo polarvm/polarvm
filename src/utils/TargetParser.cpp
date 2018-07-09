@@ -498,7 +498,7 @@ bool aarch64::get_extension_features(unsigned Extensions,
       Features.push_back("+dotprod");
    if (Extensions & aarch64::AEK_FP16)
       Features.push_back("+fullfp16");
-   if (Extensions & aarch64::AEK_profile)
+   if (Extensions & aarch64::AEK_PROFILE)
       Features.push_back("+spe");
    if (Extensions & aarch64::AEK_RAS)
       Features.push_back("+ras");

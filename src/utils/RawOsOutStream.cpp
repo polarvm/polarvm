@@ -21,7 +21,6 @@
 namespace polar {
 namespace utils {
 
-
 RawOsOutStream::~RawOsOutStream()
 {
    flush();
