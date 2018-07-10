@@ -4819,17 +4819,15 @@ ApFloat ApFloat::getAllOnesValue(unsigned bitWidth, bool isIEEE) {
 
 void ApFloat::print(RawOutStream &outstream) const
 {
-   // unittest mark
-//   SmallVector<char, 16> buffer;
-//   toString(buffer);
-//   outstream << buffer << "\n";
+   SmallVector<char, 16> buffer;
+   toString(buffer);
+   outstream << buffer << "\n";
 }
 
 #if !defined(NDEBUG) || defined(POLAR_ENABLE_DUMP)
 POLAR_DUMP_METHOD void ApFloat::dump() const
 {
-   // unittest mark
-   // print(debug_stream());
+   print(debug_stream());
 }
 #endif
 

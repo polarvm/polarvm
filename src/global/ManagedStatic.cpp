@@ -14,26 +14,20 @@
 #include <thread>
 #include <mutex>
 #include <cassert>
+#include <iostream>
 
 namespace polar {
 static const ManagedStaticBase *sg_staticList = nullptr;
-static std::mutex *sg_managedStaticMutex = nullptr;
-static std::once_flag sg_mutexInitFlag;
 
 namespace {
 
-void initialize_mutex()
-{
-   sg_managedStaticMutex = new std::mutex();
-}
-
-std::mutex* get_managed_static_mutex()
+std::recursive_mutex& get_managed_static_mutex()
 {
    // We need to use a function local static here, since this can get called
    // during a static constructor and we need to guarantee that it's initialized
    // correctly.
-   std::call_once(sg_mutexInitFlag, initialize_mutex);
-   return sg_managedStaticMutex;
+   static std::recursive_mutex managedStaticMutex;
+   return managedStaticMutex;
 }
 
 } // anonymous namespace
@@ -41,8 +35,7 @@ std::mutex* get_managed_static_mutex()
 void ManagedStaticBase::registerManagedStatic(GlobalCreatorFuncType *creator, GlobalDeleterFuncType *deleter) const
 {
    assert(creator);
-   std::lock_guard lock(*get_managed_static_mutex());
-   
+   std::lock_guard lock(get_managed_static_mutex());
    if (!m_ptr.load(std::memory_order_relaxed)) {
       void *temp = creator();
       
@@ -74,7 +67,7 @@ void ManagedStaticBase::destroy() const
 /// ::polar::shutdown - Deallocate and destroy all ManagedStatic variables.
 void shutdown()
 {
-   std::lock_guard lock(*get_managed_static_mutex());
+   std::lock_guard lock(get_managed_static_mutex());
    while (sg_staticList) {
       sg_staticList->destroy();
    }

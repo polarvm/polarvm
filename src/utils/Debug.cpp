@@ -127,7 +127,7 @@ struct DebugOnlyOpt
 
 static DebugOnlyOpt sg_debugOnlyOptLoc;
 
-static cmd::Opt<DebugOnlyOpt, true, cmd::Parser<std::string> >
+static cmd::Opt<DebugOnlyOpt, true, cmd::Parser<std::string>>
 sg_debugOnly("debug-only", cmd::Desc("Enable a specific type of debug output (comma separated list of types)"),
              cmd::Hidden, cmd::ZeroOrMore, cmd::ValueDesc("debug string"),
              cmd::location(sg_debugOnlyOptLoc), cmd::ValueRequired);
@@ -144,7 +144,7 @@ void debug_user_sig_handler(void *cookie)
          static_cast<CircularRawOutStream &>(debug_stream());
    dbgout.flushBufferWithBanner();
 }
-} // anonymous namespacd
+} // anonymous namespace
 
 /// dbgs - Return a circular-buffered debug stream.
 RawOutStream &debug_stream()
