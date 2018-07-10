@@ -18,7 +18,7 @@ using namespace polar::basic;
 
 namespace {
 
-TEST(SCCIteratorTest, AllSmallGraphs) {
+TEST(SCCIteratorTest, testAllSmallGraphs) {
    // Test SCC computation against every graph with NUM_NODES nodes or less.
    // Since SCC considers every node to have an implicit self-edge, we only
    // create graphs for which every node has a self-edge.

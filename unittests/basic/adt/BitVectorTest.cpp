@@ -27,32 +27,33 @@ using polar::basic::SmallBitVector;
 typedef ::testing::Types<BitVector, SmallBitVector> BitVectorTestTypes;
 TYPED_TEST_CASE(BitVectorTest, BitVectorTestTypes);
 
-TYPED_TEST(BitVectorTest, TrivialOperation) {
-   TypeParam Vec;
-   EXPECT_EQ(0U, Vec.count());
-   EXPECT_EQ(0U, Vec.size());
-   EXPECT_FALSE(Vec.any());
-   EXPECT_TRUE(Vec.all());
-   EXPECT_TRUE(Vec.none());
-   EXPECT_TRUE(Vec.empty());
+TYPED_TEST(BitVectorTest, testTrivialOperation)
+{
+   TypeParam vector;
+   EXPECT_EQ(0U, vector.count());
+   EXPECT_EQ(0U, vector.size());
+   EXPECT_FALSE(vector.any());
+   EXPECT_TRUE(vector.all());
+   EXPECT_TRUE(vector.none());
+   EXPECT_TRUE(vector.empty());
 
-   Vec.resize(5, true);
-   EXPECT_EQ(5U, Vec.count());
-   EXPECT_EQ(5U, Vec.size());
-   EXPECT_TRUE(Vec.any());
-   EXPECT_TRUE(Vec.all());
-   EXPECT_FALSE(Vec.none());
-   EXPECT_FALSE(Vec.empty());
+   vector.resize(5, true);
+   EXPECT_EQ(5U, vector.count());
+   EXPECT_EQ(5U, vector.size());
+   EXPECT_TRUE(vector.any());
+   EXPECT_TRUE(vector.all());
+   EXPECT_FALSE(vector.none());
+   EXPECT_FALSE(vector.empty());
 
-   Vec.resize(11);
-   EXPECT_EQ(5U, Vec.count());
-   EXPECT_EQ(11U, Vec.size());
-   EXPECT_TRUE(Vec.any());
-   EXPECT_FALSE(Vec.all());
-   EXPECT_FALSE(Vec.none());
-   EXPECT_FALSE(Vec.empty());
+   vector.resize(11);
+   EXPECT_EQ(5U, vector.count());
+   EXPECT_EQ(11U, vector.size());
+   EXPECT_TRUE(vector.any());
+   EXPECT_FALSE(vector.all());
+   EXPECT_FALSE(vector.none());
+   EXPECT_FALSE(vector.empty());
 
-   TypeParam Inv = Vec;
+   TypeParam Inv = vector;
    Inv.flip();
    EXPECT_EQ(6U, Inv.count());
    EXPECT_EQ(11U, Inv.size());
@@ -61,110 +62,110 @@ TYPED_TEST(BitVectorTest, TrivialOperation) {
    EXPECT_FALSE(Inv.none());
    EXPECT_FALSE(Inv.empty());
 
-   EXPECT_FALSE(Inv == Vec);
-   EXPECT_TRUE(Inv != Vec);
-   Vec.flip();
-   EXPECT_TRUE(Inv == Vec);
-   EXPECT_FALSE(Inv != Vec);
+   EXPECT_FALSE(Inv == vector);
+   EXPECT_TRUE(Inv != vector);
+   vector.flip();
+   EXPECT_TRUE(Inv == vector);
+   EXPECT_FALSE(Inv != vector);
 
-   // Add some "interesting" data to Vec.
-   Vec.resize(23, true);
-   Vec.resize(25, false);
-   Vec.resize(26, true);
-   Vec.resize(29, false);
-   Vec.resize(33, true);
-   Vec.resize(57, false);
+   // Add some "interesting" data to vector.
+   vector.resize(23, true);
+   vector.resize(25, false);
+   vector.resize(26, true);
+   vector.resize(29, false);
+   vector.resize(33, true);
+   vector.resize(57, false);
    unsigned Count = 0;
-   for (unsigned i = Vec.findFirst(); i != -1u; i = Vec.findNext(i)) {
+   for (unsigned i = vector.findFirst(); i != -1u; i = vector.findNext(i)) {
       ++Count;
-      EXPECT_TRUE(Vec[i]);
-      EXPECT_TRUE(Vec.test(i));
+      EXPECT_TRUE(vector[i]);
+      EXPECT_TRUE(vector.test(i));
    }
-   EXPECT_EQ(Count, Vec.count());
+   EXPECT_EQ(Count, vector.count());
    EXPECT_EQ(Count, 23u);
-   EXPECT_FALSE(Vec[0]);
-   EXPECT_TRUE(Vec[32]);
-   EXPECT_FALSE(Vec[56]);
-   Vec.resize(61, false);
+   EXPECT_FALSE(vector[0]);
+   EXPECT_TRUE(vector[32]);
+   EXPECT_FALSE(vector[56]);
+   vector.resize(61, false);
 
-   TypeParam Copy = Vec;
+   TypeParam Copy = vector;
    TypeParam Alt(3, false);
    Alt.resize(6, true);
-   std::swap(Alt, Vec);
+   std::swap(Alt, vector);
    EXPECT_TRUE(Copy == Alt);
-   EXPECT_TRUE(Vec.size() == 6);
-   EXPECT_TRUE(Vec.count() == 3);
-   EXPECT_TRUE(Vec.findFirst() == 3);
-   std::swap(Copy, Vec);
+   EXPECT_TRUE(vector.size() == 6);
+   EXPECT_TRUE(vector.count() == 3);
+   EXPECT_TRUE(vector.findFirst() == 3);
+   std::swap(Copy, vector);
 
    // Add some more "interesting" data.
-   Vec.resize(68, true);
-   Vec.resize(78, false);
-   Vec.resize(89, true);
-   Vec.resize(90, false);
-   Vec.resize(91, true);
-   Vec.resize(130, false);
+   vector.resize(68, true);
+   vector.resize(78, false);
+   vector.resize(89, true);
+   vector.resize(90, false);
+   vector.resize(91, true);
+   vector.resize(130, false);
    Count = 0;
-   for (unsigned i = Vec.findFirst(); i != -1u; i = Vec.findNext(i)) {
+   for (unsigned i = vector.findFirst(); i != -1u; i = vector.findNext(i)) {
       ++Count;
-      EXPECT_TRUE(Vec[i]);
-      EXPECT_TRUE(Vec.test(i));
+      EXPECT_TRUE(vector[i]);
+      EXPECT_TRUE(vector.test(i));
    }
-   EXPECT_EQ(Count, Vec.count());
+   EXPECT_EQ(Count, vector.count());
    EXPECT_EQ(Count, 42u);
-   EXPECT_FALSE(Vec[0]);
-   EXPECT_TRUE(Vec[32]);
-   EXPECT_FALSE(Vec[60]);
-   EXPECT_FALSE(Vec[129]);
+   EXPECT_FALSE(vector[0]);
+   EXPECT_TRUE(vector[32]);
+   EXPECT_FALSE(vector[60]);
+   EXPECT_FALSE(vector[129]);
 
-   Vec.flip(60);
-   EXPECT_TRUE(Vec[60]);
-   EXPECT_EQ(Count + 1, Vec.count());
-   Vec.flip(60);
-   EXPECT_FALSE(Vec[60]);
-   EXPECT_EQ(Count, Vec.count());
+   vector.flip(60);
+   EXPECT_TRUE(vector[60]);
+   EXPECT_EQ(Count + 1, vector.count());
+   vector.flip(60);
+   EXPECT_FALSE(vector[60]);
+   EXPECT_EQ(Count, vector.count());
 
-   Vec.reset(32);
-   EXPECT_FALSE(Vec[32]);
-   EXPECT_EQ(Count - 1, Vec.count());
-   Vec.set(32);
-   EXPECT_TRUE(Vec[32]);
-   EXPECT_EQ(Count, Vec.count());
+   vector.reset(32);
+   EXPECT_FALSE(vector[32]);
+   EXPECT_EQ(Count - 1, vector.count());
+   vector.set(32);
+   EXPECT_TRUE(vector[32]);
+   EXPECT_EQ(Count, vector.count());
 
-   Vec.flip();
-   EXPECT_EQ(Vec.size() - Count, Vec.count());
+   vector.flip();
+   EXPECT_EQ(vector.size() - Count, vector.count());
 
-   Vec.reset();
-   EXPECT_EQ(0U, Vec.count());
-   EXPECT_EQ(130U, Vec.size());
-   EXPECT_FALSE(Vec.any());
-   EXPECT_FALSE(Vec.all());
-   EXPECT_TRUE(Vec.none());
-   EXPECT_FALSE(Vec.empty());
+   vector.reset();
+   EXPECT_EQ(0U, vector.count());
+   EXPECT_EQ(130U, vector.size());
+   EXPECT_FALSE(vector.any());
+   EXPECT_FALSE(vector.all());
+   EXPECT_TRUE(vector.none());
+   EXPECT_FALSE(vector.empty());
 
-   Vec.flip();
-   EXPECT_EQ(130U, Vec.count());
-   EXPECT_EQ(130U, Vec.size());
-   EXPECT_TRUE(Vec.any());
-   EXPECT_TRUE(Vec.all());
-   EXPECT_FALSE(Vec.none());
-   EXPECT_FALSE(Vec.empty());
+   vector.flip();
+   EXPECT_EQ(130U, vector.count());
+   EXPECT_EQ(130U, vector.size());
+   EXPECT_TRUE(vector.any());
+   EXPECT_TRUE(vector.all());
+   EXPECT_FALSE(vector.none());
+   EXPECT_FALSE(vector.empty());
 
-   Vec.resize(64);
-   EXPECT_EQ(64U, Vec.count());
-   EXPECT_EQ(64U, Vec.size());
-   EXPECT_TRUE(Vec.any());
-   EXPECT_TRUE(Vec.all());
-   EXPECT_FALSE(Vec.none());
-   EXPECT_FALSE(Vec.empty());
+   vector.resize(64);
+   EXPECT_EQ(64U, vector.count());
+   EXPECT_EQ(64U, vector.size());
+   EXPECT_TRUE(vector.any());
+   EXPECT_TRUE(vector.all());
+   EXPECT_FALSE(vector.none());
+   EXPECT_FALSE(vector.empty());
 
-   Vec.flip();
-   EXPECT_EQ(0U, Vec.count());
-   EXPECT_EQ(64U, Vec.size());
-   EXPECT_FALSE(Vec.any());
-   EXPECT_FALSE(Vec.all());
-   EXPECT_TRUE(Vec.none());
-   EXPECT_FALSE(Vec.empty());
+   vector.flip();
+   EXPECT_EQ(0U, vector.count());
+   EXPECT_EQ(64U, vector.size());
+   EXPECT_FALSE(vector.any());
+   EXPECT_FALSE(vector.all());
+   EXPECT_TRUE(vector.none());
+   EXPECT_FALSE(vector.empty());
 
    Inv = TypeParam().flip();
    EXPECT_EQ(0U, Inv.count());
@@ -174,16 +175,17 @@ TYPED_TEST(BitVectorTest, TrivialOperation) {
    EXPECT_TRUE(Inv.none());
    EXPECT_TRUE(Inv.empty());
 
-   Vec.clear();
-   EXPECT_EQ(0U, Vec.count());
-   EXPECT_EQ(0U, Vec.size());
-   EXPECT_FALSE(Vec.any());
-   EXPECT_TRUE(Vec.all());
-   EXPECT_TRUE(Vec.none());
-   EXPECT_TRUE(Vec.empty());
+   vector.clear();
+   EXPECT_EQ(0U, vector.count());
+   EXPECT_EQ(0U, vector.size());
+   EXPECT_FALSE(vector.any());
+   EXPECT_TRUE(vector.all());
+   EXPECT_TRUE(vector.none());
+   EXPECT_TRUE(vector.empty());
 }
 
-TYPED_TEST(BitVectorTest, SimpleFindOps) {
+TYPED_TEST(BitVectorTest, testSimpleFindOps)
+{
   // Test finding in an empty BitVector.
   TypeParam A;
   EXPECT_EQ(-1, A.findFirst());
@@ -259,154 +261,157 @@ TYPED_TEST(BitVectorTest, SimpleFindOps) {
   EXPECT_EQ(17, A.findNextUnset(15));
 }
 
-TEST(BitVectorTest, FindInRangeMultiWord) {
-  BitVector Vec;
+TEST(BitVectorTest, testFindInRangeMultiWord)
+{
+  BitVector vector;
 
-  Vec.resize(200);
-  Vec.set(3, 7);
-  Vec.set(24, 35);
-  Vec.set(50, 70);
-  Vec.set(150);
-  Vec.set(152);
-  Vec.set(154);
+  vector.resize(200);
+  vector.set(3, 7);
+  vector.set(24, 35);
+  vector.set(50, 70);
+  vector.set(150);
+  vector.set(152);
+  vector.set(154);
 
   // find first
-  EXPECT_EQ(-1, Vec.findFirstIn(0, 0));
-  EXPECT_EQ(-1, Vec.findFirstIn(24, 24));
-  EXPECT_EQ(-1, Vec.findFirstIn(7, 24));
+  EXPECT_EQ(-1, vector.findFirstIn(0, 0));
+  EXPECT_EQ(-1, vector.findFirstIn(24, 24));
+  EXPECT_EQ(-1, vector.findFirstIn(7, 24));
 
-  EXPECT_EQ(3, Vec.findFirstIn(0, 10));
-  EXPECT_EQ(4, Vec.findFirstIn(4, 10));
-  EXPECT_EQ(150, Vec.findFirstIn(100, 200));
-  EXPECT_EQ(152, Vec.findFirstIn(151, 200));
-  EXPECT_EQ(154, Vec.findFirstIn(153, 200));
+  EXPECT_EQ(3, vector.findFirstIn(0, 10));
+  EXPECT_EQ(4, vector.findFirstIn(4, 10));
+  EXPECT_EQ(150, vector.findFirstIn(100, 200));
+  EXPECT_EQ(152, vector.findFirstIn(151, 200));
+  EXPECT_EQ(154, vector.findFirstIn(153, 200));
 
-  EXPECT_EQ(-1, Vec.findFirstIn(155, 200));
-  Vec.set(199);
-  EXPECT_EQ(199, Vec.findFirstIn(199, 200));
-  Vec.reset(199);
+  EXPECT_EQ(-1, vector.findFirstIn(155, 200));
+  vector.set(199);
+  EXPECT_EQ(199, vector.findFirstIn(199, 200));
+  vector.reset(199);
 
   // find last
-  EXPECT_EQ(-1, Vec.findLastIn(0, 0));
-  EXPECT_EQ(-1, Vec.findLastIn(24, 24));
-  EXPECT_EQ(-1, Vec.findLastIn(7, 24));
+  EXPECT_EQ(-1, vector.findLastIn(0, 0));
+  EXPECT_EQ(-1, vector.findLastIn(24, 24));
+  EXPECT_EQ(-1, vector.findLastIn(7, 24));
 
-  EXPECT_EQ(6, Vec.findLastIn(0, 10));
-  EXPECT_EQ(5, Vec.findLastIn(0, 6));
-  EXPECT_EQ(154, Vec.findLastIn(100, 155));
-  EXPECT_EQ(152, Vec.findLastIn(100, 154));
-  EXPECT_EQ(150, Vec.findLastIn(100, 152));
-  EXPECT_EQ(-1, Vec.findLastIn(100, 150));
-  Vec.set(199);
-  EXPECT_EQ(199, Vec.findLastIn(199, 200));
-  Vec.reset(199);
+  EXPECT_EQ(6, vector.findLastIn(0, 10));
+  EXPECT_EQ(5, vector.findLastIn(0, 6));
+  EXPECT_EQ(154, vector.findLastIn(100, 155));
+  EXPECT_EQ(152, vector.findLastIn(100, 154));
+  EXPECT_EQ(150, vector.findLastIn(100, 152));
+  EXPECT_EQ(-1, vector.findLastIn(100, 150));
+  vector.set(199);
+  EXPECT_EQ(199, vector.findLastIn(199, 200));
+  vector.reset(199);
 
   // find first unset
-  EXPECT_EQ(-1, Vec.findFirstUnsetIn(0, 0));
-  EXPECT_EQ(-1, Vec.findFirstUnsetIn(23, 23));
-  EXPECT_EQ(-1, Vec.findFirstUnsetIn(24, 35));
+  EXPECT_EQ(-1, vector.findFirstUnsetIn(0, 0));
+  EXPECT_EQ(-1, vector.findFirstUnsetIn(23, 23));
+  EXPECT_EQ(-1, vector.findFirstUnsetIn(24, 35));
 
-  EXPECT_EQ(0, Vec.findFirstUnsetIn(0, 10));
-  EXPECT_EQ(1, Vec.findFirstUnsetIn(1, 10));
-  EXPECT_EQ(7, Vec.findFirstUnsetIn(5, 25));
-  EXPECT_EQ(151, Vec.findFirstUnsetIn(150, 200));
-  EXPECT_EQ(151, Vec.findFirstUnsetIn(151, 200));
-  EXPECT_EQ(153, Vec.findFirstUnsetIn(152, 200));
-  EXPECT_EQ(153, Vec.findFirstUnsetIn(153, 200));
-  EXPECT_EQ(155, Vec.findFirstUnsetIn(154, 200));
-  EXPECT_EQ(155, Vec.findFirstUnsetIn(155, 200));
-  EXPECT_EQ(199, Vec.findFirstUnsetIn(199, 200));
+  EXPECT_EQ(0, vector.findFirstUnsetIn(0, 10));
+  EXPECT_EQ(1, vector.findFirstUnsetIn(1, 10));
+  EXPECT_EQ(7, vector.findFirstUnsetIn(5, 25));
+  EXPECT_EQ(151, vector.findFirstUnsetIn(150, 200));
+  EXPECT_EQ(151, vector.findFirstUnsetIn(151, 200));
+  EXPECT_EQ(153, vector.findFirstUnsetIn(152, 200));
+  EXPECT_EQ(153, vector.findFirstUnsetIn(153, 200));
+  EXPECT_EQ(155, vector.findFirstUnsetIn(154, 200));
+  EXPECT_EQ(155, vector.findFirstUnsetIn(155, 200));
+  EXPECT_EQ(199, vector.findFirstUnsetIn(199, 200));
 
   // find last unset
-  EXPECT_EQ(-1, Vec.findLastUnsetIn(0, 0));
-  EXPECT_EQ(-1, Vec.findLastUnsetIn(23, 23));
-  EXPECT_EQ(-1, Vec.findLastUnsetIn(24, 35));
+  EXPECT_EQ(-1, vector.findLastUnsetIn(0, 0));
+  EXPECT_EQ(-1, vector.findLastUnsetIn(23, 23));
+  EXPECT_EQ(-1, vector.findLastUnsetIn(24, 35));
 
-  EXPECT_EQ(9, Vec.findLastUnsetIn(0, 10));
-  EXPECT_EQ(8, Vec.findLastUnsetIn(0, 9));
-  EXPECT_EQ(2, Vec.findLastUnsetIn(0, 7));
-  EXPECT_EQ(149, Vec.findLastUnsetIn(100, 151));
-  EXPECT_EQ(151, Vec.findLastUnsetIn(100, 152));
-  EXPECT_EQ(151, Vec.findLastUnsetIn(100, 153));
-  EXPECT_EQ(153, Vec.findLastUnsetIn(100, 154));
-  EXPECT_EQ(153, Vec.findLastUnsetIn(100, 155));
-  EXPECT_EQ(155, Vec.findLastUnsetIn(100, 156));
-  EXPECT_EQ(199, Vec.findLastUnsetIn(199, 200));
+  EXPECT_EQ(9, vector.findLastUnsetIn(0, 10));
+  EXPECT_EQ(8, vector.findLastUnsetIn(0, 9));
+  EXPECT_EQ(2, vector.findLastUnsetIn(0, 7));
+  EXPECT_EQ(149, vector.findLastUnsetIn(100, 151));
+  EXPECT_EQ(151, vector.findLastUnsetIn(100, 152));
+  EXPECT_EQ(151, vector.findLastUnsetIn(100, 153));
+  EXPECT_EQ(153, vector.findLastUnsetIn(100, 154));
+  EXPECT_EQ(153, vector.findLastUnsetIn(100, 155));
+  EXPECT_EQ(155, vector.findLastUnsetIn(100, 156));
+  EXPECT_EQ(199, vector.findLastUnsetIn(199, 200));
 }
 
-TEST(BitVectorTest, FindInRangeSingleWord) {
+TEST(BitVectorTest, testFindInRangeSingleWord)
+{
   // When the bit vector contains only a single word, this is slightly different
   // than when the bit vector contains multiple words, because masks are applied
   // to the front and back of the same word.  So make sure this works.
-  BitVector Vec;
+  BitVector vector;
 
-  Vec.resize(25);
-  Vec.set(2, 4);
-  Vec.set(6, 9);
-  Vec.set(12, 15);
-  Vec.set(19);
-  Vec.set(21);
-  Vec.set(23);
+  vector.resize(25);
+  vector.set(2, 4);
+  vector.set(6, 9);
+  vector.set(12, 15);
+  vector.set(19);
+  vector.set(21);
+  vector.set(23);
 
   // find first
-  EXPECT_EQ(-1, Vec.findFirstIn(0, 0));
-  EXPECT_EQ(-1, Vec.findFirstIn(24, 24));
-  EXPECT_EQ(-1, Vec.findFirstIn(9, 12));
+  EXPECT_EQ(-1, vector.findFirstIn(0, 0));
+  EXPECT_EQ(-1, vector.findFirstIn(24, 24));
+  EXPECT_EQ(-1, vector.findFirstIn(9, 12));
 
-  EXPECT_EQ(2, Vec.findFirstIn(0, 10));
-  EXPECT_EQ(6, Vec.findFirstIn(4, 10));
-  EXPECT_EQ(19, Vec.findFirstIn(18, 25));
-  EXPECT_EQ(21, Vec.findFirstIn(20, 25));
-  EXPECT_EQ(23, Vec.findFirstIn(22, 25));
-  EXPECT_EQ(-1, Vec.findFirstIn(24, 25));
+  EXPECT_EQ(2, vector.findFirstIn(0, 10));
+  EXPECT_EQ(6, vector.findFirstIn(4, 10));
+  EXPECT_EQ(19, vector.findFirstIn(18, 25));
+  EXPECT_EQ(21, vector.findFirstIn(20, 25));
+  EXPECT_EQ(23, vector.findFirstIn(22, 25));
+  EXPECT_EQ(-1, vector.findFirstIn(24, 25));
 
   // find last
-  EXPECT_EQ(-1, Vec.findLastIn(0, 0));
-  EXPECT_EQ(-1, Vec.findLastIn(24, 24));
-  EXPECT_EQ(-1, Vec.findLastIn(9, 12));
+  EXPECT_EQ(-1, vector.findLastIn(0, 0));
+  EXPECT_EQ(-1, vector.findLastIn(24, 24));
+  EXPECT_EQ(-1, vector.findLastIn(9, 12));
 
-  EXPECT_EQ(8, Vec.findLastIn(0, 10));
-  EXPECT_EQ(3, Vec.findLastIn(0, 6));
-  EXPECT_EQ(23, Vec.findLastIn(18, 25));
-  EXPECT_EQ(21, Vec.findLastIn(18, 23));
-  EXPECT_EQ(19, Vec.findLastIn(18, 21));
-  EXPECT_EQ(-1, Vec.findLastIn(18, 19));
+  EXPECT_EQ(8, vector.findLastIn(0, 10));
+  EXPECT_EQ(3, vector.findLastIn(0, 6));
+  EXPECT_EQ(23, vector.findLastIn(18, 25));
+  EXPECT_EQ(21, vector.findLastIn(18, 23));
+  EXPECT_EQ(19, vector.findLastIn(18, 21));
+  EXPECT_EQ(-1, vector.findLastIn(18, 19));
 
   // find first unset
-  EXPECT_EQ(-1, Vec.findFirstUnsetIn(0, 0));
-  EXPECT_EQ(-1, Vec.findFirstUnsetIn(23, 23));
-  EXPECT_EQ(-1, Vec.findFirstUnsetIn(6, 9));
+  EXPECT_EQ(-1, vector.findFirstUnsetIn(0, 0));
+  EXPECT_EQ(-1, vector.findFirstUnsetIn(23, 23));
+  EXPECT_EQ(-1, vector.findFirstUnsetIn(6, 9));
 
-  EXPECT_EQ(0, Vec.findFirstUnsetIn(0, 6));
-  EXPECT_EQ(1, Vec.findFirstUnsetIn(1, 6));
-  EXPECT_EQ(9, Vec.findFirstUnsetIn(7, 13));
-  EXPECT_EQ(18, Vec.findFirstUnsetIn(18, 25));
-  EXPECT_EQ(20, Vec.findFirstUnsetIn(19, 25));
-  EXPECT_EQ(20, Vec.findFirstUnsetIn(20, 25));
-  EXPECT_EQ(22, Vec.findFirstUnsetIn(21, 25));
-  EXPECT_EQ(22, Vec.findFirstUnsetIn(22, 25));
-  EXPECT_EQ(24, Vec.findFirstUnsetIn(23, 25));
-  EXPECT_EQ(24, Vec.findFirstUnsetIn(24, 25));
+  EXPECT_EQ(0, vector.findFirstUnsetIn(0, 6));
+  EXPECT_EQ(1, vector.findFirstUnsetIn(1, 6));
+  EXPECT_EQ(9, vector.findFirstUnsetIn(7, 13));
+  EXPECT_EQ(18, vector.findFirstUnsetIn(18, 25));
+  EXPECT_EQ(20, vector.findFirstUnsetIn(19, 25));
+  EXPECT_EQ(20, vector.findFirstUnsetIn(20, 25));
+  EXPECT_EQ(22, vector.findFirstUnsetIn(21, 25));
+  EXPECT_EQ(22, vector.findFirstUnsetIn(22, 25));
+  EXPECT_EQ(24, vector.findFirstUnsetIn(23, 25));
+  EXPECT_EQ(24, vector.findFirstUnsetIn(24, 25));
 
   // find last unset
-  EXPECT_EQ(-1, Vec.findLastUnsetIn(0, 0));
-  EXPECT_EQ(-1, Vec.findLastUnsetIn(23, 23));
-  EXPECT_EQ(-1, Vec.findLastUnsetIn(6, 9));
+  EXPECT_EQ(-1, vector.findLastUnsetIn(0, 0));
+  EXPECT_EQ(-1, vector.findLastUnsetIn(23, 23));
+  EXPECT_EQ(-1, vector.findLastUnsetIn(6, 9));
 
-  EXPECT_EQ(5, Vec.findLastUnsetIn(0, 6));
-  EXPECT_EQ(4, Vec.findLastUnsetIn(0, 5));
-  EXPECT_EQ(1, Vec.findLastUnsetIn(0, 4));
-  EXPECT_EQ(11, Vec.findLastUnsetIn(7, 13));
-  EXPECT_EQ(24, Vec.findLastUnsetIn(18, 25));
-  EXPECT_EQ(22, Vec.findLastUnsetIn(18, 24));
-  EXPECT_EQ(22, Vec.findLastUnsetIn(18, 23));
-  EXPECT_EQ(20, Vec.findLastUnsetIn(18, 22));
-  EXPECT_EQ(20, Vec.findLastUnsetIn(18, 21));
-  EXPECT_EQ(18, Vec.findLastUnsetIn(18, 20));
-  EXPECT_EQ(18, Vec.findLastUnsetIn(18, 19));
+  EXPECT_EQ(5, vector.findLastUnsetIn(0, 6));
+  EXPECT_EQ(4, vector.findLastUnsetIn(0, 5));
+  EXPECT_EQ(1, vector.findLastUnsetIn(0, 4));
+  EXPECT_EQ(11, vector.findLastUnsetIn(7, 13));
+  EXPECT_EQ(24, vector.findLastUnsetIn(18, 25));
+  EXPECT_EQ(22, vector.findLastUnsetIn(18, 24));
+  EXPECT_EQ(22, vector.findLastUnsetIn(18, 23));
+  EXPECT_EQ(20, vector.findLastUnsetIn(18, 22));
+  EXPECT_EQ(20, vector.findLastUnsetIn(18, 21));
+  EXPECT_EQ(18, vector.findLastUnsetIn(18, 20));
+  EXPECT_EQ(18, vector.findLastUnsetIn(18, 19));
 }
 
-TYPED_TEST(BitVectorTest, CompoundAssignment) {
+TYPED_TEST(BitVectorTest, testCompoundAssignment)
+{
   TypeParam A;
   A.resize(10);
   A.set(4);
@@ -445,16 +450,18 @@ TYPED_TEST(BitVectorTest, CompoundAssignment) {
   EXPECT_EQ(100U, A.size());
 }
 
-TYPED_TEST(BitVectorTest, ProxyIndex) {
-  TypeParam Vec(3);
-  EXPECT_TRUE(Vec.none());
-  Vec[0] = Vec[1] = Vec[2] = true;
-  EXPECT_EQ(Vec.size(), Vec.count());
-  Vec[2] = Vec[1] = Vec[0] = false;
-  EXPECT_TRUE(Vec.none());
+TYPED_TEST(BitVectorTest, testProxyIndex)
+{
+  TypeParam vector(3);
+  EXPECT_TRUE(vector.none());
+  vector[0] = vector[1] = vector[2] = true;
+  EXPECT_EQ(vector.size(), vector.count());
+  vector[2] = vector[1] = vector[0] = false;
+  EXPECT_TRUE(vector.none());
 }
 
-TYPED_TEST(BitVectorTest, PortableBitMask) {
+TYPED_TEST(BitVectorTest, testPortableBitMask)
+{
   TypeParam A;
   const uint32_t Mask1[] = { 0x80000000, 6, 5 };
 
@@ -501,7 +508,8 @@ TYPED_TEST(BitVectorTest, PortableBitMask) {
   EXPECT_EQ(64-4u, A.count());
 }
 
-TYPED_TEST(BitVectorTest, BinOps) {
+TYPED_TEST(BitVectorTest, testBinOps)
+{
   TypeParam A;
   TypeParam B;
 
@@ -542,7 +550,8 @@ static inline VecType createBitVector(uint32_t Size,
   return V;
 }
 
-TYPED_TEST(BitVectorTest, ShiftOpsSingleWord) {
+TYPED_TEST(BitVectorTest, testShiftOpsSingleWord)
+{
   // Test that shift ops work when the desired shift amount is less
   // than one word.
 
@@ -614,7 +623,8 @@ TYPED_TEST(BitVectorTest, ShiftOpsSingleWord) {
             A);
 }
 
-TYPED_TEST(BitVectorTest, ShiftOpsMultiWord) {
+TYPED_TEST(BitVectorTest, testShiftOpsMultiWord)
+{
   // Test that shift ops work when the desired shift amount is greater than or
   // equal to the size of a single word.
   auto A = createBitVector<TypeParam>(300, {{1, 30}, {60, 95}, {200, 275}});
@@ -652,7 +662,8 @@ TYPED_TEST(BitVectorTest, ShiftOpsMultiWord) {
       createBitVector<TypeParam>(300, {{0, 95 - 93}, {200 - 93, 275 - 93}}), A);
 }
 
-TYPED_TEST(BitVectorTest, RangeOps) {
+TYPED_TEST(BitVectorTest, testRangeOps)
+{
   TypeParam A;
   A.resize(256);
   A.reset();
@@ -710,7 +721,8 @@ TYPED_TEST(BitVectorTest, RangeOps) {
   BufferOverrun.set(0, size);
 }
 
-TYPED_TEST(BitVectorTest, CompoundTestReset) {
+TYPED_TEST(BitVectorTest, testCompoundTestReset)
+{
   TypeParam A(50, true);
   TypeParam B(50, false);
 
@@ -746,7 +758,8 @@ TYPED_TEST(BitVectorTest, CompoundTestReset) {
   EXPECT_TRUE(C.none());
 }
 
-TYPED_TEST(BitVectorTest, MoveConstructor) {
+TYPED_TEST(BitVectorTest, testMoveConstructor)
+{
   TypeParam A(10, true);
   TypeParam B(std::move(A));
   // Check that the move ctor leaves the moved-from object in a valid state.
@@ -758,7 +771,8 @@ TYPED_TEST(BitVectorTest, MoveConstructor) {
   EXPECT_EQ(C, B);
 }
 
-TYPED_TEST(BitVectorTest, MoveAssignment) {
+TYPED_TEST(BitVectorTest, testMoveAssignment)
+{
   TypeParam A(10, true);
   TypeParam B;
   B = std::move(A);
@@ -772,7 +786,8 @@ TYPED_TEST(BitVectorTest, MoveAssignment) {
 }
 
 template<class TypeParam>
-static void testEmpty(const TypeParam &A) {
+static void testEmpty(const TypeParam &A)
+{
   EXPECT_TRUE(A.empty());
   EXPECT_EQ((size_t)0, A.size());
   EXPECT_EQ((size_t)0, A.count());
@@ -784,7 +799,8 @@ static void testEmpty(const TypeParam &A) {
 }
 
 /// Tests whether BitVector behaves well with Bits==nullptr, Capacity==0
-TYPED_TEST(BitVectorTest, EmptyVector) {
+TYPED_TEST(BitVectorTest, testEmptyVector)
+{
   TypeParam A;
   testEmpty(A);
 
@@ -808,7 +824,8 @@ TYPED_TEST(BitVectorTest, EmptyVector) {
   testEmpty(E);
 }
 
-TYPED_TEST(BitVectorTest, Iterators) {
+TYPED_TEST(BitVectorTest, testIterators)
+{
   TypeParam Filled(10, true);
   EXPECT_NE(Filled.setBitsBegin(), Filled.setBitsEnd());
   unsigned Counter = 0;

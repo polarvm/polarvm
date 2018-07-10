@@ -19,7 +19,7 @@
 #include "gtest/gtest.h"
 
 using namespace polar::basic;
-
+using namespace polar::utils;
 
 namespace polar {
 namespace basic {
@@ -311,18 +311,18 @@ TEST(StringRefTest, testSplit2)
 TEST(StringRefTest, testTrim)
 {
    StringRef Str0("hello");
-   StringRef Str1(" hello ");
-   StringRef Str2("  hello  ");
+   StringRef str1(" hello ");
+   StringRef str2("  hello  ");
 
    EXPECT_EQ(StringRef("hello"), Str0.rtrim());
-   EXPECT_EQ(StringRef(" hello"), Str1.rtrim());
-   EXPECT_EQ(StringRef("  hello"), Str2.rtrim());
+   EXPECT_EQ(StringRef(" hello"), str1.rtrim());
+   EXPECT_EQ(StringRef("  hello"), str2.rtrim());
    EXPECT_EQ(StringRef("hello"), Str0.ltrim());
-   EXPECT_EQ(StringRef("hello "), Str1.ltrim());
-   EXPECT_EQ(StringRef("hello  "), Str2.ltrim());
+   EXPECT_EQ(StringRef("hello "), str1.ltrim());
+   EXPECT_EQ(StringRef("hello  "), str2.ltrim());
    EXPECT_EQ(StringRef("hello"), Str0.trim());
-   EXPECT_EQ(StringRef("hello"), Str1.trim());
-   EXPECT_EQ(StringRef("hello"), Str2.trim());
+   EXPECT_EQ(StringRef("hello"), str1.trim());
+   EXPECT_EQ(StringRef("hello"), str2.trim());
 
    EXPECT_EQ(StringRef("ello"), Str0.trim("hhhhhhhhhhh"));
 
@@ -526,11 +526,11 @@ TEST(StringRefTest, testEditDistance)
 
 TEST(StringRefTest, testMisc)
 {
-   // unittest mark
-   //   std::string Storage;
-   //   RawStringOstream outstream(Storage);
-   //   outstream << StringRef("hello");
-   //   EXPECT_EQ("hello", outstream.str());
+
+   std::string storage;
+   RawStringOutStream outstream(storage);
+   outstream << StringRef("hello");
+   EXPECT_EQ("hello", outstream.getStr());
 }
 
 TEST(StringRefTest, testHashing)
@@ -936,25 +936,24 @@ TEST(StringRefTest, testJoinStrings)
 
 TEST(StringRefTest, testAllocatorCopy)
 {
-// unittest mark
-//   BumpPtrAllocator Alloc;
-//   // First test empty strings.  We don't want these to allocate anything on the
-//   // allocator.
-//   StringRef StrEmpty = "";
-//   StringRef StrEmptyc = StrEmpty.copy(Alloc);
-//   EXPECT_TRUE(StrEmpty.equals(StrEmptyc));
-//   EXPECT_EQ(StrEmptyc.data(), nullptr);
-//   EXPECT_EQ(StrEmptyc.size(), 0u);
-//   EXPECT_EQ(Alloc.getTotalMemory(), 0u);
+   BumpPtrAllocator alloc;
+   // First test empty strings.  We don't want these to allocate anything on the
+   // allocator.
+   StringRef strEmpty = "";
+   StringRef StrEmptyc = strEmpty.copy(alloc);
+   EXPECT_TRUE(strEmpty.equals(StrEmptyc));
+   EXPECT_EQ(StrEmptyc.getData(), nullptr);
+   EXPECT_EQ(StrEmptyc.size(), 0u);
+   EXPECT_EQ(alloc.getTotalMemory(), 0u);
 
-//   StringRef Str1 = "hello";
-//   StringRef Str2 = "bye";
-//   StringRef Str1c = Str1.copy(Alloc);
-//   StringRef Str2c = Str2.copy(Alloc);
-//   EXPECT_TRUE(Str1.equals(Str1c));
-//   EXPECT_NE(Str1.data(), Str1c.data());
-//   EXPECT_TRUE(Str2.equals(Str2c));
-//   EXPECT_NE(Str2.data(), Str2c.data());
+   StringRef str1 = "hello";
+   StringRef str2 = "bye";
+   StringRef str1c = str1.copy(alloc);
+   StringRef Str2c = str2.copy(alloc);
+   EXPECT_TRUE(str1.equals(str1c));
+   EXPECT_NE(str1.getData(), str1c.getData());
+   EXPECT_TRUE(str2.equals(Str2c));
+   EXPECT_NE(str2.getData(), Str2c.getData());
 }
 
 TEST(StringRefTest, testDrop) {
@@ -1067,6 +1066,5 @@ TEST(StringRefTest, testStringLiteral)
    EXPECT_EQ(StringRef("Foo"), Strings[0]);
    EXPECT_EQ(StringRef("Bar"), Strings[1]);
 }
-
 
 } // anonymous namespace

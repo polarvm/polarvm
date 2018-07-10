@@ -240,4 +240,4 @@ TEST(SparseMultiSetTest, testAltStructSet)
    EXPECT_FALSE(Set.contains(6));
 }
 
-}
+} // anonymous namespace

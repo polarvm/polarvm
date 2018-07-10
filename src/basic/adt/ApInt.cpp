@@ -23,8 +23,6 @@
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
-// unittest mark
-#include <iostream>
 
 namespace polar {
 namespace basic {
@@ -34,9 +32,7 @@ namespace basic {
 using polar::utils::byte_swap;
 using polar::utils::reverse_bits;
 using polar::utils::sign_extend;
-//using polar::utils::debug_stream;
-// unittest mark
-#define debug_stream() std::cout
+using polar::utils::debug_stream;
 using polar::utils::low_32;
 using polar::utils::high_32;
 using polar::utils::make_64;
@@ -2255,9 +2251,7 @@ void ApInt::toString(SmallVectorImpl<char> &str, unsigned radix,
          prefix = "0x";
          break;
       default:
-         break;
-         // unittest mark
-         // polar_unreachable("Invalid radix!");
+         polar_unreachable("Invalid radix!");
       }
    }
 
@@ -2362,18 +2356,16 @@ POLAR_DUMP_METHOD void ApInt::dump() const
    SmallString<40> str, unsigedStr;
    this->toStringUnsigned(unsigedStr);
    this->toStringSigned(str);
-   // unittest mark
-//   debug_stream() << "ApInt(" << m_bitWidth << "b, "
-//                  << unsigedStr << "u " << str << "s)\n";
+   debug_stream() << "ApInt(" << m_bitWidth << "b, "
+                  << unsigedStr << "u " << str << "s)\n";
 }
 #endif
 
 void ApInt::print(RawOutStream &outstream, bool isSigned) const
 {
-   // unittest mark
-//   SmallString<40> str;
-//   this->toString(str, 10, isSigned, /* formatAsCLiteral = */false);
-//   outstream << str;
+   SmallString<40> str;
+   this->toString(str, 10, isSigned, /* formatAsCLiteral = */false);
+   outstream << str;
 }
 
 namespace  {

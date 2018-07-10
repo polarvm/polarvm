@@ -23,7 +23,7 @@ using polar::basic::FoldingSet;
 using polar::basic::StringRef;
 
 // Unaligned string test.
-TEST(FoldingSetTest, UnalignedStringTest)
+TEST(FoldingSetTest, testUnalignedStringTest)
 {
    SCOPED_TRACE("UnalignedStringTest");
 
@@ -38,7 +38,7 @@ TEST(FoldingSetTest, UnalignedStringTest)
    EXPECT_EQ(a.computeHash(), b.computeHash());
 }
 
-TEST(FoldingSetTest, LongLongComparison)
+TEST(FoldingSetTest, testLongLongComparison)
 {
    struct LongLongContainer : FoldingSetNode {
       unsigned long long A, B;
@@ -72,7 +72,7 @@ struct TrivialPair : public FoldingSetNode
    }
 };
 
-TEST(FoldingSetTest, IDComparison)
+TEST(FoldingSetTest, testIDComparison)
 {
    FoldingSet<TrivialPair> Trivial;
 
@@ -87,7 +87,7 @@ TEST(FoldingSetTest, IDComparison)
    EXPECT_EQ(nullptr, InsertPos);
 }
 
-TEST(FoldingSetTest, MissedIDComparison)
+TEST(FoldingSetTest, testMissedIDComparison)
 {
    FoldingSet<TrivialPair> Trivial;
 
@@ -103,7 +103,7 @@ TEST(FoldingSetTest, MissedIDComparison)
    EXPECT_NE(nullptr, InsertPos);
 }
 
-TEST(FoldingSetTest, RemoveNodeThatIsPresent)
+TEST(FoldingSetTest, testRemoveNodeThatIsPresent)
 {
    FoldingSet<TrivialPair> Trivial;
 
@@ -116,7 +116,7 @@ TEST(FoldingSetTest, RemoveNodeThatIsPresent)
    EXPECT_EQ(0U, Trivial.size());
 }
 
-TEST(FoldingSetTest, RemoveNodeThatIsAbsent)
+TEST(FoldingSetTest, testRemoveNodeThatIsAbsent)
 {
    FoldingSet<TrivialPair> Trivial;
 
@@ -126,7 +126,7 @@ TEST(FoldingSetTest, RemoveNodeThatIsAbsent)
    EXPECT_EQ(0U, Trivial.size());
 }
 
-TEST(FoldingSetTest, GetOrInsertInserting)
+TEST(FoldingSetTest, testGetOrInsertInserting)
 {
    FoldingSet<TrivialPair> Trivial;
 
@@ -135,7 +135,7 @@ TEST(FoldingSetTest, GetOrInsertInserting)
    EXPECT_EQ(&T, N);
 }
 
-TEST(FoldingSetTest, GetOrInsertGetting)
+TEST(FoldingSetTest, testGetOrInsertGetting)
 {
    FoldingSet<TrivialPair> Trivial;
 
@@ -146,7 +146,7 @@ TEST(FoldingSetTest, GetOrInsertGetting)
    EXPECT_EQ(&T, N);
 }
 
-TEST(FoldingSetTest, InsertAtPos)
+TEST(FoldingSetTest, testInsertAtPos)
 {
    FoldingSet<TrivialPair> Trivial;
 
@@ -161,13 +161,13 @@ TEST(FoldingSetTest, InsertAtPos)
    EXPECT_EQ(1U, Trivial.size());
 }
 
-TEST(FoldingSetTest, EmptyIsTrue)
+TEST(FoldingSetTest, testEmptyIsTrue)
 {
    FoldingSet<TrivialPair> Trivial;
    EXPECT_TRUE(Trivial.empty());
 }
 
-TEST(FoldingSetTest, EmptyIsFalse)
+TEST(FoldingSetTest, testEmptyIsFalse)
 {
    FoldingSet<TrivialPair> Trivial;
    TrivialPair T(99, 42);
@@ -175,14 +175,14 @@ TEST(FoldingSetTest, EmptyIsFalse)
    EXPECT_FALSE(Trivial.empty());
 }
 
-TEST(FoldingSetTest, ClearOnEmpty)
+TEST(FoldingSetTest, testClearOnEmpty)
 {
    FoldingSet<TrivialPair> Trivial;
    Trivial.clear();
    EXPECT_TRUE(Trivial.empty());
 }
 
-TEST(FoldingSetTest, ClearOnNonEmpty)
+TEST(FoldingSetTest, testClearOnNonEmpty)
 {
    FoldingSet<TrivialPair> Trivial;
    TrivialPair T(99, 42);
@@ -191,7 +191,7 @@ TEST(FoldingSetTest, ClearOnNonEmpty)
    EXPECT_TRUE(Trivial.empty());
 }
 
-TEST(FoldingSetTest, CapacityLargerThanReserve)
+TEST(FoldingSetTest, testCapacityLargerThanReserve)
 {
    FoldingSet<TrivialPair> Trivial;
    auto OldCapacity = Trivial.getCapacity();
@@ -199,7 +199,7 @@ TEST(FoldingSetTest, CapacityLargerThanReserve)
    EXPECT_GE(Trivial.getCapacity(), OldCapacity + 1);
 }
 
-TEST(FoldingSetTest, SmallReserveChangesNothing)
+TEST(FoldingSetTest, testSmallReserveChangesNothing)
 {
    FoldingSet<TrivialPair> Trivial;
    auto OldCapacity = Trivial.getCapacity();
@@ -207,5 +207,5 @@ TEST(FoldingSetTest, SmallReserveChangesNothing)
    EXPECT_EQ(Trivial.getCapacity(), OldCapacity);
 }
 
-}
+} // anonymous namespace
 

@@ -18,7 +18,7 @@ namespace {
 
 // Ensure that there is a default constructor and we can test for a null
 // FunctionRef.
-TEST(FunctionRefTest, Null)
+TEST(FunctionRefTest, testNull)
 {
   FunctionRef<int()> F;
   EXPECT_FALSE(F);
@@ -33,7 +33,7 @@ TEST(FunctionRefTest, Null)
 
 // Ensure that copies of a FunctionRef copy the underlying state rather than
 // causing one FunctionRef to chain to the next.
-TEST(FunctionRefTest, Copy) {
+TEST(FunctionRefTest, testCopy) {
   auto A = [] { return 1; };
   auto B = [] { return 2; };
   FunctionRef<int()> X = A;

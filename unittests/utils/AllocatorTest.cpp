@@ -130,7 +130,7 @@ TEST(AllocatorTest, testSmallSlabSize)
 }
 
 // Test requesting alignment that goes past the end of the current slab.
-TEST(AllocatorTest, TestAlignmentPastSlab)
+TEST(AllocatorTest, testAlignmentPastSlab)
 {
    BumpPtrAllocator alloc;
    alloc.allocate(4095, 1);

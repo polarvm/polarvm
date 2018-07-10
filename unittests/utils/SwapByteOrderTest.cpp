@@ -17,6 +17,8 @@
 using polar::utils::get_swapped_bytes;
 using polar::utils::swap_byte_order;
 
+namespace {
+
 TEST(GetSwappedBytesTest, testUnsignedRoundTrip)
 {
    // The point of the bit twiddling of magic is to test with and without bits
@@ -26,24 +28,25 @@ TEST(GetSwappedBytesTest, testUnsignedRoundTrip)
       uint8_t original_uint8 = static_cast<uint8_t>(value);
       EXPECT_EQ(original_uint8,
                 get_swapped_bytes(get_swapped_bytes(original_uint8)));
-      
+
       uint16_t original_uint16 = static_cast<uint16_t>(value);
       EXPECT_EQ(original_uint16,
                 get_swapped_bytes(get_swapped_bytes(original_uint16)));
-      
+
       uint32_t original_uint32 = static_cast<uint32_t>(value);
       EXPECT_EQ(original_uint32,
                 get_swapped_bytes(get_swapped_bytes(original_uint32)));
-      
+
       uint64_t original_uint64 = static_cast<uint64_t>(value);
       EXPECT_EQ(original_uint64,
                 get_swapped_bytes(get_swapped_bytes(original_uint64)));
-      
+
       value = (value << 8) | 0x55; // binary 0101 0101.
    }
 }
 
-TEST(GetSwappedBytesTest, testSignedRoundTrip) {
+TEST(GetSwappedBytesTest, testSignedRoundTrip)
+{
    // The point of the bit twiddling of magic is to test with and without bits
    // in every byte.
    uint64_t value = 1;
@@ -216,3 +219,4 @@ TEST(SwapByteOrderTest, testDouble)
   EXPECT_EQ(3.84141202447173065923064450234e-226, value);
 }
 
+} // anonymous namespace

@@ -47,13 +47,13 @@ struct EmplaceOnly
    EmplaceOnly &operator=(const EmplaceOnly &X) = delete;
 };
 
-TEST(BumpPtrListTest, DefaultConstructor)
+TEST(BumpPtrListTest, testDefaultConstructor)
 {
    BumpPtrList<int> L;
    EXPECT_TRUE(L.empty());
 }
 
-TEST(BumpPtrListTest, pushPopBack)
+TEST(BumpPtrListTest, testPushPopBack)
 {
    // Build a list with push_back.
    BumpPtrList<int> L;
@@ -75,7 +75,7 @@ TEST(BumpPtrListTest, pushPopBack)
    EXPECT_TRUE(L.empty());
 }
 
-TEST(BumpPtrListTest, pushPopFront)
+TEST(BumpPtrListTest, testPushPopFront)
 {
    // Build a list with push_front.
    BumpPtrList<int> L;
@@ -98,7 +98,7 @@ TEST(BumpPtrListTest, pushPopFront)
    EXPECT_TRUE(L.empty());
 }
 
-TEST(BumpPtrListTest, pushBackMoveOnly)
+TEST(BumpPtrListTest, testPushBackMoveOnly)
 {
    BumpPtrList<MoveOnly> L;
    int Ns[] = {1, 3, 9, 5, 7};
@@ -112,7 +112,7 @@ TEST(BumpPtrListTest, pushBackMoveOnly)
    }
 }
 
-TEST(BumpPtrListTest, pushFrontMoveOnly)
+TEST(BumpPtrListTest, testPushFrontMoveOnly)
 {
    BumpPtrList<MoveOnly> L;
    int Ns[] = {1, 3, 9, 5, 7};
@@ -126,7 +126,7 @@ TEST(BumpPtrListTest, pushFrontMoveOnly)
    }
 }
 
-TEST(BumpPtrListTest, emplaceBack)
+TEST(BumpPtrListTest, testEmplaceBack)
 {
    BumpPtrList<EmplaceOnly> L;
    int N1s[] = {1, 3, 9, 5, 7};
@@ -142,7 +142,7 @@ TEST(BumpPtrListTest, emplaceBack)
    }
 }
 
-TEST(BumpPtrListTest, emplaceFront)
+TEST(BumpPtrListTest, testEmplaceFront)
 {
    BumpPtrList<EmplaceOnly> L;
    int N1s[] = {1, 3, 9, 5, 7};
@@ -158,7 +158,7 @@ TEST(BumpPtrListTest, emplaceFront)
    }
 }
 
-TEST(BumpPtrListTest, swap)
+TEST(BumpPtrListTest, testSwap)
 {
    // Build two lists with different lifetimes and swap them.
    int N1s[] = {1, 3, 5, 7, 9};
@@ -189,7 +189,7 @@ TEST(BumpPtrListTest, swap)
    EXPECT_EQ(I, L1.end());
 }
 
-TEST(BumpPtrListTest, clear)
+TEST(BumpPtrListTest, testClear)
 {
    CountsDestructors::NumCalls = 0;
    CountsDestructors N;
@@ -205,7 +205,7 @@ TEST(BumpPtrListTest, clear)
    EXPECT_EQ(3u, CountsDestructors::NumCalls);
 }
 
-TEST(BumpPtrListTest, move)
+TEST(BumpPtrListTest, testMove)
 {
    BumpPtrList<int> L1, L2;
    L1.push_back(1);
@@ -216,7 +216,7 @@ TEST(BumpPtrListTest, move)
    EXPECT_EQ(0u, L2.size());
 }
 
-TEST(BumpPtrListTest, moveCallsDestructors)
+TEST(BumpPtrListTest, testMoveCallsDestructors)
 {
    CountsDestructors::NumCalls = 0;
    BumpPtrList<CountsDestructors> L1, L2;
@@ -226,7 +226,7 @@ TEST(BumpPtrListTest, moveCallsDestructors)
    EXPECT_EQ(1u, CountsDestructors::NumCalls);
 }
 
-TEST(BumpPtrListTest, copy)
+TEST(BumpPtrListTest, testCopy)
 {
    BumpPtrList<int> L1, L2;
    L1.push_back(1);
@@ -238,7 +238,7 @@ TEST(BumpPtrListTest, copy)
    EXPECT_EQ(2, L2.front());
 }
 
-TEST(BumpPtrListTest, copyCallsDestructors)
+TEST(BumpPtrListTest, testCopyCallsDestructors)
 {
    CountsDestructors::NumCalls = 0;
    BumpPtrList<CountsDestructors> L1, L2;
@@ -248,7 +248,7 @@ TEST(BumpPtrListTest, copyCallsDestructors)
    EXPECT_EQ(1u, CountsDestructors::NumCalls);
 }
 
-TEST(BumpPtrListTest, resetAlloc)
+TEST(BumpPtrListTest, testResetAlloc)
 {
    // Resetting an empty list should work.
    BumpPtrList<int> L;

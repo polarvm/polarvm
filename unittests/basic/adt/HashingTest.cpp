@@ -68,7 +68,7 @@ using polar::basic::LargeTestInteger;
 
 } // anonymous namespace
 
-TEST(HashingTest, HashValueBasicTest)
+TEST(HashingTest, testHashValueBasicTest)
 {
    int x = 42, y = 43, c = 'x';
    void *p = nullptr;
@@ -443,7 +443,8 @@ TEST(HashingTest, testHashCombineBasicTest) {
              hash_combine(bigarr[0], l2, bigarr[9], l3, bigarr[18], bigarr[19]));
 }
 
-TEST(HashingTest, testHashCombineArgs18) {
+TEST(HashingTest, testHashCombineArgs18)
+{
    // This tests that we can pass in up to 18 args.
 #define CHECK_SAME(...)                                                        \
    EXPECT_EQ(hash_combine(__VA_ARGS__), hash_combine(__VA_ARGS__))

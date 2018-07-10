@@ -29,7 +29,8 @@ struct TagB {};
 
 } // end namespace
 
-TEST(IntrusiveListNodeTest, testOptions) {
+TEST(IntrusiveListNodeTest, testOptions)
+{
    static_assert(
             std::is_same<ComputeNodeOptions<Node>::type,
             ComputeNodeOptions<Node, IntrusiveListTag<void>>::type>::value,

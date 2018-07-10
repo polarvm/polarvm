@@ -139,11 +139,10 @@ public:
    
    template <unsigned N> SmallString<N> getSmallStr() const
    {
-      // unittest mark
-//      SmallString<N> result;
-//      RawSvectorOutStream stream(result);
-//      stream << *this;
-//      return result;
+      SmallString<N> result;
+      RawSvectorOutStream stream(result);
+      stream << *this;
+      return result;
    }
    
    template <unsigned N> operator SmallString<N>() const
@@ -279,8 +278,7 @@ template <typename T> struct FormatProvider<FormatvObject<T>>
 {
    static void format(const FormatvObject<T> &value, RawOutStream &outStream, StringRef)
    {
-      // unittest mark
-//      outStream << value;
+      outStream << value;
    }
 };
 

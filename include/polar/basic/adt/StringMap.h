@@ -219,8 +219,7 @@ public:
             static_cast<StringMapEntry*>(allocator.allocate(allocSize, alignment));
 
       if (newItem == nullptr) {
-         // unittest mark
-         // polar::utils::report_bad_alloc_error("Allocation of StringMap entry failed.");
+         polar::utils::report_bad_alloc_error("Allocation of StringMap entry failed.");
       }
       // Construct the value.
       new (newItem) StringMapEntry(keyLength, std::forward<InitType>(initVals)...);

@@ -56,7 +56,8 @@ template<typename T> std::string printToStringUnbuffered(const T &value)
    return res;
 }
 
-TEST(RawOutStreamTest, testTypesBuffered) {
+TEST(RawOutStreamTest, testTypesBuffered)
+{
    // Char
    EXPECT_EQ("c", print_to_string('c'));
 
@@ -87,7 +88,8 @@ TEST(RawOutStreamTest, testTypesBuffered) {
    EXPECT_EQ("-9223372036854775808", print_to_string(INT64_MIN));
 }
 
-TEST(RawOutStreamTest, testTypesUnbuffered) {
+TEST(RawOutStreamTest, testTypesUnbuffered)
+{
    // Char
    EXPECT_EQ("c", printToStringUnbuffered('c'));
 
@@ -118,7 +120,8 @@ TEST(RawOutStreamTest, testTypesUnbuffered) {
    EXPECT_EQ("-9223372036854775808", printToStringUnbuffered(INT64_MIN));
 }
 
-TEST(RawOutStreamTest, testBufferEdge) {
+TEST(RawOutStreamTest, testBufferEdge)
+{
    EXPECT_EQ("1.20", print_to_string(format("%.2f", 1.2), 1));
    EXPECT_EQ("1.20", print_to_string(format("%.2f", 1.2), 2));
    EXPECT_EQ("1.20", print_to_string(format("%.2f", 1.2), 3));
@@ -358,4 +361,4 @@ TEST(RawFdOutStreamTest, testMultipleRawFdOutStreamToStdout)
    { RawFdOutStream("-", errorCode, polar::fs::OpenFlags::F_None); }
 }
 
-}
+} // anonymous namespace

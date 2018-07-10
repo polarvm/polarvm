@@ -101,6 +101,6 @@ TEST(PackedVectorTest, testSignedValues)
 
 #endif
 
-}
+} // anonymous namespace
 
 #endif

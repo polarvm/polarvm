@@ -18,7 +18,7 @@ using namespace polar::basic;
 
 namespace {
 
-TEST(SequenceTest, Basic) {
+TEST(SequenceTest, testBasic) {
   int x = 0;
   for (int i : seq(0, 10)) {
     EXPECT_EQ(x, i);

@@ -32,7 +32,8 @@ TEST(EquivalenceClassesTest, testNoMerges)
    }
 }
 
-TEST(EquivalenceClassesTest, testSimpleMerge1) {
+TEST(EquivalenceClassesTest, testSimpleMerge1)
+{
    EquivalenceClasses<int> eqClasses;
    // Check that once we merge (A, B), (B, C), (C, D), then all elements belong
    // to one set.
@@ -46,7 +47,8 @@ TEST(EquivalenceClassesTest, testSimpleMerge1) {
    }
 }
 
-TEST(EquivalenceClassesTest, testSimpleMerge2) {
+TEST(EquivalenceClassesTest, testSimpleMerge2)
+{
    EquivalenceClasses<int> eqClasses;
    // Check that once we merge (A, B), (C, D), (A, C), then all elements belong
    // to one set.

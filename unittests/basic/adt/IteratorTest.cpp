@@ -259,7 +259,7 @@ TEST(IteratorTest, testZipBasic)
    }
 }
 
-TEST(IteratorTest, ZipFirstBasic)
+TEST(IteratorTest, testZipFirstBasic)
 {
    using namespace std;
    const SmallVector<unsigned, 6> pi{3, 1, 4, 1, 5, 9};

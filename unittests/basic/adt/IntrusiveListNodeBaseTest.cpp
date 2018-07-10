@@ -33,7 +33,7 @@ TEST(IntrusiveListNodeBaseTest, testDefaultConstructor)
    EXPECT_FALSE(trackNode.isSentinel());
 }
 
-TEST(IntrusiveListNodeBaseTest, setPrevAndNext)
+TEST(IntrusiveListNodeBaseTest, testSetPrevAndNext)
 {
    RawNode A, B, C;
    A.setPrev(&B);
@@ -70,7 +70,7 @@ TEST(IntrusiveListNodeBaseTest, setPrevAndNext)
    EXPECT_EQ(nullptr, TC.getNext());
 }
 
-TEST(IntrusiveListNodeBaseTest, isKnownSentinel)
+TEST(IntrusiveListNodeBaseTest, testIsKnownSentinel)
 {
    // Without sentinel tracking.
    RawNode A, B;

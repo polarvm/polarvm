@@ -28,8 +28,7 @@ void SmallVectorBase::growPod(void *firstEl, size_t minSizeInBytes,
    if (m_beginX == firstEl) {
       newElts = malloc(newCapacityInBytes);
       if (newElts == nullptr) {
-         // unittest mark
-         //polar::utils::report_bad_alloc_error("Allocation of SmallVector element failed.");
+         polar::utils::report_bad_alloc_error("Allocation of SmallVector element failed.");
       }
       // Copy the elements over.  No need to run dtors on PODs.
       memcpy(newElts, this->m_beginX, curSizeBytes);
@@ -37,8 +36,7 @@ void SmallVectorBase::growPod(void *firstEl, size_t minSizeInBytes,
       // If this wasn't grown from the inline copy, grow the allocated space.
       newElts = realloc(this->m_beginX, newCapacityInBytes);
       if (newElts == nullptr) {
-         // unittest mark
-         //polar::utils::report_bad_alloc_error("Reallocation of SmallVector element failed.");
+         polar::utils::report_bad_alloc_error("Reallocation of SmallVector element failed.");
       }
    }
    

@@ -16,8 +16,7 @@
 #include "polar/basic/adt/StlExtras.h"
 #include "polar/basic/adt/StringExtras.h"
 #include "polar/basic/adt/Twine.h"
-// unittest mark
-// #include "polar/global/AbiBreaking.h"
+#include "polar/global/AbiBreaking.h"
 #include "polar/utils/AlignOf.h"
 #include "polar/utils/Debug.h"
 #include "polar/utils/ErrorHandling.h"

@@ -16,7 +16,8 @@ using namespace polar::basic;
 
 namespace {
 
-TEST(PointerEmbeddedIntTest, Basic) {
+TEST(PointerEmbeddedIntTest, testBasic)
+{
    PointerEmbeddedInt<int, CHAR_BIT> I = 42, J = 43;
 
    EXPECT_EQ(42, I);
@@ -82,4 +83,4 @@ TEST(PointerEmbeddedIntTest, testPointerLikeTypeTraits)
              MaxTraits::getFromVoidPointer(MaxTraits::getAsVoidPointer(Max)));
 }
 
-}
+} // anonymous namespace

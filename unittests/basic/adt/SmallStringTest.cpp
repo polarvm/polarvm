@@ -37,21 +37,21 @@ protected:
 };
 
 // New string test.
-TEST_F(SmallStringTest, EmptyStringTest)
+TEST_F(SmallStringTest, testEmptyStringTest)
 {
   SCOPED_TRACE("EmptyStringTest");
   assertEmpty(theString);
   EXPECT_TRUE(theString.rbegin() == theString.rend());
 }
 
-TEST_F(SmallStringTest, AssignRepeated)
+TEST_F(SmallStringTest, testAssignRepeated)
 {
   theString.assign(3, 'a');
   EXPECT_EQ(3u, theString.getSize());
   EXPECT_STREQ("aaa", theString.getCStr());
 }
 
-TEST_F(SmallStringTest, AssignIterPair)
+TEST_F(SmallStringTest, testAssignIterPair)
 {
   StringRef abc = "abc";
   theString.assign(abc.begin(), abc.end());
@@ -59,7 +59,7 @@ TEST_F(SmallStringTest, AssignIterPair)
   EXPECT_STREQ("abc", theString.getCStr());
 }
 
-TEST_F(SmallStringTest, AssignStringRef)
+TEST_F(SmallStringTest, testAssignStringRef)
 {
   StringRef abc = "abc";
   theString.assign(abc);
@@ -67,7 +67,7 @@ TEST_F(SmallStringTest, AssignStringRef)
   EXPECT_STREQ("abc", theString.getCStr());
 }
 
-TEST_F(SmallStringTest, AssignSmallVector)
+TEST_F(SmallStringTest, testAssignSmallVector)
 {
   StringRef abc = "abc";
   SmallVector<char, 10> abcVec(abc.begin(), abc.end());
@@ -76,7 +76,7 @@ TEST_F(SmallStringTest, AssignSmallVector)
   EXPECT_STREQ("abc", theString.getCStr());
 }
 
-TEST_F(SmallStringTest, AppendIterPair)
+TEST_F(SmallStringTest, testAppendIterPair)
 {
   StringRef abc = "abc";
   theString.append(abc.begin(), abc.end());
@@ -85,7 +85,7 @@ TEST_F(SmallStringTest, AppendIterPair)
   EXPECT_STREQ("abcabc", theString.getCStr());
 }
 
-TEST_F(SmallStringTest, AppendStringRef)
+TEST_F(SmallStringTest, testAppendStringRef)
 {
   StringRef abc = "abc";
   theString.append(abc);
@@ -94,7 +94,7 @@ TEST_F(SmallStringTest, AppendStringRef)
   EXPECT_STREQ("abcabc", theString.getCStr());
 }
 
-TEST_F(SmallStringTest, AppendSmallVector)
+TEST_F(SmallStringTest, testAppendSmallVector)
 {
   StringRef abc = "abc";
   SmallVector<char, 10> abcVec(abc.begin(), abc.end());
@@ -104,7 +104,7 @@ TEST_F(SmallStringTest, AppendSmallVector)
   EXPECT_STREQ("abcabc", theString.getCStr());
 }
 
-TEST_F(SmallStringTest, Substr)
+TEST_F(SmallStringTest, testSubstr)
 {
   theString = "hello";
   EXPECT_EQ("lo", theString.substr(3));
@@ -113,7 +113,7 @@ TEST_F(SmallStringTest, Substr)
   EXPECT_EQ("o", theString.substr(4, 10));
 }
 
-TEST_F(SmallStringTest, Slice)
+TEST_F(SmallStringTest, testSlice)
 {
   theString = "hello";
   EXPECT_EQ("l", theString.slice(2, 3));
@@ -123,7 +123,7 @@ TEST_F(SmallStringTest, Slice)
   EXPECT_EQ("", theString.slice(10, 20));
 }
 
-TEST_F(SmallStringTest, Find)
+TEST_F(SmallStringTest, testFind)
 {
   theString = "hello";
   EXPECT_EQ(2U, theString.find('l'));
@@ -158,7 +158,7 @@ TEST_F(SmallStringTest, Find)
   EXPECT_EQ(0U, theString.find(""));
 }
 
-TEST_F(SmallStringTest, Count)
+TEST_F(SmallStringTest, testCount)
 {
   theString = "hello";
   EXPECT_EQ(2U, theString.count('l'));
@@ -170,7 +170,7 @@ TEST_F(SmallStringTest, Count)
   EXPECT_EQ(0U, theString.count("zz"));
 }
 
-TEST_F(SmallStringTest, Realloc)
+TEST_F(SmallStringTest, testRealloc)
 {
   theString = "abcd";
   theString.reserve(100);
@@ -182,7 +182,7 @@ TEST_F(SmallStringTest, Realloc)
   EXPECT_EQ("abcdyyy", theString.slice(0, 7));
 }
 
-TEST_F(SmallStringTest, Comparisons)
+TEST_F(SmallStringTest, testComparisons)
 {
   EXPECT_EQ(-1, SmallString<10>("aab").compare("aad"));
   EXPECT_EQ( 0, SmallString<10>("aab").compare("aab"));
@@ -217,5 +217,5 @@ TEST_F(SmallStringTest, Comparisons)
   EXPECT_EQ( 1, SmallString<10>("V8_q0").compareNumeric("V1_q0"));
 }
 
-}
+} // anonymous namespace
 

@@ -16,7 +16,8 @@ using namespace polar::basic;
 
 namespace {
 
-class ImmutableSetTest : public testing::Test {
+class ImmutableSetTest : public testing::Test
+{
 protected:
    // for callback tests
    static char buffer[10];

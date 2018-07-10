@@ -377,8 +377,7 @@ void SmallVectorTemplateBase<T, IsPodLike>::grow(size_t minSize)
    }
    T *newElts = static_cast<T*>(malloc(newCapacity * sizeof(T)));
    if (newElts == nullptr) {
-      // unittest mark
-      //utils::report_bad_alloc_error("Allocation of SmallVector element failed.");
+      utils::report_bad_alloc_error("Allocation of SmallVector element failed.");
    }
    // Move the elements over.
    uninitializedMove(this->begin(), this->end(), newElts);

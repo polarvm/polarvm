@@ -491,7 +491,7 @@ public:
    {
       assert(isSingleStringRef() &&"This cannot be had as a single stringref!");
       switch (getLhsKind()) {
-      default: break;// unittest mark polar_unreachable("Out of sync with isSingleStringRef");
+      default: polar_unreachable("Out of sync with isSingleStringRef");
       case NodeKind::EmptyKind:      return StringRef();
       case NodeKind::CStringKind:    return StringRef(m_lhs.m_CString);
       case NodeKind::StdStringKind:  return StringRef(*m_lhs.m_stdString);
@@ -594,9 +594,8 @@ inline Twine operator+(const StringRef &lhs, const char *rhs)
 
 inline RawOutStream &operator<<(RawOutStream &outStream, const Twine &rhs)
 {
-   // unittest mark
-//   rhs.print(outStream);
-//   return outStream;
+   rhs.print(outStream);
+   return outStream;
 }
 
 /// @}

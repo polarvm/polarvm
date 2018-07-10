@@ -28,7 +28,8 @@ TEST(ApIntTest, testValueInit)
 }
 
 // Test that ApInt shift left works when bitwidth > 64 and shiftamt == 0
-TEST(ApIntTest, testShiftLeftByZero) {
+TEST(ApIntTest, testShiftLeftByZero)
+{
    ApInt One = ApInt::getNullValue(65) + 1;
    ApInt Shl = One.shl(0);
    EXPECT_TRUE(Shl[0]);
@@ -396,7 +397,8 @@ TEST(ApIntTest, testCompare) {
       }
 }
 
-TEST(ApIntTest, testCompareWithRawIntegers) {
+TEST(ApIntTest, testCompareWithRawIntegers)
+{
    EXPECT_TRUE(!ApInt(8, 1).uge(256));
    EXPECT_TRUE(!ApInt(8, 1).ugt(256));
    EXPECT_TRUE( ApInt(8, 1).ule(256));
@@ -470,7 +472,8 @@ TEST(ApIntTest, testCompareWithRawIntegers) {
    EXPECT_TRUE(big != int64min);
 }
 
-TEST(ApIntTest, compareWithInt64Min) {
+TEST(ApIntTest, testCompareWithInt64Min)
+{
    int64_t edge = INT64_MIN;
    int64_t edgeP1 = edge + 1;
    int64_t edgeM1 = INT64_MAX;
@@ -490,7 +493,8 @@ TEST(ApIntTest, compareWithInt64Min) {
    EXPECT_TRUE(!a.sge(edgeM1));
 }
 
-TEST(ApIntTest, compareWithHalfInt64Max) {
+TEST(ApIntTest, testCompareWithHalfInt64Max)
+{
    uint64_t edge = 0x4000000000000000;
    uint64_t edgeP1 = edge + 1;
    uint64_t edgeM1 = edge - 1;
@@ -523,7 +527,8 @@ TEST(ApIntTest, compareWithHalfInt64Max) {
    EXPECT_TRUE( a.sge(edgeM1));
 }
 
-TEST(ApIntTest, compareLargeIntegers) {
+TEST(ApIntTest, testCompareLargeIntegers)
+{
    // Make sure all the combinations of signed comparisons work with big ints.
    auto One = ApInt{128, static_cast<uint64_t>(1), true};
    auto Two = ApInt{128, static_cast<uint64_t>(2), true};
@@ -551,7 +556,8 @@ TEST(ApIntTest, compareLargeIntegers) {
    EXPECT_TRUE(!MinusTwo.slt(MinusTwo));
 }
 
-TEST(ApIntTest, binaryOpsWithRawIntegers) {
+TEST(ApIntTest, testBinaryOpsWithRawIntegers)
+{
    // Single word check.
    uint64_t E1 = 0x2CA7F46BF6569915ULL;
    ApInt A1(64, E1);
@@ -603,7 +609,8 @@ TEST(ApIntTest, binaryOpsWithRawIntegers) {
    EXPECT_EQ(A2 ^ UINT64_MAX, A2 - N + ~N);
 }
 
-TEST(ApIntTest, rvalue_arithmetic) {
+TEST(ApIntTest, testRvalueArithmetic)
+{
    // Test all combinations of lvalue/rvalue lhs/rhs of add/sub
 
    // Lamdba to return an ApInt by value, but also provide the raw value of the
@@ -772,7 +779,8 @@ TEST(ApIntTest, rvalue_arithmetic) {
    }
 }
 
-TEST(ApIntTest, rvalue_bitwise) {
+TEST(ApIntTest, testRvalueBitwise)
+{
    // Test all combinations of lvalue/rvalue lhs/rhs of and/or/xor
 
    // Lamdba to return an ApInt by value, but also provide the raw value of the
@@ -892,7 +900,8 @@ TEST(ApIntTest, rvalue_bitwise) {
    }
 }
 
-TEST(ApIntTest, rvalue_invert) {
+TEST(ApIntTest, testRvalueInvert)
+{
    // Lamdba to return an ApInt by value, but also provide the raw value of the
    // allocated data.
    auto getRValue = [](const char *HexString, uint64_t const *&RawData) {
@@ -918,7 +927,8 @@ TEST(ApIntTest, rvalue_invert) {
 }
 
 // Tests different div/rem varaints using scheme (a * b + c) / a
-void testDiv(ApInt a, ApInt b, ApInt c) {
+void testDiv(ApInt a, ApInt b, ApInt c)
+{
    ASSERT_TRUE(a.uge(b)); // Must: a >= b
    ASSERT_TRUE(a.ugt(c)); // Must: a > c
 
@@ -957,14 +967,16 @@ void testDiv(ApInt a, ApInt b, ApInt c) {
    }
 }
 
-TEST(ApIntTest, divrem_big1) {
+TEST(ApIntTest, testDivremBig1)
+{
    // Tests KnuthDiv rare step D6
    testDiv({256, "1ffffffffffffffff", 16},
    {256, "1ffffffffffffffff", 16},
    {256, 0});
 }
 
-TEST(ApIntTest, divrem_big2) {
+TEST(ApIntTest, testDivremBig2)
+{
    // Tests KnuthDiv rare step D6
    testDiv({1024,                       "112233ceff"
             "cecece000000ffffffffffffffffffff"
@@ -978,42 +990,48 @@ TEST(ApIntTest, divrem_big2) {
    {1024, 7919});
 }
 
-TEST(ApIntTest, divrem_big3) {
+TEST(ApIntTest, testDivremBig3)
+{
    // Tests KnuthDiv case without shift
    testDiv({256, "80000001ffffffffffffffff", 16},
    {256, "ffffffffffffff0000000", 16},
    {256, 4219});
 }
 
-TEST(ApIntTest, divrem_big4) {
+TEST(ApIntTest, testDivremBig4)
+{
    // Tests heap allocation in divide() enfoced by huge numbers
    testDiv(ApInt{4096, 5}.shl(2001),
            ApInt{4096, 1}.shl(2000),
            ApInt{4096, 4219*13});
 }
 
-TEST(ApIntTest, divrem_big5) {
+TEST(ApIntTest, testDivremBig5)
+{
    // Tests one word divisor case of divide()
    testDiv(ApInt{1024, 19}.shl(811),
            ApInt{1024, 4356013}, // one word
            ApInt{1024, 1});
 }
 
-TEST(ApIntTest, divrem_big6) {
+TEST(ApIntTest, testDivremBig6)
+{
    // Tests some rare "borrow" cases in D4 step
    testDiv(ApInt{512, "ffffffffffffffff00000000000000000000000001", 16},
            ApInt{512, "10000000000000001000000000000001", 16},
            ApInt{512, "10000000000000000000000000000000", 16});
 }
 
-TEST(ApIntTest, divrem_big7) {
+TEST(ApIntTest, testDivremBig7)
+{
    // Yet another test for KnuthDiv rare step D6.
    testDiv({224, "800000008000000200000005", 16},
    {224, "fffffffd", 16},
    {224, "80000000800000010000000f", 16});
 }
 
-void testDiv(ApInt a, uint64_t b, ApInt c) {
+void testDiv(ApInt a, uint64_t b, ApInt c)
+{
    auto p = a * b + c;
 
    ApInt q;
@@ -1044,7 +1062,8 @@ void testDiv(ApInt a, uint64_t b, ApInt c) {
       EXPECT_EQ(c, sr);
 }
 
-TEST(ApIntTest, divremuint) {
+TEST(ApIntTest, testDivremuint)
+{
    // Single word ApInt
    testDiv(ApInt{64, 9},
            2,
@@ -1071,7 +1090,8 @@ TEST(ApIntTest, divremuint) {
            ApInt{1024, 1});
 }
 
-TEST(ApIntTest, fromString) {
+TEST(ApIntTest, testFromString)
+{
    EXPECT_EQ(ApInt(32, 0), ApInt(32,   "0", 2));
    EXPECT_EQ(ApInt(32, 1), ApInt(32,   "1", 2));
    EXPECT_EQ(ApInt(32, 2), ApInt(32,  "10", 2));
@@ -1154,11 +1174,13 @@ TEST(ApIntTest, fromString) {
    EXPECT_EQ(ApInt(32, uint64_t(-72LL)), ApInt(32, "-20", 36));
 }
 
-TEST(ApIntTest, FromArray) {
+TEST(ApIntTest, testFromArray)
+{
    EXPECT_EQ(ApInt(32, uint64_t(1)), ApInt(32, ArrayRef<uint64_t>(1)));
 }
 
-TEST(ApIntTest, StringBitsNeeded2) {
+TEST(ApIntTest, testStringBitsNeeded2)
+{
    EXPECT_EQ(1U, ApInt::getBitsNeeded(  "0", 2));
    EXPECT_EQ(1U, ApInt::getBitsNeeded(  "1", 2));
    EXPECT_EQ(2U, ApInt::getBitsNeeded( "10", 2));
@@ -1178,7 +1200,8 @@ TEST(ApIntTest, StringBitsNeeded2) {
    EXPECT_EQ(4U, ApInt::getBitsNeeded("-100", 2));
 }
 
-TEST(ApIntTest, StringBitsNeeded8) {
+TEST(ApIntTest, testStringBitsNeeded8)
+{
    EXPECT_EQ(3U, ApInt::getBitsNeeded( "0", 8));
    EXPECT_EQ(3U, ApInt::getBitsNeeded( "7", 8));
    EXPECT_EQ(6U, ApInt::getBitsNeeded("10", 8));
@@ -1198,7 +1221,8 @@ TEST(ApIntTest, StringBitsNeeded8) {
    EXPECT_EQ(7U, ApInt::getBitsNeeded("-20", 8));
 }
 
-TEST(ApIntTest, StringBitsNeeded10) {
+TEST(ApIntTest, testStringBitsNeeded10)
+{
    EXPECT_EQ(1U, ApInt::getBitsNeeded( "0", 10));
    EXPECT_EQ(2U, ApInt::getBitsNeeded( "3", 10));
    EXPECT_EQ(4U, ApInt::getBitsNeeded( "9", 10));
@@ -1219,7 +1243,8 @@ TEST(ApIntTest, StringBitsNeeded10) {
    EXPECT_EQ(6U, ApInt::getBitsNeeded("-20", 10));
 }
 
-TEST(ApIntTest, StringBitsNeeded16) {
+TEST(ApIntTest, testStringBitsNeeded16)
+{
    EXPECT_EQ(4U, ApInt::getBitsNeeded( "0", 16));
    EXPECT_EQ(4U, ApInt::getBitsNeeded( "F", 16));
    EXPECT_EQ(8U, ApInt::getBitsNeeded("10", 16));
@@ -1239,7 +1264,8 @@ TEST(ApIntTest, StringBitsNeeded16) {
    EXPECT_EQ(9U, ApInt::getBitsNeeded("-20", 16));
 }
 
-TEST(ApIntTest, toString) {
+TEST(ApIntTest, testToString)
+{
    SmallString<16> str;
    bool isSigned;
 
@@ -1294,7 +1320,8 @@ TEST(ApIntTest, toString) {
    str.clear();
 }
 
-TEST(ApIntTest, Log2) {
+TEST(ApIntTest, testLog2)
+{
    EXPECT_EQ(ApInt(15, 7).logBase2(), 2U);
    EXPECT_EQ(ApInt(15, 7).ceilLogBase2(), 3U);
    EXPECT_EQ(ApInt(15, 7).exactLogBase2(), -1);
@@ -1306,7 +1333,8 @@ TEST(ApIntTest, Log2) {
    EXPECT_EQ(ApInt(15, 9).exactLogBase2(), -1);
 }
 
-TEST(ApIntTest, magic) {
+TEST(ApIntTest, testMagic)
+{
    EXPECT_EQ(ApInt(32, 3).getMagic().m_magic, ApInt(32, "55555556", 16));
    EXPECT_EQ(ApInt(32, 3).getMagic().m_shift, 0U);
    EXPECT_EQ(ApInt(32, 5).getMagic().m_magic, ApInt(32, "66666667", 16));
@@ -1315,7 +1343,7 @@ TEST(ApIntTest, magic) {
    EXPECT_EQ(ApInt(32, 7).getMagic().m_shift, 2U);
 }
 
-TEST(ApIntTest, magicu)
+TEST(ApIntTest, testMagicu)
 {
    EXPECT_EQ(ApInt(32, 3).getMagicUnsign().m_magic, ApInt(32, "AAAAAAAB", 16));
    EXPECT_EQ(ApInt(32, 3).getMagicUnsign().m_shift, 1U);
@@ -1329,7 +1357,8 @@ TEST(ApIntTest, magicu)
 
 #ifdef GTEST_HAS_DEATH_TEST
 #ifndef NDEBUG
-TEST(ApIntTest, StringDeath) {
+TEST(ApIntTest, testStringDeath)
+{
    EXPECT_DEATH(ApInt(0, "", 0), "Bitwidth too small");
    EXPECT_DEATH(ApInt(32, "", 0), "Invalid string length");
    EXPECT_DEATH(ApInt(32, "0", 0), "Radix should be 2, 8, 10, 16, or 36!");
@@ -1343,7 +1372,8 @@ TEST(ApIntTest, StringDeath) {
 #endif
 #endif
 
-TEST(ApIntTest, mul_clear) {
+TEST(ApIntTest, testMulClear)
+{
    ApInt ValA(65, -1ULL);
    ApInt ValB(65, 4);
    ApInt ValC(65, 0);
@@ -1352,7 +1382,8 @@ TEST(ApIntTest, mul_clear) {
    EXPECT_EQ(ValA.toString(10, false), ValC.toString(10, false));
 }
 
-TEST(ApIntTest, Rotate) {
+TEST(ApIntTest, testRotate)
+{
    EXPECT_EQ(ApInt(8, 1),  ApInt(8, 1).rotl(0));
    EXPECT_EQ(ApInt(8, 2),  ApInt(8, 1).rotl(1));
    EXPECT_EQ(ApInt(8, 4),  ApInt(8, 1).rotl(2));
@@ -1432,7 +1463,8 @@ TEST(ApIntTest, Rotate) {
    EXPECT_EQ(ApInt(32, (1 << 29)), ApInt(32, 1).rotr(Big));
 }
 
-TEST(ApIntTest, Splat) {
+TEST(ApIntTest, testSplat)
+{
    ApInt ValA(8, 0x01);
    EXPECT_EQ(ValA, ApInt::getSplat(8, ValA));
    EXPECT_EQ(ApInt(64, 0x0101010101010101ULL), ApInt::getSplat(64, ValA));
@@ -1442,7 +1474,8 @@ TEST(ApIntTest, Splat) {
    EXPECT_EQ(ApInt(15, 0xDB6D), ApInt::getSplat(15, ValB));
 }
 
-TEST(ApIntTest, tcDecrement) {
+TEST(ApIntTest, testTcDecrement)
+{
    // Test single word decrement.
 
    // No out borrow.
@@ -1508,7 +1541,8 @@ TEST(ApIntTest, tcDecrement) {
    }
 }
 
-TEST(ApIntTest, arrayAccess) {
+TEST(ApIntTest, testArrayAccess)
+{
    // Single word check.
    uint64_t E1 = 0x2CA7F46BF6569915ULL;
    ApInt A1(64, E1);
@@ -1533,7 +1567,8 @@ TEST(ApIntTest, arrayAccess) {
    }
 }
 
-TEST(ApIntTest, LargeAPIntConstruction) {
+TEST(ApIntTest, testLargeAPIntConstruction)
+{
    // Check that we can properly construct very large ApInt. It is very
    // unlikely that people will ever do this, but it is a legal input,
    // so we should not crash on it.
@@ -1541,7 +1576,8 @@ TEST(ApIntTest, LargeAPIntConstruction) {
    EXPECT_FALSE(A9.getBoolValue());
 }
 
-TEST(ApIntTest, nearestLogBase2) {
+TEST(ApIntTest, testNearestLogBase2)
+{
    // Single word check.
 
    // Test round up.
@@ -1588,7 +1624,8 @@ TEST(ApIntTest, nearestLogBase2) {
    EXPECT_EQ(A9.nearestLogBase2(), UINT32_MAX);
 }
 
-TEST(ApIntTest, IsSplat) {
+TEST(ApIntTest, testIsSplat)
+{
    ApInt A(32, 0x01010101);
    EXPECT_FALSE(A.isSplat(1));
    EXPECT_FALSE(A.isSplat(2));
@@ -1628,7 +1665,8 @@ TEST(ApIntTest, IsSplat) {
    EXPECT_TRUE(E.isSplat(32));
 }
 
-TEST(ApIntTest, isMask) {
+TEST(ApIntTest, testIsMask)
+{
    EXPECT_FALSE(ApInt(32, 0x01010101).isMask());
    EXPECT_FALSE(ApInt(32, 0xf0000000).isMask());
    EXPECT_FALSE(ApInt(32, 0xffff0000).isMask());
@@ -1646,7 +1684,8 @@ TEST(ApIntTest, isMask) {
    }
 }
 
-TEST(ApIntTest, isShiftedMask) {
+TEST(ApIntTest, testIsShiftedMask)
+{
    EXPECT_FALSE(ApInt(32, 0x01010101).isShiftedMask());
    EXPECT_TRUE(ApInt(32, 0xf0000000).isShiftedMask());
    EXPECT_TRUE(ApInt(32, 0xffff0000).isShiftedMask());
@@ -1671,7 +1710,7 @@ TEST(ApIntTest, isShiftedMask) {
    }
 }
 
-TEST(ApIntTest, reverseBits) {
+TEST(ApIntTest, testReverseBits) {
    EXPECT_EQ(1, ApInt(1, 1).reverseBits());
    EXPECT_EQ(0, ApInt(1, 0).reverseBits());
 
@@ -1713,7 +1752,8 @@ TEST(ApIntTest, reverseBits) {
    }
 }
 
-TEST(ApIntTest, insertBits) {
+TEST(ApIntTest, testInsertBits)
+{
    ApInt iSrc(31, 0x00123456);
 
    // Direct copy.
@@ -1766,7 +1806,8 @@ TEST(ApIntTest, insertBits) {
    EXPECT_EQ(i260.extractBits(4, 256).getZeroExtValue(), 0x000000000000000Full);
 }
 
-TEST(ApIntTest, extractBits) {
+TEST(ApIntTest, testExtractBits)
+{
    ApInt i32(32, 0x1234567);
    EXPECT_EQ(0x3456, i32.extractBits(16, 4));
 
@@ -1782,7 +1823,8 @@ TEST(ApIntTest, extractBits) {
              i257.extractBits(129, 1).getSignExtValue());
 }
 
-TEST(ApIntTest, getLowBitsSet) {
+TEST(ApIntTest, testGetLowBitsSet)
+{
    ApInt i128lo64 = ApInt::getLowBitsSet(128, 64);
    EXPECT_EQ(0u, i128lo64.countLeadingOnes());
    EXPECT_EQ(64u, i128lo64.countLeadingZeros());
@@ -1792,7 +1834,8 @@ TEST(ApIntTest, getLowBitsSet) {
    EXPECT_EQ(64u, i128lo64.countPopulation());
 }
 
-TEST(ApIntTest, getBitsSet) {
+TEST(ApIntTest, testGetBitsSet)
+{
    ApInt i64hi1lo1 = ApInt::getBitsSet(64, 1, 63);
    EXPECT_EQ(0u, i64hi1lo1.countLeadingOnes());
    EXPECT_EQ(1u, i64hi1lo1.countLeadingZeros());
@@ -1810,7 +1853,8 @@ TEST(ApIntTest, getBitsSet) {
    EXPECT_EQ(125u, i127hi1lo1.countPopulation());
 }
 
-TEST(ApIntTest, getHighBitsSet) {
+TEST(ApIntTest, testGetHighBitsSet)
+{
    ApInt i64hi32 = ApInt::getHighBitsSet(64, 32);
    EXPECT_EQ(32u, i64hi32.countLeadingOnes());
    EXPECT_EQ(0u, i64hi32.countLeadingZeros());
@@ -1820,7 +1864,8 @@ TEST(ApIntTest, getHighBitsSet) {
    EXPECT_EQ(32u, i64hi32.countPopulation());
 }
 
-TEST(ApIntTest, getBitsSetFrom) {
+TEST(ApIntTest, testGetBitsSetFrom)
+{
    ApInt i64hi31 = ApInt::getBitsSetFrom(64, 33);
    EXPECT_EQ(31u, i64hi31.countLeadingOnes());
    EXPECT_EQ(0u, i64hi31.countLeadingZeros());
@@ -1830,7 +1875,8 @@ TEST(ApIntTest, getBitsSetFrom) {
    EXPECT_EQ(31u, i64hi31.countPopulation());
 }
 
-TEST(ApIntTest, setLowBits) {
+TEST(ApIntTest, testSetLowBits)
+{
    ApInt i64lo32(64, 0);
    i64lo32.setLowBits(32);
    EXPECT_EQ(0u, i64lo32.countLeadingOnes());
@@ -1886,7 +1932,8 @@ TEST(ApIntTest, setLowBits) {
    EXPECT_EQ(79u, i80lo79.countPopulation());
 }
 
-TEST(ApIntTest, setHighBits) {
+TEST(ApIntTest, testSetHighBits)
+{
    ApInt i64hi32(64, 0);
    i64hi32.setHighBits(32);
    EXPECT_EQ(32u, i64hi32.countLeadingOnes());
@@ -1951,7 +1998,8 @@ TEST(ApIntTest, setHighBits) {
    EXPECT_EQ(16u, i32hi16.countPopulation());
 }
 
-TEST(ApIntTest, setBitsFrom) {
+TEST(ApIntTest, testSetBitsFrom)
+{
    ApInt i64from63(64, 0);
    i64from63.setBitsFrom(63);
    EXPECT_EQ(1u, i64from63.countLeadingOnes());
@@ -1962,7 +2010,8 @@ TEST(ApIntTest, setBitsFrom) {
    EXPECT_EQ(1u, i64from63.countPopulation());
 }
 
-TEST(ApIntTest, setAllBits) {
+TEST(ApIntTest, testSetAllBits)
+{
    ApInt i32(32, 0);
    i32.setAllBits();
    EXPECT_EQ(32u, i32.countLeadingOnes());
@@ -2000,7 +2049,8 @@ TEST(ApIntTest, setAllBits) {
    EXPECT_EQ(128u, i128.countPopulation());
 }
 
-TEST(ApIntTest, getLoBits) {
+TEST(ApIntTest, testGetLoBits)
+{
    ApInt i32(32, 0xfa);
    i32.setHighBits(1);
    EXPECT_EQ(0xa, i32.getLoBits(4));
@@ -2009,7 +2059,8 @@ TEST(ApIntTest, getLoBits) {
    EXPECT_EQ(0xa, i128.getLoBits(4));
 }
 
-TEST(ApIntTest, getHiBits) {
+TEST(ApIntTest, testGetHiBits)
+{
    ApInt i32(32, 0xfa);
    i32.setHighBits(2);
    EXPECT_EQ(0xc, i32.getHiBits(4));
@@ -2018,7 +2069,8 @@ TEST(ApIntTest, getHiBits) {
    EXPECT_EQ(0xc, i128.getHiBits(4));
 }
 
-TEST(ApIntTest, GCD) {
+TEST(ApIntTest, testGCD)
+{
    using ApIntOps::greatest_common_divisor;
 
    for (unsigned Bits : {1, 2, 32, 63, 64, 65}) {
@@ -2061,7 +2113,8 @@ TEST(ApIntTest, GCD) {
    EXPECT_EQ(C, HugePrime);
 }
 
-TEST(ApIntTest, LogicalRightShift) {
+TEST(ApIntTest, testLogicalRightShift)
+{
    ApInt i256(ApInt::getHighBitsSet(256, 2));
 
    i256.lshrInPlace(1);
@@ -2094,7 +2147,8 @@ TEST(ApIntTest, LogicalRightShift) {
    EXPECT_EQ(0, neg_one.lshr(128));
 }
 
-TEST(ApIntTest, ArithmeticRightShift) {
+TEST(ApIntTest, testArithmeticRightShift)
+{
    ApInt i72(ApInt::getHighBitsSet(72, 1));
    i72.ashrInPlace(46);
    EXPECT_EQ(47U, i72.countLeadingOnes());
@@ -2130,7 +2184,8 @@ TEST(ApIntTest, ArithmeticRightShift) {
    EXPECT_EQ(0, umax128.ashr(128));
 }
 
-TEST(ApIntTest, LeftShift) {
+TEST(ApIntTest, testLeftShift)
+{
    ApInt i256(ApInt::getLowBitsSet(256, 2));
 
    i256 <<= 1;
@@ -2163,7 +2218,8 @@ TEST(ApIntTest, LeftShift) {
    EXPECT_EQ(0, neg_one.shl(128));
 }
 
-TEST(ApIntTest, isSubsetOf) {
+TEST(ApIntTest, testIsSubsetOf)
+{
    ApInt i32_1(32, 1);
    ApInt i32_2(32, 2);
    ApInt i32_3(32, 3);
@@ -2192,7 +2248,8 @@ TEST(ApIntTest, isSubsetOf) {
    EXPECT_TRUE(i128_3.isSubsetOf(i128_3));
 }
 
-TEST(ApIntTest, sext) {
+TEST(ApIntTest, testSext)
+{
    EXPECT_EQ(0, ApInt(1, 0).sext(64));
    EXPECT_EQ(~uint64_t(0), ApInt(1, 1).sext(64));
 
@@ -2231,6 +2288,5 @@ TEST(ApIntTest, testMultiply)
    EXPECT_EQ(32U, i96.countPopulation());
    EXPECT_EQ(64U, i96.countTrailingZeros());
 }
-
 
 } // anonymous namespace

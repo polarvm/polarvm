@@ -18,7 +18,7 @@ using namespace polar::basic;
 
 namespace {
 
-TEST(SmallPtrSetTest, Assignment)
+TEST(SmallPtrSetTest, testAssignment)
 {
    int buf[8];
    for (int i = 0; i < 8; ++i) {
@@ -51,7 +51,8 @@ TEST(SmallPtrSetTest, Assignment)
 
 }
 
-TEST(SmallPtrSetTest, GrowthTest) {
+TEST(SmallPtrSetTest, testGrowthTest)
+{
    int i;
    int buf[8];
    for(i=0; i<8; ++i) {
@@ -108,7 +109,8 @@ TEST(SmallPtrSetTest, GrowthTest) {
       EXPECT_EQ(1,buf[i]);
 }
 
-TEST(SmallPtrSetTest, CopyAndMoveTest) {
+TEST(SmallPtrSetTest, testCopyAndMoveTest)
+{
    int buf[8];
    for (int i = 0; i < 8; ++i)
       buf[i] = 0;
@@ -174,7 +176,7 @@ TEST(SmallPtrSetTest, CopyAndMoveTest) {
       EXPECT_TRUE(s3.count(&buf[i]));
 }
 
-TEST(SmallPtrSetTest, SwapTest) {
+TEST(SmallPtrSetTest, testSwapTest) {
    int buf[10];
 
    SmallPtrSet<int *, 2> a;
@@ -252,7 +254,8 @@ TEST(SmallPtrSetTest, SwapTest) {
    EXPECT_TRUE(a.count(&buf[3]));
 }
 
-void checkEraseAndIterators(SmallPtrSetImpl<int*> &S) {
+void checkEraseAndIterators(SmallPtrSetImpl<int*> &S)
+{
    int buf[3];
 
    S.insert(&buf[0]);
@@ -281,7 +284,8 @@ void checkEraseAndIterators(SmallPtrSetImpl<int*> &S) {
    EXPECT_EQ(std::next(M), E);
 }
 
-TEST(SmallPtrSetTest, EraseTest) {
+TEST(SmallPtrSetTest, testEraseTest)
+{
    // Test when set stays small.
    SmallPtrSet<int *, 8> B;
    checkEraseAndIterators(B);
@@ -292,7 +296,8 @@ TEST(SmallPtrSetTest, EraseTest) {
 }
 
 // Verify that dereferencing and iteration work.
-TEST(SmallPtrSetTest, dereferenceAndIterate) {
+TEST(SmallPtrSetTest, testDereferenceAndIterate)
+{
    int Ints[] = {0, 1, 2, 3, 4, 5, 6, 7};
    SmallPtrSet<const int *, 4> S;
    for (int &I : Ints) {
@@ -315,7 +320,8 @@ TEST(SmallPtrSetTest, dereferenceAndIterate) {
 
 // Verify that const pointers work for count and find even when the underlying
 // SmallPtrSet is not for a const pointer type.
-TEST(SmallPtrSetTest, ConstTest) {
+TEST(SmallPtrSetTest, testConstTest)
+{
    SmallPtrSet<int *, 8> IntSet;
    int A;
    int *B = &A;
@@ -331,7 +337,8 @@ TEST(SmallPtrSetTest, ConstTest) {
 // filled in for us, even for a non-pointer type
 using TestPair = PointerIntPair<int *, 1>;
 
-TEST(SmallPtrSetTest, ConstNonPtrTest) {
+TEST(SmallPtrSetTest, testConstNonPtrTest)
+{
    SmallPtrSet<TestPair, 8> IntSet;
    int A[1];
    TestPair Pair(&A[0], 1);

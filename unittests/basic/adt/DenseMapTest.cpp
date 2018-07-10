@@ -81,7 +81,8 @@ CtorTester getTestValue(int i, CtorTester *) { return CtorTester(42 + i); }
 // allows all of the map implementations to be tested with shared
 // implementations of helper routines.
 template <typename T>
-class DenseMapTest : public ::testing::Test {
+class DenseMapTest : public ::testing::Test
+{
 protected:
    T Map;
 
@@ -113,7 +114,7 @@ CtorTesterMapInfo>
 TYPED_TEST_CASE(DenseMapTest, DenseMapTestTypes);
 
 // Empty map tests
-TYPED_TEST(DenseMapTest, EmptyIntMapTest)
+TYPED_TEST(DenseMapTest, testEmptyIntMapTest)
 {
    // Size tests
    EXPECT_EQ(0u, this->Map.getSize());
@@ -139,7 +140,7 @@ TYPED_TEST(DenseMapTest, EmptyIntMapTest)
 }
 
 // Constant map tests
-TYPED_TEST(DenseMapTest, ConstEmptyMapTest)
+TYPED_TEST(DenseMapTest, testConstEmptyMapTest)
 {
    const TypeParam &ConstMap = this->Map;
    EXPECT_EQ(0u, ConstMap.getSize());
@@ -148,7 +149,7 @@ TYPED_TEST(DenseMapTest, ConstEmptyMapTest)
 }
 
 // A map with a single entry
-TYPED_TEST(DenseMapTest, SingleEntryMapTest)
+TYPED_TEST(DenseMapTest, testSingleEntryMapTest)
 {
    this->Map[this->getKey()] = this->getValue();
 
@@ -172,7 +173,7 @@ TYPED_TEST(DenseMapTest, SingleEntryMapTest)
 }
 
 // Test clear() method
-TYPED_TEST(DenseMapTest, ClearTest)
+TYPED_TEST(DenseMapTest, testClearTest)
 {
    this->Map[this->getKey()] = this->getValue();
    this->Map.clear();
@@ -183,7 +184,7 @@ TYPED_TEST(DenseMapTest, ClearTest)
 }
 
 // Test erase(iterator) method
-TYPED_TEST(DenseMapTest, EraseTest)
+TYPED_TEST(DenseMapTest, testEraseTest)
 {
    this->Map[this->getKey()] = this->getValue();
    this->Map.erase(this->Map.begin());
@@ -194,7 +195,7 @@ TYPED_TEST(DenseMapTest, EraseTest)
 }
 
 // Test erase(value) method
-TYPED_TEST(DenseMapTest, EraseTest2)
+TYPED_TEST(DenseMapTest, testEraseTest2)
 {
    this->Map[this->getKey()] = this->getValue();
    this->Map.erase(this->getKey());
@@ -205,7 +206,7 @@ TYPED_TEST(DenseMapTest, EraseTest2)
 }
 
 // Test insert() method
-TYPED_TEST(DenseMapTest, InsertTest)
+TYPED_TEST(DenseMapTest, testInsertTest)
 {
    this->Map.insert(std::make_pair(this->getKey(), this->getValue()));
    EXPECT_EQ(1u, this->Map.getSize());
@@ -213,7 +214,7 @@ TYPED_TEST(DenseMapTest, InsertTest)
 }
 
 // Test copy constructor method
-TYPED_TEST(DenseMapTest, CopyConstructorTest)
+TYPED_TEST(DenseMapTest, testCopyConstructorTest)
 {
    this->Map[this->getKey()] = this->getValue();
    TypeParam copyMap(this->Map);
@@ -223,7 +224,7 @@ TYPED_TEST(DenseMapTest, CopyConstructorTest)
 }
 
 // Test copy constructor method where SmallDenseMap isn't small.
-TYPED_TEST(DenseMapTest, CopyConstructorNotSmallTest)
+TYPED_TEST(DenseMapTest, testCopyConstructorNotSmallTest)
 {
    for (int Key = 0; Key < 5; ++Key)
       this->Map[this->getKey(Key)] = this->getValue(Key);
@@ -235,7 +236,7 @@ TYPED_TEST(DenseMapTest, CopyConstructorNotSmallTest)
 }
 
 // Test copying from a default-constructed map.
-TYPED_TEST(DenseMapTest, CopyConstructorFromDefaultTest)
+TYPED_TEST(DenseMapTest, testCopyConstructorFromDefaultTest)
 {
    TypeParam copyMap(this->Map);
 
@@ -243,7 +244,7 @@ TYPED_TEST(DenseMapTest, CopyConstructorFromDefaultTest)
 }
 
 // Test copying from an empty map where SmallDenseMap isn't small.
-TYPED_TEST(DenseMapTest, CopyConstructorFromEmptyTest)
+TYPED_TEST(DenseMapTest, testCopyConstructorFromEmptyTest)
 {
    for (int Key = 0; Key < 5; ++Key)
       this->Map[this->getKey(Key)] = this->getValue(Key);
@@ -254,7 +255,7 @@ TYPED_TEST(DenseMapTest, CopyConstructorFromEmptyTest)
 }
 
 // Test assignment operator method
-TYPED_TEST(DenseMapTest, AssignmentTest)
+TYPED_TEST(DenseMapTest, testAssignmentTest)
 {
    this->Map[this->getKey()] = this->getValue();
    TypeParam copyMap = this->Map;
@@ -268,7 +269,7 @@ TYPED_TEST(DenseMapTest, AssignmentTest)
    EXPECT_EQ(this->getValue(), copyMap[this->getKey()]);
 }
 
-TYPED_TEST(DenseMapTest, AssignmentTestNotSmall)
+TYPED_TEST(DenseMapTest, testAssignmentTestNotSmall)
 {
    for (int Key = 0; Key < 5; ++Key)
       this->Map[this->getKey(Key)] = this->getValue(Key);
@@ -286,7 +287,7 @@ TYPED_TEST(DenseMapTest, AssignmentTestNotSmall)
 }
 
 // Test swap method
-TYPED_TEST(DenseMapTest, SwapTest)
+TYPED_TEST(DenseMapTest, testSwapTest)
 {
    this->Map[this->getKey()] = this->getValue();
    TypeParam otherMap;
@@ -323,7 +324,7 @@ TYPED_TEST(DenseMapTest, SwapTest)
 }
 
 // A more complex iteration test
-TYPED_TEST(DenseMapTest, IterationTest)
+TYPED_TEST(DenseMapTest, testIterationTest)
 {
    bool visited[100];
    std::map<typename TypeParam::key_type, unsigned> visitedIndex;
@@ -347,7 +348,7 @@ TYPED_TEST(DenseMapTest, IterationTest)
 }
 
 // const_iterator test
-TYPED_TEST(DenseMapTest, ConstIteratorTest)
+TYPED_TEST(DenseMapTest, testConstIteratorTest)
 {
    // Check conversion from iterator to const_iterator.
    typename TypeParam::iterator it = this->Map.begin();
@@ -384,7 +385,7 @@ int CountCopyAndMove::Move = 0;
 } // anonymous namespace
 
 // Test for the default minimum size of a DenseMap
-TEST(DenseMapCustomTest, DefaultMinReservedSizeTest)
+TEST(DenseMapCustomTest, testDefaultMinReservedSizeTest)
 {
    // IF THIS VALUE CHANGE, please update InitialSizeTest, InitFromIterator, and
    // ReserveTest as well!
@@ -425,7 +426,7 @@ TEST(DenseMapCustomTest, DefaultMinReservedSizeTest)
 
 // Make sure creating the map with an initial size of N actually gives us enough
 // buckets to insert N items without increasing allocation size.
-TEST(DenseMapCustomTest, InitialSizeTest)
+TEST(DenseMapCustomTest, testInitialSizeTest)
 {
    // Test a few different sizes, 48 is *not* a random choice: we need a value
    // that is 2/3 of a power of two to stress the grow() condition, and the power
@@ -451,7 +452,7 @@ TEST(DenseMapCustomTest, InitialSizeTest)
 }
 
 // Make sure creating the map with a iterator range does not trigger grow()
-TEST(DenseMapCustomTest, InitFromIterator)
+TEST(DenseMapCustomTest, testInitFromIterator)
 {
    std::vector<std::pair<int, CountCopyAndMove>> Values;
    // The size is a random value greater than 64 (hardcoded DenseMap min init)
@@ -470,7 +471,7 @@ TEST(DenseMapCustomTest, InitFromIterator)
 
 // Make sure reserve actually gives us enough buckets to insert N items
 // without increasing allocation size.
-TEST(DenseMapCustomTest, ReserveTest)
+TEST(DenseMapCustomTest, testReserveTest)
 {
    // Test a few different size, 48 is *not* a random choice: we need a value
    // that is 2/3 of a power of two to stress the grow() condition, and the power
@@ -497,7 +498,7 @@ TEST(DenseMapCustomTest, ReserveTest)
 }
 
 // Make sure DenseMap works with StringRef keys.
-TEST(DenseMapCustomTest, StringRefTest)
+TEST(DenseMapCustomTest, testStringRefTest)
 {
    DenseMap<StringRef, int> M;
 
@@ -541,7 +542,7 @@ struct TestDenseMapInfo
 };
 
 // findAs() tests
-TEST(DenseMapCustomTest, FindAsTest)
+TEST(DenseMapCustomTest, testFindAsTest)
 {
    DenseMap<unsigned, unsigned, TestDenseMapInfo> map;
    map[0] = 1;
@@ -577,7 +578,7 @@ struct ContiguousDenseMapInfo
 
 // Test that filling a small dense map with exactly the number of elements in
 // the map grows to have enough space for an empty bucket.
-TEST(DenseMapCustomTest, SmallDenseMapGrowTest)
+TEST(DenseMapCustomTest, testSmallDenseMapGrowTest)
 {
    SmallDenseMap<unsigned, unsigned, 32, ContiguousDenseMapInfo> map;
    // Add some number of elements, then delete a few to leave us some tombstones.
@@ -600,7 +601,7 @@ TEST(DenseMapCustomTest, SmallDenseMapGrowTest)
    EXPECT_TRUE(map.find(32) == map.end());
 }
 
-TEST(DenseMapCustomTest, TryEmplaceTest)
+TEST(DenseMapCustomTest, testTryEmplaceTest)
 {
    DenseMap<int, std::unique_ptr<int>> Map;
    std::unique_ptr<int> P(new int(2));
@@ -612,7 +613,7 @@ TEST(DenseMapCustomTest, TryEmplaceTest)
    EXPECT_NE(nullptr, P);
 }
 
-TEST(DenseMapCustomTest, ConstTest)
+TEST(DenseMapCustomTest, testConstTest)
 {
    // Test that const pointers work okay for count and find, even when the
    // underlying map is a non-const pointer.

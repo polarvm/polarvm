@@ -66,8 +66,7 @@ void StringMapImpl::init(unsigned initSize)
                                               sizeof(unsigned));
 
    if (m_theTable == nullptr) {
-      // unittest mark
-      // polar::utils::report_bad_alloc_error("Allocation of StringMap table failed.");
+      polar::utils::report_bad_alloc_error("Allocation of StringMap table failed.");
    }
    // Set the member only if TheTable was successfully allocated
    m_numBuckets = newnumBuckets;
@@ -238,8 +237,7 @@ unsigned StringMapImpl::rehashTable(unsigned bucketNo)
                                        sizeof(unsigned));
 
    if (newTableArray == nullptr) {
-      // unittest mark
-      // polar::utils::report_bad_alloc_error("Allocation of StringMap hash table failed.");
+      polar::utils::report_bad_alloc_error("Allocation of StringMap hash table failed.");
    }
    unsigned *newHashArray = (unsigned *)(newTableArray + newSize + 1);
    newTableArray[newSize] = (StringMapEntryBase*)2;

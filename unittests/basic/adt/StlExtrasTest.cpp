@@ -94,7 +94,7 @@ TEST(StlExtrasTest, testEnumerateModifyLValue) {
    EXPECT_EQ('d', foo[2]);
 }
 
-TEST(StlExtrasTest, EnumerateRValueRef) {
+TEST(StlExtrasTest, testEnumerateRValueRef) {
    // Test that an rvalue can be enumerated.
    typedef std::pair<std::size_t, int> PairType;
    std::vector<PairType> results;

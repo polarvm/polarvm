@@ -26,21 +26,21 @@ TEST(BreadthFristIteratorTest, testBasic)
    G.addEdge(0, 2);
    G.addEdge(1, 3);
 
-   auto It = BFIter::begin(G);
+   auto iter = BFIter::begin(G);
    auto End = BFIter::end(G);
-   EXPECT_EQ(It.getLevel(), 0U);
-   EXPECT_EQ(*It, G.accessNode(0));
-   ++It;
-   EXPECT_EQ(It.getLevel(), 1U);
-   EXPECT_EQ(*It, G.accessNode(1));
-   ++It;
-   EXPECT_EQ(It.getLevel(), 1U);
-   EXPECT_EQ(*It, G.accessNode(2));
-   ++It;
-   EXPECT_EQ(It.getLevel(), 2U);
-   EXPECT_EQ(*It, G.accessNode(3));
-   ++It;
-   EXPECT_EQ(It, End);
+   EXPECT_EQ(iter.getLevel(), 0U);
+   EXPECT_EQ(*iter, G.accessNode(0));
+   ++iter;
+   EXPECT_EQ(iter.getLevel(), 1U);
+   EXPECT_EQ(*iter, G.accessNode(1));
+   ++iter;
+   EXPECT_EQ(iter.getLevel(), 1U);
+   EXPECT_EQ(*iter, G.accessNode(2));
+   ++iter;
+   EXPECT_EQ(iter.getLevel(), 2U);
+   EXPECT_EQ(*iter, G.accessNode(3));
+   ++iter;
+   EXPECT_EQ(iter, End);
 }
 
 TEST(BreadthFristIteratorTest, testCycle)
@@ -58,21 +58,21 @@ TEST(BreadthFristIteratorTest, testCycle)
    G.addEdge(3, 1);
    G.addEdge(3, 0);
 
-   auto It = BFIter::begin(G);
+   auto iter = BFIter::begin(G);
    auto End = BFIter::end(G);
-   EXPECT_EQ(It.getLevel(), 0U);
-   EXPECT_EQ(*It, G.accessNode(0));
-   ++It;
-   EXPECT_EQ(It.getLevel(), 1U);
-   EXPECT_EQ(*It, G.accessNode(1));
-   ++It;
-   EXPECT_EQ(It.getLevel(), 2U);
-   EXPECT_EQ(*It, G.accessNode(2));
-   ++It;
-   EXPECT_EQ(It.getLevel(), 3U);
-   EXPECT_EQ(*It, G.accessNode(3));
-   ++It;
-   EXPECT_EQ(It, End);
+   EXPECT_EQ(iter.getLevel(), 0U);
+   EXPECT_EQ(*iter, G.accessNode(0));
+   ++iter;
+   EXPECT_EQ(iter.getLevel(), 1U);
+   EXPECT_EQ(*iter, G.accessNode(1));
+   ++iter;
+   EXPECT_EQ(iter.getLevel(), 2U);
+   EXPECT_EQ(*iter, G.accessNode(2));
+   ++iter;
+   EXPECT_EQ(iter.getLevel(), 3U);
+   EXPECT_EQ(*iter, G.accessNode(3));
+   ++iter;
+   EXPECT_EQ(iter, End);
 }
 
 } // anonymous namespace

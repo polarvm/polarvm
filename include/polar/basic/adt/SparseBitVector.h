@@ -157,8 +157,7 @@ public:
             return i * BITWORD_SIZE + count_trailing_zeros(m_bits[i]);
          }
       }
-      // unittest mark
-      // polar_unreachable("Illegal empty element");
+      polar_unreachable("Illegal empty element");
    }
 
    /// findLast - Returns the index of the last set bit.
@@ -171,8 +170,7 @@ public:
                   count_leading_zeros(m_bits[idx]) - 1;
          }
       }
-      // unittest mark
-      // polar_unreachable("Illegal empty element");
+      polar_unreachable("Illegal empty element");
    }
 
    /// findNext - Returns the index of the next set bit starting from the
@@ -945,18 +943,17 @@ operator-(const SparseBitVector<ElementSize> &lhs,
 template <unsigned ElementSize>
 void dump(const SparseBitVector<ElementSize> &vector, RawOutStream &out)
 {
-   // unittest mark
-//   out << "[";
+   out << "[";
 
-//   typename SparseBitVector<ElementSize>::iterator bi = vector.begin(),
-//         be = vector.end();
-//   if (bi != be) {
-//      out << *bi;
-//      for (++bi; bi != be; ++bi) {
-//         out << " " << *bi;
-//      }
-//   }
-//   out << "]\n";
+   typename SparseBitVector<ElementSize>::iterator bi = vector.begin(),
+         be = vector.end();
+   if (bi != be) {
+      out << *bi;
+      for (++bi; bi != be; ++bi) {
+         out << " " << *bi;
+      }
+   }
+   out << "]\n";
 }
 
 } // basic

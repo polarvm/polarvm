@@ -19,7 +19,8 @@ namespace {
 using namespace polar::basic;
 
 // Test hashing with a set of only two entries.
-TEST(DenseSetTest, DoubleEntrySetTest) {
+TEST(DenseSetTest, DoubleEntrySetTest)
+{
   DenseSet<unsigned> set(2);
   set.insert(0);
   set.insert(1);
@@ -27,7 +28,8 @@ TEST(DenseSetTest, DoubleEntrySetTest) {
   EXPECT_EQ(0u, set.count(2));
 }
 
-struct TestDenseSetInfo {
+struct TestDenseSetInfo
+{
   static inline unsigned getEmptyKey() { return ~0; }
   static inline unsigned getTombstoneKey() { return ~0U - 1; }
   static unsigned getHashValue(const unsigned& Val) { return Val * 37U; }
@@ -43,7 +45,8 @@ struct TestDenseSetInfo {
 };
 
 // Test fixture
-template <typename T> class DenseSetTest : public testing::Test {
+template <typename T> class DenseSetTest : public testing::Test
+{
 protected:
   T Set = GetTestSet();
 
@@ -67,7 +70,8 @@ typedef ::testing::Types<DenseSet<unsigned, TestDenseSetInfo>,
     DenseSetTestTypes;
 TYPED_TEST_CASE(DenseSetTest, DenseSetTestTypes);
 
-TYPED_TEST(DenseSetTest, InitializerList) {
+TYPED_TEST(DenseSetTest, testInitializerList)
+{
   TypeParam set({1, 2, 1, 4});
   EXPECT_EQ(3u, set.getSize());
   EXPECT_EQ(1u, set.count(1));
@@ -76,7 +80,8 @@ TYPED_TEST(DenseSetTest, InitializerList) {
   EXPECT_EQ(0u, set.count(3));
 }
 
-TYPED_TEST(DenseSetTest, ConstIteratorComparison) {
+TYPED_TEST(DenseSetTest, testConstIteratorComparison)
+{
   TypeParam set({1});
   const TypeParam &cset = set;
   EXPECT_EQ(set.begin(), cset.begin());
@@ -85,20 +90,23 @@ TYPED_TEST(DenseSetTest, ConstIteratorComparison) {
   EXPECT_NE(set.begin(), cset.end());
 }
 
-TYPED_TEST(DenseSetTest, DefaultConstruction) {
+TYPED_TEST(DenseSetTest, testDefaultConstruction)
+{
   typename TypeParam::iterator I, J;
   typename TypeParam::const_iterator CI, CJ;
   EXPECT_EQ(I, J);
   EXPECT_EQ(CI, CJ);
 }
 
-TYPED_TEST(DenseSetTest, EmptyInitializerList) {
+TYPED_TEST(DenseSetTest, testEmptyInitializerList)
+{
   TypeParam set({});
   EXPECT_EQ(0u, set.getSize());
   EXPECT_EQ(0u, set.count(0));
 }
 
-TYPED_TEST(DenseSetTest, FindAsTest) {
+TYPED_TEST(DenseSetTest, testFindAsTest)
+{
   auto &set = this->Set;
   // Size tests
   EXPECT_EQ(3u, set.getSize());
@@ -118,7 +126,8 @@ TYPED_TEST(DenseSetTest, FindAsTest) {
 }
 
 // Simple class that counts how many moves and copy happens when growing a map
-struct CountCopyAndMove {
+struct CountCopyAndMove
+{
   static int Move;
   static int Copy;
   int Value;
@@ -169,7 +178,7 @@ template <> struct DenseMapInfo<CountCopyAndMove> {
 namespace {
 // Make sure reserve actually gives us enough buckets to insert N items
 // without increasing allocation size.
-TEST(DenseSetCustomTest, ReserveTest) {
+TEST(DenseSetCustomTest, testReserveTest) {
   // Test a few different size, 48 is *not* a random choice: we need a value
   // that is 2/3 of a power of two to stress the grow() condition, and the power
   // of two has to be at least 64 because of minimum size allocation in the
@@ -190,7 +199,7 @@ TEST(DenseSetCustomTest, ReserveTest) {
     EXPECT_EQ(0, CountCopyAndMove::Copy);
   }
 }
-TEST(DenseSetCustomTest, ConstTest) {
+TEST(DenseSetCustomTest, testConstTest) {
   // Test that const pointers work okay for count and find, even when the
   // underlying map is a non-const pointer.
   DenseSet<int *> Map;
@@ -203,4 +212,5 @@ TEST(DenseSetCustomTest, ConstTest) {
   EXPECT_NE(Map.find(B), Map.end());
   EXPECT_NE(Map.find(C), Map.end());
 }
-}
+
+} // anonymous namespace

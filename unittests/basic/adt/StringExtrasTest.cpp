@@ -17,7 +17,9 @@ using namespace polar::basic;
 
 namespace {
 
-TEST(StringExtrasTest, Join)
+using polar::utils::RawStringOutStream;
+
+TEST(StringExtrasTest, testJoin)
 {
   std::vector<std::string> Items;
   EXPECT_EQ("", join(Items.begin(), Items.end(), " <sep> "));
@@ -33,7 +35,7 @@ TEST(StringExtrasTest, Join)
             join(Items.begin(), Items.end(), " <sep> "));
 }
 
-TEST(StringExtrasTest, JoinItems)
+TEST(StringExtrasTest, testJoinItems)
 {
   const char *Foo = "foo";
   std::string Bar = "bar";
@@ -58,7 +60,7 @@ TEST(StringExtrasTest, JoinItems)
   EXPECT_EQ("foo/bar/baz/x", join_items('/', Foo, Bar, Baz, X));
 }
 
-TEST(StringExtrasTest, ToAndFromHex)
+TEST(StringExtrasTest, testToAndFromHex)
 {
   std::vector<uint8_t> OddBytes = {0x5, 0xBD, 0x0D, 0x3E, 0xCD};
   std::string OddStr = "05BD0D3ECD";
@@ -75,7 +77,7 @@ TEST(StringExtrasTest, ToAndFromHex)
   EXPECT_EQ(EvenData, from_hex(EvenStr));
 }
 
-TEST(StringExtrasTest, to_float)
+TEST(StringExtrasTest, testToFloat)
 {
   float F;
   EXPECT_TRUE(to_float("4.7", F));
@@ -94,14 +96,12 @@ TEST(StringExtrasTest, to_float)
   EXPECT_FLOAT_EQ(4.7f, F); // F should be unchanged
 }
 
-TEST(StringExtrasTest, printLowerCase)
+TEST(StringExtrasTest, testPrintLowerCase)
 {
-   // unittest mark
-//  std::string str;
-//  RawStringOutStream OS(str);
-//  printLowerCase("ABCdefg01234.,&!~`'}\"", OS);
-//  EXPECT_EQ("abcdefg01234.,&!~`'}\"", OS.str());
+  std::string str;
+  RawStringOutStream OS(str);
+  print_lower_case("ABCdefg01234.,&!~`'}\"", OS);
+  EXPECT_EQ("abcdefg01234.,&!~`'}\"", OS.getStr());
 }
 
-}
-
+} // anonymous namespace

@@ -466,18 +466,18 @@ TEST(SimpleIntrusiveListTest, testMerge)
       EXPECT_TRUE(std::is_sorted(L2.begin(), L2.end()));
 
       // Merge.
-      auto &LHS = IsL1LHS ? L1 : L2;
-      auto &RHS = IsL1LHS ? L2 : L1;
-      LHS.merge(RHS);
-      EXPECT_TRUE(RHS.empty());
-      EXPECT_FALSE(LHS.empty());
-      EXPECT_TRUE(std::is_sorted(LHS.begin(), LHS.end()));
-      auto I = LHS.begin();
+      auto &lhs = IsL1LHS ? L1 : L2;
+      auto &rhs = IsL1LHS ? L2 : L1;
+      lhs.merge(rhs);
+      EXPECT_TRUE(rhs.empty());
+      EXPECT_FALSE(lhs.empty());
+      EXPECT_TRUE(std::is_sorted(lhs.begin(), lhs.end()));
+      auto I = lhs.begin();
       for (Node &N : Ns) {
          EXPECT_EQ(&N, &*I++);
       }
 
-      EXPECT_EQ(LHS.end(), I);
+      EXPECT_EQ(lhs.end(), I);
    }
 }
 
@@ -554,16 +554,16 @@ TEST(SimpleIntrusiveListTest, testMergeEmpty)
       EXPECT_TRUE(std::is_sorted(L1.begin(), L1.end()));
 
       // Merge.
-      auto &LHS = IsL1LHS ? L1 : L2;
-      auto &RHS = IsL1LHS ? L2 : L1;
-      LHS.merge(RHS);
-      EXPECT_TRUE(RHS.empty());
-      EXPECT_FALSE(LHS.empty());
-      EXPECT_TRUE(std::is_sorted(LHS.begin(), LHS.end()));
-      auto I = LHS.begin();
+      auto &lhs = IsL1LHS ? L1 : L2;
+      auto &rhs = IsL1LHS ? L2 : L1;
+      lhs.merge(rhs);
+      EXPECT_TRUE(rhs.empty());
+      EXPECT_FALSE(lhs.empty());
+      EXPECT_TRUE(std::is_sorted(lhs.begin(), lhs.end()));
+      auto I = lhs.begin();
       for (Node &N : Ns)
          EXPECT_EQ(&N, &*I++);
-      EXPECT_EQ(LHS.end(), I);
+      EXPECT_EQ(lhs.end(), I);
    }
 }
 

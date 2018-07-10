@@ -15,7 +15,8 @@
 using namespace polar::basic;
 
 namespace {
-enum Flags {
+enum Flags
+{
    F0 = 0,
    F1 = 1,
    F2 = 2,
@@ -24,7 +25,8 @@ enum Flags {
    POLAR_MARK_AS_BITMASK_ENUM(F4)
 };
 
-TEST(BitMaskEnumTest, BitwiseOr) {
+TEST(BitMaskEnumTest, testBitwiseOr)
+{
    Flags f = F1 | F2;
    EXPECT_EQ(3, f);
 
@@ -32,7 +34,8 @@ TEST(BitMaskEnumTest, BitwiseOr) {
    EXPECT_EQ(7, f);
 }
 
-TEST(BitMaskEnumTest, BitwiseOrEquals) {
+TEST(BitMaskEnumTest, testBitwiseOrEquals)
+{
    Flags f = F1;
    f |= F3;
    EXPECT_EQ(5, f);
@@ -43,7 +46,8 @@ TEST(BitMaskEnumTest, BitwiseOrEquals) {
    EXPECT_EQ(F1, f);
 }
 
-TEST(BitMaskEnumTest, BitwiseAnd) {
+TEST(BitMaskEnumTest, testBitwiseAnd)
+{
    Flags f = static_cast<Flags>(3) & F2;
    EXPECT_EQ(F2, f);
 
@@ -51,7 +55,8 @@ TEST(BitMaskEnumTest, BitwiseAnd) {
    EXPECT_EQ(6, f);
 }
 
-TEST(BitMaskEnumTest, BitwiseAndEquals) {
+TEST(BitMaskEnumTest, testBitwiseAndEquals)
+{
    Flags f = F1 | F2 | F3;
    f &= F1 | F2;
    EXPECT_EQ(3, f);
@@ -61,7 +66,8 @@ TEST(BitMaskEnumTest, BitwiseAndEquals) {
    EXPECT_EQ(F3, f);
 }
 
-TEST(BitMaskEnumTest, BitwiseXor) {
+TEST(BitMaskEnumTest, testBitwiseXor)
+{
    Flags f = (F1 | F2) ^ (F2 | F3);
    EXPECT_EQ(5, f);
 
@@ -69,7 +75,8 @@ TEST(BitMaskEnumTest, BitwiseXor) {
    EXPECT_EQ(4, f);
 }
 
-TEST(BitMaskEnumTest, BitwiseXorEquals) {
+TEST(BitMaskEnumTest, testBitwiseXorEquals)
+{
    Flags f = (F1 | F2);
    f ^= (F2 | F4);
    EXPECT_EQ(9, f);
@@ -79,13 +86,15 @@ TEST(BitMaskEnumTest, BitwiseXorEquals) {
    EXPECT_EQ(F3, f);
 }
 
-TEST(BitMaskEnumTest, BitwiseNot) {
+TEST(BitMaskEnumTest, testBitwiseNot)
+{
    Flags f = ~F1;
    EXPECT_EQ(14, f); // Largest value for f is 15.
    EXPECT_EQ(15, ~F0);
 }
 
-enum class FlagsClass {
+enum class FlagsClass
+{
    F0 = 0,
    F1 = 1,
    F2 = 2,
@@ -93,7 +102,7 @@ enum class FlagsClass {
    POLAR_MARK_AS_BITMASK_ENUM(F3)
 };
 
-TEST(BitMaskEnumTest, ScopedEnum) {
+TEST(BitMaskEnumTest, testScopedEnum) {
    FlagsClass f = (FlagsClass::F1 & ~FlagsClass::F0) | FlagsClass::F2;
    f |= FlagsClass::F3;
    EXPECT_EQ(7, static_cast<int>(f));
@@ -109,7 +118,7 @@ struct Container {
    }
 };
 
-TEST(BitMaskEnumTest, EnumInStruct) { EXPECT_EQ(3, Container::getFlags()); }
+TEST(BitMaskEnumTest, testEnumInStruct) { EXPECT_EQ(3, Container::getFlags()); }
 
 } // namespace
 
@@ -128,7 +137,8 @@ enum FlagsInNamespace {
 } // namespace bar
 
 namespace {
-TEST(BitMaskEnumTest, EnumInNamespace) {
+TEST(BitMaskEnumTest, testEnumInNamespace)
+{
    foo::bar::FlagsInNamespace f = ~foo::bar::F0 & (foo::bar::F1 | foo::bar::F2);
    f |= foo::bar::F3;
    EXPECT_EQ(7, f);

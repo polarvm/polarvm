@@ -16,7 +16,8 @@ using namespace polar::basic;
 
 namespace {
 
-template <class T, class... Options> struct PickSentinel {
+template <class T, class... Options> struct PickSentinel
+{
    typedef IntrusiveListSentinel<
    typename ilist_internal::ComputeNodeOptions<T, Options...>::type>
    type;
@@ -41,7 +42,7 @@ TEST(IntrusiveListSentinelTest, testDefaultConstructor)
    Sentinel S;
    EXPECT_EQ(&S, LocalAccess::getPrev(S));
    EXPECT_EQ(&S, LocalAccess::getNext(S));
-#if LLVM_ENABLE_ABI_BREAKING_CHECKS
+#if POLAR_ENABLE_ABI_BREAKING_CHECKS
    EXPECT_TRUE(S.isKnownSentinel());
 #else
    EXPECT_FALSE(S.isKnownSentinel());

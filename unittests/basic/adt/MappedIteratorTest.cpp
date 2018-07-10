@@ -53,4 +53,4 @@ TEST(MappedIteratorTest, testFunctionPreservesReferences)
    EXPECT_EQ(M[1], 42) << "assignment should have modified M";
 }
 
-}
+} // anonymous namespace

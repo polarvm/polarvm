@@ -468,7 +468,7 @@ struct CountCtorCopyAndMove
    }
    CountCtorCopyAndMove &operator=(const CountCtorCopyAndMove &&) {
       Move++;
-//      std::cout << "move copy ctor " << Move<< std::endl;
+      //      std::cout << "move copy ctor " << Move<< std::endl;
       return *this;
    }
 };
@@ -480,7 +480,7 @@ unsigned CountCtorCopyAndMove::Ctor = 0;
 
 // Make sure creating the map with an initial size of N actually gives us enough
 // buckets to insert N items without increasing allocation size.
-TEST(StringMapCustomTest, InitialSizeTest)
+TEST(StringMapCustomTest, testInitialSizeTest)
 {
    // 1 is an "edge value", 32 is an arbitrary power of two, and 67 is an
    // arbitrary prime, picked without any good reason.
@@ -490,9 +490,8 @@ TEST(StringMapCustomTest, InitialSizeTest)
       CountCtorCopyAndMove::Move = 0;
       CountCtorCopyAndMove::Copy = 0;
       for (int i = 0; i < Size; ++i) {
-         // unittest mark
          // current use std::to_string(i) instead of Twine(i).getStr()
-//         std::cout << Twine(i).getStr() << std::endl;
+         std::cout << Twine(i).getStr() << std::endl;
          Map.insert(std::pair<std::string, CountCtorCopyAndMove>(
                        std::piecewise_construct, std::forward_as_tuple(std::to_string(i)),
                        std::forward_as_tuple(i)));
@@ -506,7 +505,7 @@ TEST(StringMapCustomTest, InitialSizeTest)
    }
 }
 
-TEST(StringMapCustomTest, BracketOperatorCtor)
+TEST(StringMapCustomTest, testBracketOperatorCtor)
 {
    StringMap<CountCtorCopyAndMove> Map;
    CountCtorCopyAndMove::Ctor = 0;
@@ -530,7 +529,7 @@ struct NonMoveableNonCopyableType
 }
 
 // Test that we can "emplace" an element in the map without involving map/move
-TEST(StringMapCustomTest, EmplaceTest)
+TEST(StringMapCustomTest, testEmplaceTest)
 {
    StringMap<NonMoveableNonCopyableType> Map;
    Map.tryEmplace("abcd", 42);
@@ -538,4 +537,4 @@ TEST(StringMapCustomTest, EmplaceTest)
    EXPECT_EQ(42, Map["abcd"].Data);
 }
 
-}
+} // anonymous namespace

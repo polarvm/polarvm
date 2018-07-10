@@ -1678,7 +1678,8 @@ TEST(ConvertUtfTest, testUTF8ToUTF32Lenient)
                   "\xef\xb7\xbf"));
 }
 
-TEST(ConvertUtfTest, UTF8ToUTF32PartialLenient) {
+TEST(ConvertUtfTest, testUTF8ToUTF32PartialLenient)
+{
    // U+0041 LATIN CAPITAL LETTER A
    EXPECT_TRUE(check_convert_utf8_to_unicode_scalars(
                   ConvertUTFResultContainer(ConversionResult::ConversionOK).withScalars(0x0041),

@@ -623,8 +623,7 @@ class concat_iterator
             return;
          }
       }
-      // unittest mark
-      // polar_unreachable("Attempted to increment an end concat iterator!");
+      polar_unreachable("Attempted to increment an end concat iterator!");
    }
    
    /// Returns null if the specified iterator is at the end. Otherwise,
@@ -633,9 +632,9 @@ class concat_iterator
    template <size_t Index> ValueT *getHelper() const
    {
       auto &IterPair = std::get<Index>(m_iterPairs);
-      if (IterPair.first == IterPair.second)
+      if (IterPair.first == IterPair.second) {
          return nullptr;
-      
+      }
       return &*IterPair.first;
    }
    
@@ -655,8 +654,7 @@ class concat_iterator
             return *ptr;
          }
       }
-      // unittest mark
-      // polar_unreachable("Attempted to get a pointer from an end concat iterator!");
+      polar_unreachable("Attempted to get a pointer from an end concat iterator!");
    }
    
 public:

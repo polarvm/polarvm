@@ -107,4 +107,4 @@ TEST(PointerIntPairTest, testManyUnusedBits)
              PointerLikeTypeTraits<decltype(pair)>::NumLowBitsAvailable);
 }
 
-}
+} // anonymous namespace

@@ -54,14 +54,14 @@ TEST(PathTest, testWorks)
   EXPECT_FALSE(path::is_separator('-'));
   EXPECT_FALSE(path::is_separator(' '));
 
-//  EXPECT_TRUE(path::is_separator('\\', path::Style::windows));
-//  EXPECT_FALSE(path::is_separator('\\', path::Style::posix));
+  EXPECT_TRUE(path::is_separator('\\', path::Style::windows));
+  EXPECT_FALSE(path::is_separator('\\', path::Style::posix));
 
-//#ifdef POLAR_ON_WIN32
-//  EXPECT_TRUE(path::is_separator('\\'));
-//#else
-//  EXPECT_FALSE(path::is_separator('\\'));
-//#endif
+#ifdef POLAR_ON_WIN32
+  EXPECT_TRUE(path::is_separator('\\'));
+#else
+  EXPECT_FALSE(path::is_separator('\\'));
+#endif
 }
 
 } // anonymous namespace

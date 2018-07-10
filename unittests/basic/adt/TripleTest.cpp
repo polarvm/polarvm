@@ -16,62 +16,63 @@ using namespace polar::basic;
 
 namespace {
 
-TEST(TripleTest, testBasicParsing) {
-//   Triple T;
+TEST(TripleTest, testBasicParsing)
+{
+   Triple T;
 
-//   T = Triple("");
-//   EXPECT_EQ("", T.getArchName().getStr());
-//   EXPECT_EQ("", T.getVendorName().getStr());
-//   EXPECT_EQ("", T.getOSName().getStr());
-//   EXPECT_EQ("", T.getEnvironmentName().getStr());
+   T = Triple("");
+   EXPECT_EQ("", T.getArchName().getStr());
+   EXPECT_EQ("", T.getVendorName().getStr());
+   EXPECT_EQ("", T.getOSName().getStr());
+   EXPECT_EQ("", T.getEnvironmentName().getStr());
 
-//   T = Triple("-");
-//   EXPECT_EQ("", T.getArchName().getStr());
-//   EXPECT_EQ("", T.getVendorName().getStr());
-//   EXPECT_EQ("", T.getOSName().getStr());
-//   EXPECT_EQ("", T.getEnvironmentName().getStr());
+   T = Triple("-");
+   EXPECT_EQ("", T.getArchName().getStr());
+   EXPECT_EQ("", T.getVendorName().getStr());
+   EXPECT_EQ("", T.getOSName().getStr());
+   EXPECT_EQ("", T.getEnvironmentName().getStr());
 
-//   T = Triple("--");
-//   EXPECT_EQ("", T.getArchName().getStr());
-//   EXPECT_EQ("", T.getVendorName().getStr());
-//   EXPECT_EQ("", T.getOSName().getStr());
-//   EXPECT_EQ("", T.getEnvironmentName().getStr());
+   T = Triple("--");
+   EXPECT_EQ("", T.getArchName().getStr());
+   EXPECT_EQ("", T.getVendorName().getStr());
+   EXPECT_EQ("", T.getOSName().getStr());
+   EXPECT_EQ("", T.getEnvironmentName().getStr());
 
-//   T = Triple("---");
-//   EXPECT_EQ("", T.getArchName().getStr());
-//   EXPECT_EQ("", T.getVendorName().getStr());
-//   EXPECT_EQ("", T.getOSName().getStr());
-//   EXPECT_EQ("", T.getEnvironmentName().getStr());
+   T = Triple("---");
+   EXPECT_EQ("", T.getArchName().getStr());
+   EXPECT_EQ("", T.getVendorName().getStr());
+   EXPECT_EQ("", T.getOSName().getStr());
+   EXPECT_EQ("", T.getEnvironmentName().getStr());
 
-//   T = Triple("----");
-//   EXPECT_EQ("", T.getArchName().getStr());
-//   EXPECT_EQ("", T.getVendorName().getStr());
-//   EXPECT_EQ("", T.getOSName().getStr());
-//   EXPECT_EQ("-", T.getEnvironmentName().getStr());
+   T = Triple("----");
+   EXPECT_EQ("", T.getArchName().getStr());
+   EXPECT_EQ("", T.getVendorName().getStr());
+   EXPECT_EQ("", T.getOSName().getStr());
+   EXPECT_EQ("-", T.getEnvironmentName().getStr());
 
-//   T = Triple("a");
-//   EXPECT_EQ("a", T.getArchName().getStr());
-//   EXPECT_EQ("", T.getVendorName().getStr());
-//   EXPECT_EQ("", T.getOSName().getStr());
-//   EXPECT_EQ("", T.getEnvironmentName().getStr());
+   T = Triple("a");
+   EXPECT_EQ("a", T.getArchName().getStr());
+   EXPECT_EQ("", T.getVendorName().getStr());
+   EXPECT_EQ("", T.getOSName().getStr());
+   EXPECT_EQ("", T.getEnvironmentName().getStr());
 
-//   T = Triple("a-b");
-//   EXPECT_EQ("a", T.getArchName().getStr());
-//   EXPECT_EQ("b", T.getVendorName().getStr());
-//   EXPECT_EQ("", T.getOSName().getStr());
-//   EXPECT_EQ("", T.getEnvironmentName().getStr());
+   T = Triple("a-b");
+   EXPECT_EQ("a", T.getArchName().getStr());
+   EXPECT_EQ("b", T.getVendorName().getStr());
+   EXPECT_EQ("", T.getOSName().getStr());
+   EXPECT_EQ("", T.getEnvironmentName().getStr());
 
-//   T = Triple("a-b-c");
-//   EXPECT_EQ("a", T.getArchName().getStr());
-//   EXPECT_EQ("b", T.getVendorName().getStr());
-//   EXPECT_EQ("c", T.getOSName().getStr());
-//   EXPECT_EQ("", T.getEnvironmentName().getStr());
+   T = Triple("a-b-c");
+   EXPECT_EQ("a", T.getArchName().getStr());
+   EXPECT_EQ("b", T.getVendorName().getStr());
+   EXPECT_EQ("c", T.getOSName().getStr());
+   EXPECT_EQ("", T.getEnvironmentName().getStr());
 
-//   T = Triple("a-b-c-d");
-//   EXPECT_EQ("a", T.getArchName().getStr());
-//   EXPECT_EQ("b", T.getVendorName().getStr());
-//   EXPECT_EQ("c", T.getOSName().getStr());
-//   EXPECT_EQ("d", T.getEnvironmentName().getStr());
+   T = Triple("a-b-c-d");
+   EXPECT_EQ("a", T.getArchName().getStr());
+   EXPECT_EQ("b", T.getVendorName().getStr());
+   EXPECT_EQ("c", T.getOSName().getStr());
+   EXPECT_EQ("d", T.getEnvironmentName().getStr());
 }
 
 } // anonymous namespace

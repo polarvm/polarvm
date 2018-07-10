@@ -89,19 +89,17 @@ private:
            iter != end; ++iter)
       {
          if (iter != m_ranges.begin() && prev >= iter->m_lower) {
-            // unittest mark
-//            POLAR_DEBUG(debug_stream() << "m_upper bound 0x");
-//            POLAR_DEBUG(debug_stream().writeHex(prev));
-//            POLAR_DEBUG(debug_stream() << " should be less than succeeding lower bound 0x");
-//            POLAR_DEBUG(debug_stream().writeHex(iter->m_lower) << "\n");
+            POLAR_DEBUG(debug_stream() << "m_upper bound 0x");
+            POLAR_DEBUG(debug_stream().writeHex(prev));
+            POLAR_DEBUG(debug_stream() << " should be less than succeeding lower bound 0x");
+            POLAR_DEBUG(debug_stream().writeHex(iter->m_lower) << "\n");
             return false;
          }
          if (iter->m_upper < iter->m_lower) {
-            // unittest mark
-//            POLAR_DEBUG(debug_stream() << "m_upper bound 0x");
-//            POLAR_DEBUG(debug_stream().writeHex(iter->m_lower));
-//            POLAR_DEBUG(debug_stream() << " should not be less than lower bound 0x");
-//            POLAR_DEBUG(debug_stream().writeHex(iter->m_upper) << "\n");
+            POLAR_DEBUG(debug_stream() << "m_upper bound 0x");
+            POLAR_DEBUG(debug_stream().writeHex(iter->m_lower));
+            POLAR_DEBUG(debug_stream() << " should not be less than lower bound 0x");
+            POLAR_DEBUG(debug_stream().writeHex(iter->m_upper) << "\n");
             return false;
          }
          prev = iter->m_upper;

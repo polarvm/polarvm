@@ -496,8 +496,7 @@ inline void *safe_calloc(size_t count, size_t size)
 {
    void *result = std::calloc(count, size);
    if (result == nullptr) {
-      // unittest mark
-      // report_bad_alloc_error("Allocation failed.");
+      report_bad_alloc_error("Allocation failed.");
    }
    return result;
 }

@@ -232,7 +232,7 @@ SmallVector<Constructable, 5>
 TYPED_TEST_CASE(SmallVectorTest, SmallVectorTestTypes);
 
 // Clear test.
-TYPED_TEST(SmallVectorTest, clearTest)
+TYPED_TEST(SmallVectorTest, testClearTest)
 {
    SCOPED_TRACE("ClearTest");
 
@@ -246,7 +246,7 @@ TYPED_TEST(SmallVectorTest, clearTest)
 }
 
 // Resize smaller test.
-TYPED_TEST(SmallVectorTest, resizeShrinkTest)
+TYPED_TEST(SmallVectorTest, testResizeShrinkTest)
 {
    SCOPED_TRACE("ResizeShrinkTest");
 
@@ -260,7 +260,7 @@ TYPED_TEST(SmallVectorTest, resizeShrinkTest)
 }
 
 // Resize bigger test.
-TYPED_TEST(SmallVectorTest, resizeGrowTest)
+TYPED_TEST(SmallVectorTest, testResizeGrowTest)
 {
    SCOPED_TRACE("ResizeGrowTest");
 
@@ -271,7 +271,7 @@ TYPED_TEST(SmallVectorTest, resizeGrowTest)
    EXPECT_EQ(2u, this->theVector.getSize());
 }
 
-TYPED_TEST(SmallVectorTest, resizeWithElementsTest)
+TYPED_TEST(SmallVectorTest, testResizeWithElementsTest)
 {
    this->theVector.resize(2);
 
@@ -288,7 +288,7 @@ TYPED_TEST(SmallVectorTest, resizeWithElementsTest)
 }
 
 // Resize with fill value.
-TYPED_TEST(SmallVectorTest, resizeFillTest)
+TYPED_TEST(SmallVectorTest, testResizeFillTest)
 {
    SCOPED_TRACE("ResizeFillTest");
 
@@ -297,7 +297,7 @@ TYPED_TEST(SmallVectorTest, resizeFillTest)
 }
 
 // Overflow past fixed size.
-TYPED_TEST(SmallVectorTest, overflowTest)
+TYPED_TEST(SmallVectorTest, testOverflowTest)
 {
    SCOPED_TRACE("OverflowTest");
 
@@ -317,7 +317,7 @@ TYPED_TEST(SmallVectorTest, overflowTest)
 }
 
 // Iteration tests.
-TYPED_TEST(SmallVectorTest, iterationTest)
+TYPED_TEST(SmallVectorTest, testIterationTest)
 {
    this->makeSequence(this->theVector, 1, 2);
 
@@ -357,7 +357,7 @@ TYPED_TEST(SmallVectorTest, iterationTest)
 }
 
 // Swap test.
-TYPED_TEST(SmallVectorTest, swapTest)
+TYPED_TEST(SmallVectorTest, testSwapTest)
 {
    SCOPED_TRACE("SwapTest");
 
@@ -369,7 +369,7 @@ TYPED_TEST(SmallVectorTest, swapTest)
 }
 
 // Append test
-TYPED_TEST(SmallVectorTest, appendTest)
+TYPED_TEST(SmallVectorTest, testAppendTest)
 {
    SCOPED_TRACE("AppendTest");
 
@@ -382,7 +382,7 @@ TYPED_TEST(SmallVectorTest, appendTest)
 }
 
 // Append repeated test
-TYPED_TEST(SmallVectorTest, appendRepeatedTest)
+TYPED_TEST(SmallVectorTest, testAppendRepeatedTest)
 {
    SCOPED_TRACE("AppendRepeatedTest");
 
@@ -392,7 +392,7 @@ TYPED_TEST(SmallVectorTest, appendRepeatedTest)
 }
 
 // Append test
-TYPED_TEST(SmallVectorTest, appendNonIterTest)
+TYPED_TEST(SmallVectorTest, testAppendNonIterTest)
 {
 
    SCOPED_TRACE("AppendRepeatedTest");
@@ -413,7 +413,7 @@ struct output_iterator
    operator Constructable() { return 7; }
 };
 
-TYPED_TEST(SmallVectorTest, appendRepeatedNonForwardIterator)
+TYPED_TEST(SmallVectorTest, testAppendRepeatedNonForwardIterator)
 {
    SCOPED_TRACE("AppendRepeatedTest");
 
@@ -423,7 +423,7 @@ TYPED_TEST(SmallVectorTest, appendRepeatedNonForwardIterator)
 }
 
 // Assign test
-TYPED_TEST(SmallVectorTest, assignTest)
+TYPED_TEST(SmallVectorTest, testAssignTest)
 {
    SCOPED_TRACE("AssignTest");
 
@@ -433,7 +433,7 @@ TYPED_TEST(SmallVectorTest, assignTest)
 }
 
 // Assign test
-TYPED_TEST(SmallVectorTest, assignRangeTest)
+TYPED_TEST(SmallVectorTest, testAssignRangeTest)
 {
    SCOPED_TRACE("AssignTest");
 
@@ -444,7 +444,7 @@ TYPED_TEST(SmallVectorTest, assignRangeTest)
 }
 
 // Assign test
-TYPED_TEST(SmallVectorTest, assignNonIterTest)
+TYPED_TEST(SmallVectorTest, testAssignNonIterTest)
 {
    SCOPED_TRACE("AssignTest");
 
@@ -454,7 +454,7 @@ TYPED_TEST(SmallVectorTest, assignNonIterTest)
 }
 
 // Move-assign test
-TYPED_TEST(SmallVectorTest, moveAssignTest)
+TYPED_TEST(SmallVectorTest, testMoveAssignTest)
 {
    SCOPED_TRACE("MoveAssignTest");
 
@@ -485,7 +485,7 @@ TYPED_TEST(SmallVectorTest, moveAssignTest)
 }
 
 // Erase a single element
-TYPED_TEST(SmallVectorTest, eraseTest)
+TYPED_TEST(SmallVectorTest, testEraseTest)
 {
    SCOPED_TRACE("EraseTest");
 
@@ -496,7 +496,7 @@ TYPED_TEST(SmallVectorTest, eraseTest)
 }
 
 // Erase a range of elements
-TYPED_TEST(SmallVectorTest, eraseRangeTest)
+TYPED_TEST(SmallVectorTest, testEraseRangeTest)
 {
    SCOPED_TRACE("EraseRangeTest");
 
@@ -507,7 +507,7 @@ TYPED_TEST(SmallVectorTest, eraseRangeTest)
 }
 
 // Insert a single element.
-TYPED_TEST(SmallVectorTest, insertTest)
+TYPED_TEST(SmallVectorTest, testInsertTest)
 {
    SCOPED_TRACE("InsertTest");
 
@@ -519,7 +519,7 @@ TYPED_TEST(SmallVectorTest, insertTest)
 }
 
 // Insert a copy of a single element.
-TYPED_TEST(SmallVectorTest, insertCopy)
+TYPED_TEST(SmallVectorTest, testInsertCopy)
 {
    SCOPED_TRACE("InsertTest");
 
@@ -532,7 +532,7 @@ TYPED_TEST(SmallVectorTest, insertCopy)
 }
 
 // Insert repeated elements.
-TYPED_TEST(SmallVectorTest, insertRepeatedTest)
+TYPED_TEST(SmallVectorTest, testInsertRepeatedTest)
 {
    SCOPED_TRACE("InsertRepeatedTest");
 
@@ -557,7 +557,7 @@ TYPED_TEST(SmallVectorTest, insertRepeatedTest)
    this->assertValuesInOrder(this->theVector, 6u, 1, 16, 16, 2, 3, 4);
 }
 
-TYPED_TEST(SmallVectorTest, insertRepeatedNonIterTest)
+TYPED_TEST(SmallVectorTest, testInsertRepeatedNonIterTest)
 {
    SCOPED_TRACE("InsertRepeatedTest");
 
@@ -568,7 +568,7 @@ TYPED_TEST(SmallVectorTest, insertRepeatedNonIterTest)
    this->assertValuesInOrder(this->theVector, 6u, 1, 7, 7, 2, 3, 4);
 }
 
-TYPED_TEST(SmallVectorTest, insertRepeatedAtEndTest)
+TYPED_TEST(SmallVectorTest, testInsertRepeatedAtEndTest)
 {
    SCOPED_TRACE("InsertRepeatedTest");
 
@@ -588,7 +588,7 @@ TYPED_TEST(SmallVectorTest, insertRepeatedAtEndTest)
    this->assertValuesInOrder(this->theVector, 6u, 1, 2, 3, 4, 16, 16);
 }
 
-TYPED_TEST(SmallVectorTest, insertRepeatedEmptyTest)
+TYPED_TEST(SmallVectorTest, testInsertRepeatedEmptyTest)
 {
    SCOPED_TRACE("InsertRepeatedTest");
 
@@ -604,7 +604,7 @@ TYPED_TEST(SmallVectorTest, insertRepeatedEmptyTest)
 }
 
 // Insert range.
-TYPED_TEST(SmallVectorTest, insertRangeTest)
+TYPED_TEST(SmallVectorTest, testInsertRangeTest)
 {
    SCOPED_TRACE("InsertRangeTest");
 
@@ -630,7 +630,7 @@ TYPED_TEST(SmallVectorTest, insertRangeTest)
 }
 
 
-TYPED_TEST(SmallVectorTest, insertRangeAtEndTest)
+TYPED_TEST(SmallVectorTest, testInsertRangeAtEndTest)
 {
    SCOPED_TRACE("InsertRangeTest");
 
@@ -656,7 +656,7 @@ TYPED_TEST(SmallVectorTest, insertRangeAtEndTest)
                              1, 2, 3, 77, 77, 77);
 }
 
-TYPED_TEST(SmallVectorTest, insertEmptyRangeTest)
+TYPED_TEST(SmallVectorTest, testInsertEmptyRangeTest)
 {
    SCOPED_TRACE("InsertRangeTest");
 
@@ -674,7 +674,7 @@ TYPED_TEST(SmallVectorTest, insertEmptyRangeTest)
 }
 
 // Comparison tests.
-TYPED_TEST(SmallVectorTest, comparisonTest)
+TYPED_TEST(SmallVectorTest, testComparisonTest)
 {
    SCOPED_TRACE("ComparisonTest");
 
@@ -692,7 +692,7 @@ TYPED_TEST(SmallVectorTest, comparisonTest)
 }
 
 // Constant vector tests.
-TYPED_TEST(SmallVectorTest, constVectorTest)
+TYPED_TEST(SmallVectorTest, testConstVectorTest)
 {
    const TypeParam constVector;
 
@@ -702,7 +702,7 @@ TYPED_TEST(SmallVectorTest, constVectorTest)
 }
 
 // Direct array access.
-TYPED_TEST(SmallVectorTest, directVectorTest)
+TYPED_TEST(SmallVectorTest, testDirectVectorTest)
 {
    EXPECT_EQ(0u, this->theVector.getSize());
    this->theVector.reserve(4);
@@ -720,7 +720,8 @@ TYPED_TEST(SmallVectorTest, directVectorTest)
    EXPECT_EQ(4, this->theVector[3].getValue());
 }
 
-TYPED_TEST(SmallVectorTest, IteratorTest) {
+TYPED_TEST(SmallVectorTest, testIteratorTest)
+{
    std::list<int> L;
    this->theVector.insert(this->theVector.end(), L.begin(), L.end());
 }
@@ -750,7 +751,8 @@ std::pair<SmallVector<Constructable, 2>, SmallVector<Constructable, 2>>
 
 TYPED_TEST_CASE(DualSmallVectorsTest, DualSmallVectorTestTypes);
 
-TYPED_TEST(DualSmallVectorsTest, MoveAssignment) {
+TYPED_TEST(DualSmallVectorsTest, testMoveAssignment)
+{
    SCOPED_TRACE("MoveAssignTest-DualVectorTypes");
 
    // Set up our vector with four elements.
@@ -786,12 +788,14 @@ TYPED_TEST(DualSmallVectorsTest, MoveAssignment) {
    EXPECT_EQ(Constructable::getNumCopyConstructorCalls(), 0);
 }
 
-struct notassignable {
+struct notassignable
+{
    int &x;
    notassignable(int &x) : x(x) {}
 };
 
-TEST(SmallVectorCustomTest, NoAssignTest) {
+TEST(SmallVectorCustomTest, testNoAssignTest)
+{
    int x = 0;
    SmallVector<notassignable, 2> vec;
    vec.push_back(notassignable(x));
@@ -799,7 +803,8 @@ TEST(SmallVectorCustomTest, NoAssignTest) {
    EXPECT_EQ(42, vec.popBackValue().x);
 }
 
-struct MovedFrom {
+struct MovedFrom
+{
    bool hasValue;
    MovedFrom() : hasValue(true) {
    }
@@ -813,7 +818,8 @@ struct MovedFrom {
    }
 };
 
-TEST(SmallVectorTest, MidInsert) {
+TEST(SmallVectorTest, testMidInsert)
+{
    SmallVector<MovedFrom, 3> v;
    v.push_back(MovedFrom());
    v.insert(v.begin(), MovedFrom());
@@ -821,14 +827,16 @@ TEST(SmallVectorTest, MidInsert) {
       EXPECT_TRUE(m.hasValue);
 }
 
-enum EmplaceableArgState {
+enum EmplaceableArgState
+{
    EAS_Defaulted,
    EAS_Arg,
    EAS_LValue,
    EAS_RValue,
    EAS_Failure
 };
-template <int I> struct EmplaceableArg {
+template <int I> struct EmplaceableArg
+{
    EmplaceableArgState State;
    EmplaceableArg() : State(EAS_Defaulted) {}
    EmplaceableArg(EmplaceableArg &&X)
@@ -884,7 +892,8 @@ private:
    Emplaceable &operator=(const Emplaceable &) = delete;
 };
 
-TEST(SmallVectorTest, EmplaceBack) {
+TEST(SmallVectorTest, testEmplaceBack)
+{
    EmplaceableArg<0> A0(true);
    EmplaceableArg<1> A1(true);
    EmplaceableArg<2> A2(true);
@@ -959,7 +968,7 @@ TEST(SmallVectorTest, EmplaceBack) {
    }
 }
 
-TEST(SmallVectorTest, InitializerList)
+TEST(SmallVectorTest, testInitializerList)
 {
    SmallVector<int, 2> V1 = {};
    EXPECT_TRUE(V1.empty());

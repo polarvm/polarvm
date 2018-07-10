@@ -42,14 +42,14 @@ TEST(IntervalMapTest, testEmptyMap)
   EXPECT_FALSE(map.end() != map.end());
   EXPECT_FALSE(map.begin().valid());
   EXPECT_FALSE(map.end().valid());
-  UUMap::Iterator I = map.begin();
-  EXPECT_FALSE(I.valid());
-  EXPECT_TRUE(I == map.end());
+  UUMap::Iterator iter = map.begin();
+  EXPECT_FALSE(iter.valid());
+  EXPECT_TRUE(iter == map.end());
 
   // Default constructor and cross-constness compares.
   UUMap::ConstIterator CI;
   CI = map.begin();
-  EXPECT_TRUE(CI == I);
+  EXPECT_TRUE(CI == iter);
   UUMap::Iterator I2;
   I2 = map.end();
   EXPECT_TRUE(I2 == CI);
@@ -83,76 +83,76 @@ TEST(IntervalMapTest, testSingleEntryMap)
   EXPECT_FALSE(map.end().valid());
 
   // Iter deref.
-  UUMap::Iterator I = map.begin();
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(100u, I.start());
-  EXPECT_EQ(150u, I.stop());
-  EXPECT_EQ(1u, I.value());
+  UUMap::Iterator iter = map.begin();
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(100u, iter.start());
+  EXPECT_EQ(150u, iter.stop());
+  EXPECT_EQ(1u, iter.value());
 
   // Preincrement.
-  ++I;
-  EXPECT_FALSE(I.valid());
-  EXPECT_FALSE(I == map.begin());
-  EXPECT_TRUE(I == map.end());
+  ++iter;
+  EXPECT_FALSE(iter.valid());
+  EXPECT_FALSE(iter == map.begin());
+  EXPECT_TRUE(iter == map.end());
 
   // PreDecrement.
-  --I;
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(100u, I.start());
-  EXPECT_EQ(150u, I.stop());
-  EXPECT_EQ(1u, I.value());
-  EXPECT_TRUE(I == map.begin());
-  EXPECT_FALSE(I == map.end());
+  --iter;
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(100u, iter.start());
+  EXPECT_EQ(150u, iter.stop());
+  EXPECT_EQ(1u, iter.value());
+  EXPECT_TRUE(iter == map.begin());
+  EXPECT_FALSE(iter == map.end());
 
   // Change the value.
-  I.setValue(2);
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(100u, I.start());
-  EXPECT_EQ(150u, I.stop());
-  EXPECT_EQ(2u, I.value());
+  iter.setValue(2);
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(100u, iter.start());
+  EXPECT_EQ(150u, iter.stop());
+  EXPECT_EQ(2u, iter.value());
 
   // Grow the bounds.
-  I.setStart(0);
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(0u, I.start());
-  EXPECT_EQ(150u, I.stop());
-  EXPECT_EQ(2u, I.value());
+  iter.setStart(0);
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(0u, iter.start());
+  EXPECT_EQ(150u, iter.stop());
+  EXPECT_EQ(2u, iter.value());
 
-  I.setStop(200);
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(0u, I.start());
-  EXPECT_EQ(200u, I.stop());
-  EXPECT_EQ(2u, I.value());
+  iter.setStop(200);
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(0u, iter.start());
+  EXPECT_EQ(200u, iter.stop());
+  EXPECT_EQ(2u, iter.value());
 
   // Shrink the bounds.
-  I.setStart(150);
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(150u, I.start());
-  EXPECT_EQ(200u, I.stop());
-  EXPECT_EQ(2u, I.value());
+  iter.setStart(150);
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(150u, iter.start());
+  EXPECT_EQ(200u, iter.stop());
+  EXPECT_EQ(2u, iter.value());
 
   // Shrink the interval to have a length of 1
-  I.setStop(150);
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(150u, I.start());
-  EXPECT_EQ(150u, I.stop());
-  EXPECT_EQ(2u, I.value());
+  iter.setStop(150);
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(150u, iter.start());
+  EXPECT_EQ(150u, iter.stop());
+  EXPECT_EQ(2u, iter.value());
 
-  I.setStop(160);
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(150u, I.start());
-  EXPECT_EQ(160u, I.stop());
-  EXPECT_EQ(2u, I.value());
+  iter.setStop(160);
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(150u, iter.start());
+  EXPECT_EQ(160u, iter.stop());
+  EXPECT_EQ(2u, iter.value());
 
   // Shrink the interval to have a length of 1
-  I.setStart(160);
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(160u, I.start());
-  EXPECT_EQ(160u, I.stop());
-  EXPECT_EQ(2u, I.value());
+  iter.setStart(160);
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(160u, iter.start());
+  EXPECT_EQ(160u, iter.stop());
+  EXPECT_EQ(2u, iter.value());
 
   // Erase last elem.
-  I.erase();
+  iter.erase();
   EXPECT_TRUE(map.empty());
   EXPECT_EQ(0, std::distance(map.begin(), map.end()));
 }
@@ -165,28 +165,28 @@ TEST(IntervalMapTest, testSingleEntryHalfOpenMap)
   map.insert(100, 150, 1);
   EXPECT_FALSE(map.empty());
 
-  UUHalfOpenMap::Iterator I = map.begin();
-  ASSERT_TRUE(I.valid());
+  UUHalfOpenMap::Iterator iter = map.begin();
+  ASSERT_TRUE(iter.valid());
 
   // Shrink the interval to have a length of 1
-  I.setStart(149);
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(149u, I.start());
-  EXPECT_EQ(150u, I.stop());
-  EXPECT_EQ(1u, I.value());
+  iter.setStart(149);
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(149u, iter.start());
+  EXPECT_EQ(150u, iter.stop());
+  EXPECT_EQ(1u, iter.value());
 
-  I.setStop(160);
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(149u, I.start());
-  EXPECT_EQ(160u, I.stop());
-  EXPECT_EQ(1u, I.value());
+  iter.setStop(160);
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(149u, iter.start());
+  EXPECT_EQ(160u, iter.stop());
+  EXPECT_EQ(1u, iter.value());
 
   // Shrink the interval to have a length of 1
-  I.setStop(150);
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(149u, I.start());
-  EXPECT_EQ(150u, I.stop());
-  EXPECT_EQ(1u, I.value());
+  iter.setStop(150);
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(149u, iter.start());
+  EXPECT_EQ(150u, iter.stop());
+  EXPECT_EQ(1u, iter.value());
 }
 
 // Flat coalescing tests.
@@ -216,16 +216,16 @@ TEST(IntervalMapTest, testRootCoalescing)
   EXPECT_EQ(2u, map.lookup(89));
   EXPECT_EQ(1u, map.lookup(90));
 
-  UUMap::Iterator I = map.begin();
-  EXPECT_EQ(60u, I.start());
-  EXPECT_EQ(89u, I.stop());
-  EXPECT_EQ(2u, I.value());
-  ++I;
-  EXPECT_EQ(90u, I.start());
-  EXPECT_EQ(200u, I.stop());
-  EXPECT_EQ(1u, I.value());
-  ++I;
-  EXPECT_FALSE(I.valid());
+  UUMap::Iterator iter = map.begin();
+  EXPECT_EQ(60u, iter.start());
+  EXPECT_EQ(89u, iter.stop());
+  EXPECT_EQ(2u, iter.value());
+  ++iter;
+  EXPECT_EQ(90u, iter.start());
+  EXPECT_EQ(200u, iter.stop());
+  EXPECT_EQ(1u, iter.value());
+  ++iter;
+  EXPECT_FALSE(iter.valid());
 
   // Non-coalesce from the right.
   map.insert(201, 210, 2);
@@ -253,11 +253,11 @@ TEST(IntervalMapTest, testRootCoalescing)
   EXPECT_EQ(3, std::distance(map.begin(), map.end()));
   (++map.begin()).setValue(2);
   EXPECT_EQ(1, std::distance(map.begin(), map.end()));
-  I = map.begin();
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(80u, I.start());
-  EXPECT_EQ(210u, I.stop());
-  EXPECT_EQ(2u, I.value());
+  iter = map.begin();
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(80u, iter.start());
+  EXPECT_EQ(210u, iter.stop());
+  EXPECT_EQ(2u, iter.value());
 }
 
 // Flat multi-coalescing tests.
@@ -274,100 +274,100 @@ TEST(IntervalMapTest, testRootMultiCoalescing)
   EXPECT_EQ(170u, map.stop());
 
   // Verify inserts.
-  UUMap::Iterator I = map.begin();
-  EXPECT_EQ(100u, I.start());
-  EXPECT_EQ(110u, I.stop());
-  ++I;
-  EXPECT_EQ(120u, I.start());
-  EXPECT_EQ(130u, I.stop());
-  ++I;
-  EXPECT_EQ(140u, I.start());
-  EXPECT_EQ(150u, I.stop());
-  ++I;
-  EXPECT_EQ(160u, I.start());
-  EXPECT_EQ(170u, I.stop());
-  ++I;
-  EXPECT_FALSE(I.valid());
+  UUMap::Iterator iter = map.begin();
+  EXPECT_EQ(100u, iter.start());
+  EXPECT_EQ(110u, iter.stop());
+  ++iter;
+  EXPECT_EQ(120u, iter.start());
+  EXPECT_EQ(130u, iter.stop());
+  ++iter;
+  EXPECT_EQ(140u, iter.start());
+  EXPECT_EQ(150u, iter.stop());
+  ++iter;
+  EXPECT_EQ(160u, iter.start());
+  EXPECT_EQ(170u, iter.stop());
+  ++iter;
+  EXPECT_FALSE(iter.valid());
 
   // Test advanceTo on flat tree.
-  I = map.begin();
-  I.advanceTo(135);
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(140u, I.start());
-  EXPECT_EQ(150u, I.stop());
+  iter = map.begin();
+  iter.advanceTo(135);
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(140u, iter.start());
+  EXPECT_EQ(150u, iter.stop());
 
-  I.advanceTo(145);
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(140u, I.start());
-  EXPECT_EQ(150u, I.stop());
+  iter.advanceTo(145);
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(140u, iter.start());
+  EXPECT_EQ(150u, iter.stop());
 
-  I.advanceTo(200);
-  EXPECT_FALSE(I.valid());
+  iter.advanceTo(200);
+  EXPECT_FALSE(iter.valid());
 
-  I.advanceTo(300);
-  EXPECT_FALSE(I.valid());
+  iter.advanceTo(300);
+  EXPECT_FALSE(iter.valid());
 
   // Coalesce left with followers.
   // [100;110] [120;130] [140;150] [160;170]
   map.insert(111, 115, 1);
-  I = map.begin();
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(100u, I.start());
-  EXPECT_EQ(115u, I.stop());
-  ++I;
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(120u, I.start());
-  EXPECT_EQ(130u, I.stop());
-  ++I;
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(140u, I.start());
-  EXPECT_EQ(150u, I.stop());
-  ++I;
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(160u, I.start());
-  EXPECT_EQ(170u, I.stop());
-  ++I;
-  EXPECT_FALSE(I.valid());
+  iter = map.begin();
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(100u, iter.start());
+  EXPECT_EQ(115u, iter.stop());
+  ++iter;
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(120u, iter.start());
+  EXPECT_EQ(130u, iter.stop());
+  ++iter;
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(140u, iter.start());
+  EXPECT_EQ(150u, iter.stop());
+  ++iter;
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(160u, iter.start());
+  EXPECT_EQ(170u, iter.stop());
+  ++iter;
+  EXPECT_FALSE(iter.valid());
 
   // Coalesce right with followers.
   // [100;115] [120;130] [140;150] [160;170]
   map.insert(135, 139, 1);
-  I = map.begin();
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(100u, I.start());
-  EXPECT_EQ(115u, I.stop());
-  ++I;
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(120u, I.start());
-  EXPECT_EQ(130u, I.stop());
-  ++I;
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(135u, I.start());
-  EXPECT_EQ(150u, I.stop());
-  ++I;
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(160u, I.start());
-  EXPECT_EQ(170u, I.stop());
-  ++I;
-  EXPECT_FALSE(I.valid());
+  iter = map.begin();
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(100u, iter.start());
+  EXPECT_EQ(115u, iter.stop());
+  ++iter;
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(120u, iter.start());
+  EXPECT_EQ(130u, iter.stop());
+  ++iter;
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(135u, iter.start());
+  EXPECT_EQ(150u, iter.stop());
+  ++iter;
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(160u, iter.start());
+  EXPECT_EQ(170u, iter.stop());
+  ++iter;
+  EXPECT_FALSE(iter.valid());
 
   // Coalesce left and right with followers.
   // [100;115] [120;130] [135;150] [160;170]
   map.insert(131, 134, 1);
-  I = map.begin();
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(100u, I.start());
-  EXPECT_EQ(115u, I.stop());
-  ++I;
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(120u, I.start());
-  EXPECT_EQ(150u, I.stop());
-  ++I;
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(160u, I.start());
-  EXPECT_EQ(170u, I.stop());
-  ++I;
-  EXPECT_FALSE(I.valid());
+  iter = map.begin();
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(100u, iter.start());
+  EXPECT_EQ(115u, iter.stop());
+  ++iter;
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(120u, iter.start());
+  EXPECT_EQ(150u, iter.stop());
+  ++iter;
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(160u, iter.start());
+  EXPECT_EQ(170u, iter.stop());
+  ++iter;
+  EXPECT_FALSE(iter.valid());
 
   // Test clear() on non-branched map.
   map.clear();
@@ -403,113 +403,113 @@ TEST(IntervalMapTest, testBranched)
   }
 
   // Forward iteration.
-  UUMap::Iterator I = map.begin();
+  UUMap::Iterator iter = map.begin();
   for (unsigned i = 1; i < 100; ++i) {
-    ASSERT_TRUE(I.valid());
-    EXPECT_EQ(10*i, I.start());
-    EXPECT_EQ(10*i+5, I.stop());
-    EXPECT_EQ(i, *I);
-    ++I;
+    ASSERT_TRUE(iter.valid());
+    EXPECT_EQ(10*i, iter.start());
+    EXPECT_EQ(10*i+5, iter.stop());
+    EXPECT_EQ(i, *iter);
+    ++iter;
   }
-  EXPECT_FALSE(I.valid());
-  EXPECT_TRUE(I == map.end());
+  EXPECT_FALSE(iter.valid());
+  EXPECT_TRUE(iter == map.end());
 
   // Backwards iteration.
   for (unsigned i = 99; i; --i) {
-    --I;
-    ASSERT_TRUE(I.valid());
-    EXPECT_EQ(10*i, I.start());
-    EXPECT_EQ(10*i+5, I.stop());
-    EXPECT_EQ(i, *I);
+    --iter;
+    ASSERT_TRUE(iter.valid());
+    EXPECT_EQ(10*i, iter.start());
+    EXPECT_EQ(10*i+5, iter.stop());
+    EXPECT_EQ(i, *iter);
   }
-  EXPECT_TRUE(I == map.begin());
+  EXPECT_TRUE(iter == map.begin());
 
   // Test advanceTo in same node.
-  I.advanceTo(20);
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(20u, I.start());
-  EXPECT_EQ(25u, I.stop());
+  iter.advanceTo(20);
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(20u, iter.start());
+  EXPECT_EQ(25u, iter.stop());
 
   // Change value, no coalescing.
-  I.setValue(0);
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(20u, I.start());
-  EXPECT_EQ(25u, I.stop());
-  EXPECT_EQ(0u, I.value());
+  iter.setValue(0);
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(20u, iter.start());
+  EXPECT_EQ(25u, iter.stop());
+  EXPECT_EQ(0u, iter.value());
 
   // Close the gap right, no coalescing.
-  I.setStop(29);
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(20u, I.start());
-  EXPECT_EQ(29u, I.stop());
-  EXPECT_EQ(0u, I.value());
+  iter.setStop(29);
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(20u, iter.start());
+  EXPECT_EQ(29u, iter.stop());
+  EXPECT_EQ(0u, iter.value());
 
   // Change value, no coalescing.
-  I.setValue(2);
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(20u, I.start());
-  EXPECT_EQ(29u, I.stop());
-  EXPECT_EQ(2u, I.value());
+  iter.setValue(2);
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(20u, iter.start());
+  EXPECT_EQ(29u, iter.stop());
+  EXPECT_EQ(2u, iter.value());
 
   // Change value, now coalescing.
-  I.setValue(3);
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(20u, I.start());
-  EXPECT_EQ(35u, I.stop());
-  EXPECT_EQ(3u, I.value());
+  iter.setValue(3);
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(20u, iter.start());
+  EXPECT_EQ(35u, iter.stop());
+  EXPECT_EQ(3u, iter.value());
 
   // Close the gap, now coalescing.
-  I.setValue(4);
-  ASSERT_TRUE(I.valid());
-  I.setStop(39);
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(20u, I.start());
-  EXPECT_EQ(45u, I.stop());
-  EXPECT_EQ(4u, I.value());
+  iter.setValue(4);
+  ASSERT_TRUE(iter.valid());
+  iter.setStop(39);
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(20u, iter.start());
+  EXPECT_EQ(45u, iter.stop());
+  EXPECT_EQ(4u, iter.value());
 
   // advanceTo another node.
-  I.advanceTo(200);
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(200u, I.start());
-  EXPECT_EQ(205u, I.stop());
+  iter.advanceTo(200);
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(200u, iter.start());
+  EXPECT_EQ(205u, iter.stop());
 
   // Close the gap left, no coalescing.
-  I.setStart(196);
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(196u, I.start());
-  EXPECT_EQ(205u, I.stop());
-  EXPECT_EQ(20u, I.value());
+  iter.setStart(196);
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(196u, iter.start());
+  EXPECT_EQ(205u, iter.stop());
+  EXPECT_EQ(20u, iter.value());
 
   // Change value, no coalescing.
-  I.setValue(0);
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(196u, I.start());
-  EXPECT_EQ(205u, I.stop());
-  EXPECT_EQ(0u, I.value());
+  iter.setValue(0);
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(196u, iter.start());
+  EXPECT_EQ(205u, iter.stop());
+  EXPECT_EQ(0u, iter.value());
 
   // Change value, now coalescing.
-  I.setValue(19);
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(190u, I.start());
-  EXPECT_EQ(205u, I.stop());
-  EXPECT_EQ(19u, I.value());
+  iter.setValue(19);
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(190u, iter.start());
+  EXPECT_EQ(205u, iter.stop());
+  EXPECT_EQ(19u, iter.value());
 
   // Close the gap, now coalescing.
-  I.setValue(18);
-  ASSERT_TRUE(I.valid());
-  I.setStart(186);
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(180u, I.start());
-  EXPECT_EQ(205u, I.stop());
-  EXPECT_EQ(18u, I.value());
+  iter.setValue(18);
+  ASSERT_TRUE(iter.valid());
+  iter.setStart(186);
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(180u, iter.start());
+  EXPECT_EQ(205u, iter.stop());
+  EXPECT_EQ(18u, iter.value());
 
   // Erase from the front.
-  I = map.begin();
+  iter = map.begin();
   for (unsigned i = 0; i != 20; ++i) {
-    I.erase();
-    EXPECT_TRUE(I == map.begin());
+    iter.erase();
+    EXPECT_TRUE(iter == map.begin());
     EXPECT_FALSE(map.empty());
-    EXPECT_EQ(I.start(), map.start());
+    EXPECT_EQ(iter.start(), map.start());
     EXPECT_EQ(995u, map.stop());
   }
 
@@ -543,52 +543,52 @@ TEST(IntervalMapTest, testBranched2)
   }
 
   // Forward iteration.
-  UUMap::Iterator I = map.begin();
+  UUMap::Iterator iter = map.begin();
   for (unsigned i = 1; i < 1000; ++i) {
-    ASSERT_TRUE(I.valid());
-    EXPECT_EQ(10*i, I.start());
-    EXPECT_EQ(10*i+5, I.stop());
-    EXPECT_EQ(i, *I);
-    ++I;
+    ASSERT_TRUE(iter.valid());
+    EXPECT_EQ(10*i, iter.start());
+    EXPECT_EQ(10*i+5, iter.stop());
+    EXPECT_EQ(i, *iter);
+    ++iter;
   }
-  EXPECT_FALSE(I.valid());
-  EXPECT_TRUE(I == map.end());
+  EXPECT_FALSE(iter.valid());
+  EXPECT_TRUE(iter == map.end());
 
   // Backwards iteration.
   for (unsigned i = 999; i; --i) {
-    --I;
-    ASSERT_TRUE(I.valid());
-    EXPECT_EQ(10*i, I.start());
-    EXPECT_EQ(10*i+5, I.stop());
-    EXPECT_EQ(i, *I);
+    --iter;
+    ASSERT_TRUE(iter.valid());
+    EXPECT_EQ(10*i, iter.start());
+    EXPECT_EQ(10*i+5, iter.stop());
+    EXPECT_EQ(i, *iter);
   }
-  EXPECT_TRUE(I == map.begin());
+  EXPECT_TRUE(iter == map.begin());
 
   // Test advanceTo in same node.
-  I.advanceTo(20);
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(20u, I.start());
-  EXPECT_EQ(25u, I.stop());
+  iter.advanceTo(20);
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(20u, iter.start());
+  EXPECT_EQ(25u, iter.stop());
 
   // advanceTo sibling leaf node.
-  I.advanceTo(200);
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(200u, I.start());
-  EXPECT_EQ(205u, I.stop());
+  iter.advanceTo(200);
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(200u, iter.start());
+  EXPECT_EQ(205u, iter.stop());
 
   // advanceTo further.
-  I.advanceTo(2000);
-  ASSERT_TRUE(I.valid());
-  EXPECT_EQ(2000u, I.start());
-  EXPECT_EQ(2005u, I.stop());
+  iter.advanceTo(2000);
+  ASSERT_TRUE(iter.valid());
+  EXPECT_EQ(2000u, iter.start());
+  EXPECT_EQ(2005u, iter.stop());
 
   // advanceTo beyond end()
-  I.advanceTo(20000);
-  EXPECT_FALSE(I.valid());
+  iter.advanceTo(20000);
+  EXPECT_FALSE(iter.valid());
 
   // end().advanceTo() is valid as long as x > map.stop()
-  I.advanceTo(30000);
-  EXPECT_FALSE(I.valid());
+  iter.advanceTo(30000);
+  EXPECT_FALSE(iter.valid());
 
   // Test clear() on branched map.
   map.clear();

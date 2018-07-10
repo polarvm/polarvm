@@ -1082,8 +1082,7 @@ public:
       if (usesLayout<DoubleApFloat>(getSemantics())) {
          return m_storage.m_dvalue.add(other.m_storage.m_dvalue, rmode);
       }
-      // unittest mark
-      // polar_unreachable("Unexpected semantics");
+      polar_unreachable("Unexpected semantics");
    }
 
    OpStatus subtract(const ApFloat &other, RoundingMode rmode)
@@ -1310,8 +1309,7 @@ public:
       if (usesLayout<DoubleApFloat>(getSemantics())) {
          return m_storage.m_dvalue.compare(other.m_storage.m_dvalue);
       }
-      // unittest mark
-      // polar_unreachable("Unexpected semantics");
+      polar_unreachable("Unexpected semantics");
    }
 
    bool bitwiseIsEqual(const ApFloat &other) const
@@ -1475,8 +1473,7 @@ inline ApFloat scalbn(ApFloat x, int exp, ApFloat::RoundingMode rmode)
    if (ApFloat::usesLayout<internal::DoubleApFloat>(x.getSemantics())) {
       return ApFloat(scalbn(x.m_storage.m_dvalue, exp, rmode), x.getSemantics());
    }
-   // unittest mark
-   // polar_unreachable("Unexpected semantics");
+   polar_unreachable("Unexpected semantics");
 }
 
 /// Equivalent of C standard library function.

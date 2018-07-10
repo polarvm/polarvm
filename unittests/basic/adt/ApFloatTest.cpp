@@ -467,7 +467,8 @@ TEST(ApFloatTest, testNext)
    EXPECT_TRUE(test.bitwiseIsEqual(expected));
 }
 
-TEST(ApFloatTest, testFMA) {
+TEST(ApFloatTest, testFMA)
+{
    ApFloat::RoundingMode rdmd = ApFloat::RoundingMode::rmNearestTiesToEven;
 
    {
@@ -567,7 +568,7 @@ TEST(ApFloatTest, testMaxNum)
    EXPECT_EQ(1.0, maxnum(nan, f1).convertToDouble());
 }
 
-TEST(ApFloatTest, Denormal)
+TEST(ApFloatTest, testDenormal)
 {
    ApFloat::RoundingMode rdmd = ApFloat::RoundingMode::rmNearestTiesToEven;
 
@@ -657,7 +658,7 @@ TEST(ApFloatTest, testDecimalStringsWithoutNullTerminators)
 
 }
 
-TEST(ApFloatTest, fromZeroDecimalString)
+TEST(ApFloatTest, testFromZeroDecimalString)
 {
    EXPECT_EQ( 0.0, ApFloat(ApFloat::getIEEEdouble(),  "0").convertToDouble());
    EXPECT_EQ(+0.0, ApFloat(ApFloat::getIEEEdouble(), "+0").convertToDouble());
@@ -688,7 +689,8 @@ TEST(ApFloatTest, fromZeroDecimalString)
    EXPECT_EQ(-0.0, ApFloat(ApFloat::getIEEEdouble(), "-0000.00000").convertToDouble());
 }
 
-TEST(ApFloatTest, fromZeroDecimalSingleExponentString) {
+TEST(ApFloatTest, testFromZeroDecimalSingleExponentString)
+{
    EXPECT_EQ( 0.0, ApFloat(ApFloat::getIEEEdouble(),   "0e1").convertToDouble());
    EXPECT_EQ(+0.0, ApFloat(ApFloat::getIEEEdouble(),  "+0e1").convertToDouble());
    EXPECT_EQ(-0.0, ApFloat(ApFloat::getIEEEdouble(),  "-0e1").convertToDouble());
@@ -745,7 +747,8 @@ TEST(ApFloatTest, fromZeroDecimalSingleExponentString) {
    EXPECT_EQ(-0.0, ApFloat(ApFloat::getIEEEdouble(), "-000.0000e+1").convertToDouble());
 }
 
-TEST(ApFloatTest, fromZeroDecimalLargeExponentString) {
+TEST(ApFloatTest, testFromZeroDecimalLargeExponentString)
+{
    EXPECT_EQ( 0.0, ApFloat(ApFloat::getIEEEdouble(),  "0e1234").convertToDouble());
    EXPECT_EQ(+0.0, ApFloat(ApFloat::getIEEEdouble(), "+0e1234").convertToDouble());
    EXPECT_EQ(-0.0, ApFloat(ApFloat::getIEEEdouble(), "-0e1234").convertToDouble());
@@ -764,7 +767,8 @@ TEST(ApFloatTest, fromZeroDecimalLargeExponentString) {
    EXPECT_EQ(0.0,  ApFloat(ApFloat::getIEEEdouble(), StringRef("0e1234" "\0" "2", 6)).convertToDouble());
 }
 
-TEST(ApFloatTest, fromZeroHexadecimalString) {
+TEST(ApFloatTest, testFromZeroHexadecimalString)
+{
    EXPECT_EQ( 0.0, ApFloat(ApFloat::getIEEEdouble(),  "0x0p1").convertToDouble());
    EXPECT_EQ(+0.0, ApFloat(ApFloat::getIEEEdouble(), "+0x0p1").convertToDouble());
    EXPECT_EQ(-0.0, ApFloat(ApFloat::getIEEEdouble(), "-0x0p1").convertToDouble());
@@ -1169,7 +1173,7 @@ TEST(ApFloatTest, StringDecimalExponentDeath)
    EXPECT_DEATH(ApFloat(ApFloat::getIEEEdouble(), "1.0e-"), "Exponent has no digits");
 }
 
-TEST(ApFloatTest, StringHexadecimalDeath)
+TEST(ApFloatTest, testStringHexadecimalDeath)
 {
    EXPECT_DEATH(ApFloat(ApFloat::getIEEEdouble(),  "0x"), "Invalid string");
    EXPECT_DEATH(ApFloat(ApFloat::getIEEEdouble(), "+0x"), "Invalid string");
@@ -1206,7 +1210,7 @@ TEST(ApFloatTest, StringHexadecimalDeath)
    EXPECT_DEATH(ApFloat(ApFloat::getIEEEdouble(), "0x1.0.0p1"), "String contains multiple dots");
 }
 
-TEST(ApFloatTest, StringHexadecimalSignificandDeath)
+TEST(ApFloatTest, testStringHexadecimalSignificandDeath)
 {
    EXPECT_DEATH(ApFloat(ApFloat::getIEEEdouble(),  "0x."), "Significand has no digits");
    EXPECT_DEATH(ApFloat(ApFloat::getIEEEdouble(), "+0x."), "Significand has no digits");
@@ -1238,7 +1242,7 @@ TEST(ApFloatTest, StringHexadecimalSignificandDeath)
    EXPECT_DEATH(ApFloat(ApFloat::getIEEEdouble(), "-0x.p-"), "Significand has no digits");
 }
 
-TEST(ApFloatTest, StringHexadecimalExponentDeath)
+TEST(ApFloatTest, testStringHexadecimalExponentDeath)
 {
    EXPECT_DEATH(ApFloat(ApFloat::getIEEEdouble(),  "0x1p"), "Exponent has no digits");
    EXPECT_DEATH(ApFloat(ApFloat::getIEEEdouble(), "+0x1p"), "Exponent has no digits");
@@ -1294,7 +1298,8 @@ TEST(ApFloatTest, StringHexadecimalExponentDeath)
 #endif
 #endif
 
-TEST(ApFloatTest, testExactInverse) {
+TEST(ApFloatTest, testExactInverse)
+{
    ApFloat inv(0.0f);
 
    // Trivial operation.
@@ -1321,7 +1326,8 @@ TEST(ApFloatTest, testExactInverse) {
    EXPECT_FALSE(ApFloat(1.40129846e-45f).getExactInverse(nullptr));
 }
 
-TEST(ApFloatTest, testRoundToIntegral) {
+TEST(ApFloatTest, testRoundToIntegral)
+{
    ApFloat T(-0.5), S(3.14), R(ApFloat::getLargest(ApFloat::getIEEEdouble())), P(0.0);
 
    P = T;
@@ -1415,13 +1421,13 @@ TEST(DoubleAPFloatTest, testIsInteger)
    EXPECT_FALSE(T3.isInteger());
 }
 
-TEST(ApFloatTest, getLargest)
+TEST(ApFloatTest, testGetLargest)
 {
    EXPECT_EQ(3.402823466e+38f, ApFloat::getLargest(ApFloat::getIEEEsingle()).convertToFloat());
    EXPECT_EQ(1.7976931348623158e+308, ApFloat::getLargest(ApFloat::getIEEEdouble()).convertToDouble());
 }
 
-TEST(ApFloatTest, getGetSmallest)
+TEST(ApFloatTest, testGetSmallest)
 {
    ApFloat test = ApFloat::getSmallest(ApFloat::getIEEEsingle(), false);
    ApFloat expected = ApFloat(ApFloat::getIEEEsingle(), "0x0.000002p-126");
@@ -1452,7 +1458,7 @@ TEST(ApFloatTest, getGetSmallest)
    EXPECT_TRUE(test.bitwiseIsEqual(expected));
 }
 
-TEST(ApFloatTest, getGetSmallestNormalized)
+TEST(ApFloatTest, testGetSmallestNormalized)
 {
    ApFloat test = ApFloat::getSmallestNormalized(ApFloat::getIEEEsingle(), false);
    ApFloat expected = ApFloat(ApFloat::getIEEEsingle(), "0x1p-126");
@@ -1585,7 +1591,8 @@ TEST(ApFloatTest, testConvert)
    EXPECT_FALSE(losesInfo);
 }
 
-TEST(ApFloatTest, testGetPPCDoubleDouble) {
+TEST(ApFloatTest, testGetPPCDoubleDouble)
+{
    ApFloat test(ApFloat::getPPCDoubleDouble(), "1.0");
    EXPECT_EQ(0x3ff0000000000000ull, test.bitcastToApInt().getRawData()[0]);
    EXPECT_EQ(0x0000000000000000ull, test.bitcastToApInt().getRawData()[1]);
@@ -1661,7 +1668,7 @@ TEST(ApFloatTest, testIsNormal)
    EXPECT_FALSE(ApFloat(ApFloat::getIEEEsingle(), "0x1p-149").isNormal());
 }
 
-TEST(ApFloatTest, isFinite)
+TEST(ApFloatTest, testIsFinite)
 {
    ApFloat t(ApFloat::getIEEEsingle(), "0x1p+0");
    EXPECT_TRUE(t.isFinite());
@@ -2012,7 +2019,8 @@ TEST(ApFloatTest, testAdd)
    }
 }
 
-TEST(ApFloatTest, testSubtract) {
+TEST(ApFloatTest, testSubtract)
+{
    // Test Special Cases against each other and normal values.
 
    // TODOS/NOTES:
@@ -2953,7 +2961,8 @@ TEST(ApFloatTest, testNeg)
    EXPECT_TRUE(QNaN.bitwiseIsEqual(neg(NegQNaN)));
 }
 
-TEST(ApFloatTest, testIlogb) {
+TEST(ApFloatTest, testIlogb)
+{
    EXPECT_EQ(-1074, ilogb(ApFloat::getSmallest(ApFloat::getIEEEdouble(), false)));
    EXPECT_EQ(-1074, ilogb(ApFloat::getSmallest(ApFloat::getIEEEdouble(), true)));
    EXPECT_EQ(-1023, ilogb(ApFloat(ApFloat::getIEEEdouble(), "0x1.ffffffffffffep-1024")));
@@ -2996,7 +3005,8 @@ TEST(ApFloatTest, testIlogb) {
              ilogb(ApFloat::getSmallestNormalized(ApFloat::getIEEEsingle(), true)));
 }
 
-TEST(ApFloatTest, testScalbn) {
+TEST(ApFloatTest, testScalbn)
+{
 
    const ApFloat::RoundingMode RM = ApFloat::RoundingMode::rmNearestTiesToEven;
    EXPECT_TRUE(
@@ -3167,7 +3177,8 @@ TEST(ApFloatTest, testScalbn) {
             .bitwiseIsEqual(scalbn(ApFloat(ApFloat::getIEEEdouble(), "0x1p-51"), -52, RM)));
 }
 
-TEST(ApFloatTest, testFrexp) {
+TEST(ApFloatTest, testFrexp)
+{
    const ApFloat::RoundingMode RM = ApFloat::RoundingMode::rmNearestTiesToEven;
 
    ApFloat PZero = ApFloat::getZero(ApFloat::getIEEEdouble(), false);
@@ -3293,7 +3304,8 @@ TEST(ApFloatTest, testFrexp) {
    EXPECT_TRUE(ApFloat(ApFloat::getIEEEdouble(), "0x1.c60f120d9f87cp-1").bitwiseIsEqual(Frac));
 }
 
-TEST(ApFloatTest, testMod) {
+TEST(ApFloatTest, testMod)
+{
    {
       ApFloat f1(ApFloat::getIEEEdouble(), "1.5");
       ApFloat f2(ApFloat::getIEEEdouble(), "1.0");
@@ -3409,21 +3421,19 @@ TEST(ApFloatTest, testPPCDoubleDoubleAddSpecial)
          ApFloat A1(ApFloat::getPPCDoubleDouble(), ApInt(128, 2, Op1));
          ApFloat A2(ApFloat::getPPCDoubleDouble(), ApInt(128, 2, Op2));
          A1.add(A2, RM);
-         // unittest mark
-//         EXPECT_EQ(Expected, A1.getCategory())
-//               << formatv("({0:x} + {1:x}) + ({2:x} + {3:x})", Op1[0], Op1[1],
-//               Op2[0], Op2[1])
-//               .getStr();
+         EXPECT_EQ(Expected, A1.getCategory())
+               << formatv("({0:x} + {1:x}) + ({2:x} + {3:x})", Op1[0], Op1[1],
+               Op2[0], Op2[1])
+               .getStr();
       }
       {
          ApFloat A1(ApFloat::getPPCDoubleDouble(), ApInt(128, 2, Op1));
          ApFloat A2(ApFloat::getPPCDoubleDouble(), ApInt(128, 2, Op2));
          A2.add(A1, RM);
-
-//         EXPECT_EQ(Expected, A2.getCategory())
-//               << formatv("({0:x} + {1:x}) + ({2:x} + {3:x})", Op2[0], Op2[1],
-//               Op1[0], Op1[1])
-//               .getStr();
+         EXPECT_EQ(Expected, A2.getCategory())
+               << formatv("({0:x} + {1:x}) + ({2:x} + {3:x})", Op2[0], Op2[1],
+               Op1[0], Op1[1])
+               .getStr();
       }
    }
 }
@@ -3474,29 +3484,28 @@ TEST(ApFloatTest, testPPCDoubleDoubleAdd)
          ApFloat A1(ApFloat::getPPCDoubleDouble(), ApInt(128, 2, Op1));
          ApFloat A2(ApFloat::getPPCDoubleDouble(), ApInt(128, 2, Op2));
          A1.add(A2, RM);
-         // unittest mark
-//         EXPECT_EQ(Expected[0], A1.bitcastToApInt().getRawData()[0])
-//               << formatv("({0:x} + {1:x}) + ({2:x} + {3:x})", Op1[0], Op1[1],
-//               Op2[0], Op2[1])
-//               .getStr();
-//         EXPECT_EQ(Expected[1], A1.bitcastToApInt().getRawData()[1])
-//               << formatv("({0:x} + {1:x}) + ({2:x} + {3:x})", Op1[0], Op1[1],
-//               Op2[0], Op2[1])
-//               .getStr();
+         EXPECT_EQ(Expected[0], A1.bitcastToApInt().getRawData()[0])
+               << formatv("({0:x} + {1:x}) + ({2:x} + {3:x})", Op1[0], Op1[1],
+               Op2[0], Op2[1])
+               .getStr();
+         EXPECT_EQ(Expected[1], A1.bitcastToApInt().getRawData()[1])
+               << formatv("({0:x} + {1:x}) + ({2:x} + {3:x})", Op1[0], Op1[1],
+               Op2[0], Op2[1])
+               .getStr();
       }
       {
          ApFloat A1(ApFloat::getPPCDoubleDouble(), ApInt(128, 2, Op1));
          ApFloat A2(ApFloat::getPPCDoubleDouble(), ApInt(128, 2, Op2));
          A2.add(A1, RM);
 
-//         EXPECT_EQ(Expected[0], A2.bitcastToApInt().getRawData()[0])
-//               << formatv("({0:x} + {1:x}) + ({2:x} + {3:x})", Op2[0], Op2[1],
-//               Op1[0], Op1[1])
-//               .getStr();
-//         EXPECT_EQ(Expected[1], A2.bitcastToApInt().getRawData()[1])
-//               << formatv("({0:x} + {1:x}) + ({2:x} + {3:x})", Op2[0], Op2[1],
-//               Op1[0], Op1[1])
-//               .getStr();
+         EXPECT_EQ(Expected[0], A2.bitcastToApInt().getRawData()[0])
+               << formatv("({0:x} + {1:x}) + ({2:x} + {3:x})", Op2[0], Op2[1],
+               Op1[0], Op1[1])
+               .getStr();
+         EXPECT_EQ(Expected[1], A2.bitcastToApInt().getRawData()[1])
+               << formatv("({0:x} + {1:x}) + ({2:x} + {3:x})", Op2[0], Op2[1],
+               Op1[0], Op1[1])
+               .getStr();
       }
    }
 }
@@ -3524,15 +3533,14 @@ TEST(ApFloatTest, testPPCDoubleDoubleSubtract)
       ApFloat A1(ApFloat::getPPCDoubleDouble(), ApInt(128, 2, Op1));
       ApFloat A2(ApFloat::getPPCDoubleDouble(), ApInt(128, 2, Op2));
       A1.subtract(A2, RM);
-      // unittest mark
-//      EXPECT_EQ(Expected[0], A1.bitcastToApInt().getRawData()[0])
-//            << formatv("({0:x} + {1:x}) - ({2:x} + {3:x})", Op1[0], Op1[1], Op2[0],
-//            Op2[1])
-//            .getStr();
-//      EXPECT_EQ(Expected[1], A1.bitcastToApInt().getRawData()[1])
-//            << formatv("({0:x} + {1:x}) - ({2:x} + {3:x})", Op1[0], Op1[1], Op2[0],
-//            Op2[1])
-//            .getStr();
+      EXPECT_EQ(Expected[0], A1.bitcastToApInt().getRawData()[0])
+            << formatv("({0:x} + {1:x}) - ({2:x} + {3:x})", Op1[0], Op1[1], Op2[0],
+            Op2[1])
+            .getStr();
+      EXPECT_EQ(Expected[1], A1.bitcastToApInt().getRawData()[1])
+            << formatv("({0:x} + {1:x}) - ({2:x} + {3:x})", Op1[0], Op1[1], Op2[0],
+            Op2[1])
+            .getStr();
    }
 }
 
@@ -3580,21 +3588,19 @@ TEST(ApFloatTest, testPPCDoubleDoubleMultiplySpecial)
          ApFloat A1(ApFloat::getPPCDoubleDouble(), ApInt(128, 2, Op1));
          ApFloat A2(ApFloat::getPPCDoubleDouble(), ApInt(128, 2, Op2));
          A1.multiply(A2, RM);
-         // unittest mark
-//         EXPECT_EQ(Expected, A1.getCategory())
-//               << formatv("({0:x} + {1:x}) * ({2:x} + {3:x})", Op1[0], Op1[1],
-//               Op2[0], Op2[1])
-//               .getStr();
+         EXPECT_EQ(Expected, A1.getCategory())
+               << formatv("({0:x} + {1:x}) * ({2:x} + {3:x})", Op1[0], Op1[1],
+               Op2[0], Op2[1])
+               .getStr();
       }
       {
          ApFloat A1(ApFloat::getPPCDoubleDouble(), ApInt(128, 2, Op1));
          ApFloat A2(ApFloat::getPPCDoubleDouble(), ApInt(128, 2, Op2));
          A2.multiply(A1, RM);
-            // unittest mark
-//         EXPECT_EQ(Expected, A2.getCategory())
-//               << formatv("({0:x} + {1:x}) * ({2:x} + {3:x})", Op2[0], Op2[1],
-//               Op1[0], Op1[1])
-//               .getStr();
+         EXPECT_EQ(Expected, A2.getCategory())
+               << formatv("({0:x} + {1:x}) * ({2:x} + {3:x})", Op2[0], Op2[1],
+               Op1[0], Op1[1])
+               .getStr();
       }
    }
 }
@@ -3654,29 +3660,28 @@ TEST(ApFloatTest, testPPCDoubleDoubleMultiply)
          ApFloat A1(ApFloat::getPPCDoubleDouble(), ApInt(128, 2, Op1));
          ApFloat A2(ApFloat::getPPCDoubleDouble(), ApInt(128, 2, Op2));
          A1.multiply(A2, RM);
-            // unittest mark
-//         EXPECT_EQ(Expected[0], A1.bitcastToApInt().getRawData()[0])
-//               << formatv("({0:x} + {1:x}) * ({2:x} + {3:x})", Op1[0], Op1[1],
-//               Op2[0], Op2[1])
-//               .getStr();
-//         EXPECT_EQ(Expected[1], A1.bitcastToApInt().getRawData()[1])
-//               << formatv("({0:x} + {1:x}) * ({2:x} + {3:x})", Op1[0], Op1[1],
-//               Op2[0], Op2[1])
-//               .getStr();
+         EXPECT_EQ(Expected[0], A1.bitcastToApInt().getRawData()[0])
+               << formatv("({0:x} + {1:x}) * ({2:x} + {3:x})", Op1[0], Op1[1],
+               Op2[0], Op2[1])
+               .getStr();
+         EXPECT_EQ(Expected[1], A1.bitcastToApInt().getRawData()[1])
+               << formatv("({0:x} + {1:x}) * ({2:x} + {3:x})", Op1[0], Op1[1],
+               Op2[0], Op2[1])
+               .getStr();
       }
       {
          ApFloat A1(ApFloat::getPPCDoubleDouble(), ApInt(128, 2, Op1));
          ApFloat A2(ApFloat::getPPCDoubleDouble(), ApInt(128, 2, Op2));
          A2.multiply(A1, RM);
 
-//         EXPECT_EQ(Expected[0], A2.bitcastToApInt().getRawData()[0])
-//               << formatv("({0:x} + {1:x}) * ({2:x} + {3:x})", Op2[0], Op2[1],
-//               Op1[0], Op1[1])
-//               .getStr();
-//         EXPECT_EQ(Expected[1], A2.bitcastToApInt().getRawData()[1])
-//               << formatv("({0:x} + {1:x}) * ({2:x} + {3:x})", Op2[0], Op2[1],
-//               Op1[0], Op1[1])
-//               .getStr();
+         EXPECT_EQ(Expected[0], A2.bitcastToApInt().getRawData()[0])
+               << formatv("({0:x} + {1:x}) * ({2:x} + {3:x})", Op2[0], Op2[1],
+               Op1[0], Op1[1])
+               .getStr();
+         EXPECT_EQ(Expected[1], A2.bitcastToApInt().getRawData()[1])
+               << formatv("({0:x} + {1:x}) * ({2:x} + {3:x})", Op2[0], Op2[1],
+               Op1[0], Op1[1])
+               .getStr();
       }
    }
 }
@@ -3702,15 +3707,14 @@ TEST(ApFloatTest, testPPCDoubleDoubleDivide)
       ApFloat A1(ApFloat::getPPCDoubleDouble(), ApInt(128, 2, Op1));
       ApFloat A2(ApFloat::getPPCDoubleDouble(), ApInt(128, 2, Op2));
       A1.divide(A2, RM);
-      // unittest mark
-//      EXPECT_EQ(Expected[0], A1.bitcastToApInt().getRawData()[0])
-//            << formatv("({0:x} + {1:x}) / ({2:x} + {3:x})", Op1[0], Op1[1], Op2[0],
-//            Op2[1])
-//            .getStr();
-//      EXPECT_EQ(Expected[1], A1.bitcastToApInt().getRawData()[1])
-//            << formatv("({0:x} + {1:x}) / ({2:x} + {3:x})", Op1[0], Op1[1], Op2[0],
-//            Op2[1])
-//            .getStr();
+      EXPECT_EQ(Expected[0], A1.bitcastToApInt().getRawData()[0])
+            << formatv("({0:x} + {1:x}) / ({2:x} + {3:x})", Op1[0], Op1[1], Op2[0],
+            Op2[1])
+            .getStr();
+      EXPECT_EQ(Expected[1], A1.bitcastToApInt().getRawData()[1])
+            << formatv("({0:x} + {1:x}) / ({2:x} + {3:x})", Op1[0], Op1[1], Op2[0],
+            Op2[1])
+            .getStr();
    }
 }
 
@@ -3736,15 +3740,14 @@ TEST(ApFloatTest, testPPCDoubleDoubleRemainder)
       ApFloat A1(ApFloat::getPPCDoubleDouble(), ApInt(128, 2, Op1));
       ApFloat A2(ApFloat::getPPCDoubleDouble(), ApInt(128, 2, Op2));
       A1.remainder(A2);
-      // unittest mark
-//      EXPECT_EQ(Expected[0], A1.bitcastToApInt().getRawData()[0])
-//            << formatv("remainder({0:x} + {1:x}), ({2:x} + {3:x}))", Op1[0], Op1[1],
-//            Op2[0], Op2[1])
-//            .getStr();
-//      EXPECT_EQ(Expected[1], A1.bitcastToApInt().getRawData()[1])
-//            << formatv("remainder(({0:x} + {1:x}), ({2:x} + {3:x}))", Op1[0],
-//            Op1[1], Op2[0], Op2[1])
-//            .getStr();
+      EXPECT_EQ(Expected[0], A1.bitcastToApInt().getRawData()[0])
+            << formatv("remainder({0:x} + {1:x}), ({2:x} + {3:x}))", Op1[0], Op1[1],
+            Op2[0], Op2[1])
+            .getStr();
+      EXPECT_EQ(Expected[1], A1.bitcastToApInt().getRawData()[1])
+            << formatv("remainder(({0:x} + {1:x}), ({2:x} + {3:x}))", Op1[0],
+            Op1[1], Op2[0], Op2[1])
+            .getStr();
    }
 }
 
@@ -3772,19 +3775,19 @@ TEST(ApFloatTest, testPPCDoubleDoubleMod)
       ApFloat A1(ApFloat::getPPCDoubleDouble(), ApInt(128, 2, Op1));
       ApFloat A2(ApFloat::getPPCDoubleDouble(), ApInt(128, 2, Op2));
       A1.mod(A2);
-      // unittest mark
-//      EXPECT_EQ(Expected[0], A1.bitcastToApInt().getRawData()[0])
-//            << formatv("fmod(({0:x} + {1:x}),  ({2:x} + {3:x}))", Op1[0], Op1[1],
-//            Op2[0], Op2[1])
-//            .getStr();
-//      EXPECT_EQ(Expected[1], A1.bitcastToApInt().getRawData()[1])
-//            << formatv("fmod(({0:x} + {1:x}), ({2:x} + {3:x}))", Op1[0], Op1[1],
-//            Op2[0], Op2[1])
-//            .getStr();
+      EXPECT_EQ(Expected[0], A1.bitcastToApInt().getRawData()[0])
+            << formatv("fmod(({0:x} + {1:x}),  ({2:x} + {3:x}))", Op1[0], Op1[1],
+            Op2[0], Op2[1])
+            .getStr();
+      EXPECT_EQ(Expected[1], A1.bitcastToApInt().getRawData()[1])
+            << formatv("fmod(({0:x} + {1:x}), ({2:x} + {3:x}))", Op1[0], Op1[1],
+            Op2[0], Op2[1])
+            .getStr();
    }
 }
 
-TEST(ApFloatTest, testPPCDoubleDoubleFMA) {
+TEST(ApFloatTest, testPPCDoubleDoubleFMA)
+{
    // Sanity check for now.
    ApFloat A(ApFloat::getPPCDoubleDouble(), "2");
    A.fusedMultiplyAdd(ApFloat(ApFloat::getPPCDoubleDouble(), "3"),
@@ -3846,11 +3849,10 @@ TEST(ApFloatTest, testPPCDoubleDoubleCompare)
 
       ApFloat A1(ApFloat::getPPCDoubleDouble(), ApInt(128, 2, Op1));
       ApFloat A2(ApFloat::getPPCDoubleDouble(), ApInt(128, 2, Op2));
-      // unittest mark
-//      EXPECT_EQ(Expected, A1.compare(A2))
-//            << formatv("compare(({0:x} + {1:x}), ({2:x} + {3:x}))", Op1[0], Op1[1],
-//            Op2[0], Op2[1])
-//            .getStr();
+      EXPECT_EQ(Expected, A1.compare(A2))
+            << formatv("compare(({0:x} + {1:x}), ({2:x} + {3:x}))", Op1[0], Op1[1],
+            Op2[0], Op2[1])
+            .getStr();
    }
 }
 
@@ -3880,11 +3882,10 @@ TEST(ApFloatTest, testPPCDoubleDoubleBitwiseIsEqual)
 
       ApFloat A1(ApFloat::getPPCDoubleDouble(), ApInt(128, 2, Op1));
       ApFloat A2(ApFloat::getPPCDoubleDouble(), ApInt(128, 2, Op2));
-      // unittest mark
-//      EXPECT_EQ(Expected, A1.bitwiseIsEqual(A2))
-//            << formatv("({0:x} + {1:x}) = ({2:x} + {3:x})", Op1[0], Op1[1], Op2[0],
-//            Op2[1])
-//            .getStr();
+      EXPECT_EQ(Expected, A1.bitwiseIsEqual(A2))
+            << formatv("({0:x} + {1:x}) = ({2:x} + {3:x})", Op1[0], Op1[1], Op2[0],
+            Op2[1])
+            .getStr();
    }
 }
 
@@ -3898,7 +3899,8 @@ TEST(ApFloatTest, testPPCDoubleDoubleHashValue)
             hash_value(ApFloat(ApFloat::getPPCDoubleDouble(), ApInt(128, 2, Data2))));
 }
 
-TEST(ApFloatTest, testPPCDoubleDoubleChangeSign) {
+TEST(ApFloatTest, testPPCDoubleDoubleChangeSign)
+{
    uint64_t Data[] = {
       0x400f000000000000ull, 0xbcb0000000000000ull,
    };

@@ -248,7 +248,7 @@ struct IntrusiveListCallbackTraits<NodeWithCallback>
 
 namespace {
 
-TEST(IntrusiveListTest, addNodeToList)
+TEST(IntrusiveListTest, testAddNodeToList)
 {
    IntrusiveList<NodeWithCallback> l1, l2;
    NodeWithCallback N(7);

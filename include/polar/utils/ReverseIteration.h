@@ -12,8 +12,7 @@
 #ifndef POLAR_UTILS_REVERSE_ITERATION_H
 #define POLAR_UTILS_REVERSE_ITERATION_H
 
-// unittest mark
-// #include "polar/global/AbiBreaking.h"
+#include "polar/global/AbiBreaking.h"
 #include "polar/utils/PointerLikeTypeTraits.h"
 
 namespace polar {

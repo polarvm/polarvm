@@ -151,4 +151,4 @@ TYPED_TEST(PriorityWorklistTest, testEraseIf)
    EXPECT_EQ(13, W.popBackValue());
 }
 
-}
+} // anonymous namespace

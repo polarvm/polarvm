@@ -28,7 +28,7 @@ struct SimpleRefCounted : public RefCountedBase<SimpleRefCounted>
 };
 int SimpleRefCounted::NumInstances = 0;
 
-TEST(IntrusiveRefCountPtrTest, RefCountedBaseCopyDoesNotLeak)
+TEST(IntrusiveRefCountPtrTest, testRefCountedBaseCopyDoesNotLeak)
 {
    EXPECT_EQ(0, SimpleRefCounted::NumInstances);
    {
@@ -72,7 +72,7 @@ struct IntrusiveRefCountPtrInfo<InterceptRefCounted>
 
 namespace {
 
-TEST(IntrusiveRefCountPtrTest, UsesTraitsToRetainAndRelease)
+TEST(IntrusiveRefCountPtrTest, testUsesTraitsToRetainAndRelease)
 {
    bool Released = false;
    bool Retained = false;

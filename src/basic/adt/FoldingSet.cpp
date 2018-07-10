@@ -260,8 +260,7 @@ void **allocate_buckets(unsigned numBuckets)
 {
    void **buckets = static_cast<void**>(calloc(numBuckets+1, sizeof(void*)));
    if (buckets == nullptr) {
-      // unittest mark
-      // polar::utils::report_bad_alloc_error("Allocation of Buckets failed.");
+      polar::utils::report_bad_alloc_error("Allocation of Buckets failed.");
    }
    // Set the very last bucket to be a non-null "pointer".
    buckets[numBuckets] = reinterpret_cast<void*>(-1);

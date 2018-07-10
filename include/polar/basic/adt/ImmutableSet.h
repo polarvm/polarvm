@@ -831,8 +831,7 @@ public:
          m_stack.back() |= VisitedRight;
          break;
       default:
-         // unittest mark
-         // polar_unreachable("Unreachable.");
+         polar_unreachable("Unreachable.");
          break;
       }
    }
@@ -871,8 +870,7 @@ public:
          skipToParent();
          break;
       default:
-         // unittest mark
-         // polar_unreachable("Unreachable.");
+         polar_unreachable("Unreachable.");
          break;
       }
       return *this;
@@ -901,8 +899,7 @@ public:
          }
          break;
       default:
-         // unittest mark
-         // polar_unreachable("Unreachable.");
+         polar_unreachable("Unreachable.");
          break;
       }
       return *this;

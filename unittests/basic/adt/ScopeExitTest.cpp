@@ -16,7 +16,7 @@ using namespace polar::basic;
 
 namespace {
 
-TEST(ScopeExitTest, Basic)
+TEST(ScopeExitTest, testBasic)
 {
   struct Callable {
     bool &Called;
