@@ -70,14 +70,14 @@ protected:
    // std::vector<Base*>.
    struct create_adapters {
       template <typename... Ts>
-      std::vector<internal::FormatAdapter *> operator()(Ts &... items)
+      std::vector<internal::FormatAdapterImpl *> operator()(Ts &... items)
       {
-         return std::vector<internal::FormatAdapter *>{&items...};
+         return std::vector<internal::FormatAdapterImpl *>{&items...};
       }
    };
    
    StringRef m_fmt;
-   std::vector<internal::FormatAdapter *> m_adapters;
+   std::vector<internal::FormatAdapterImpl *> m_adapters;
    std::vector<ReplacementItem> m_replacements;
    
    static bool consumeFieldLayout(StringRef &spec, AlignStyle &where,
@@ -105,24 +105,23 @@ public:
    
    void format(RawOutStream &outStream) const
    {
-      // unittest mark
-//      for (auto &replacement : m_replacements) {
-//         if (replacement.m_type == ReplacementType::Empty)
-//            continue;
-//         if (replacement.m_type == ReplacementType::Literal) {
-//            outStream << replacement.m_spec;
-//            continue;
-//         }
-//         if (replacement.m_index >= m_adapters.size()) {
-//            outStream << replacement.m_spec;
-//            continue;
-//         }
+      for (auto &replacement : m_replacements) {
+         if (replacement.m_type == ReplacementType::Empty)
+            continue;
+         if (replacement.m_type == ReplacementType::Literal) {
+            outStream << replacement.m_spec;
+            continue;
+         }
+         if (replacement.m_index >= m_adapters.size()) {
+            outStream << replacement.m_spec;
+            continue;
+         }
          
-//         auto w = m_adapters[replacement.m_index];
+         auto w = m_adapters[replacement.m_index];
          
-//         FmtAlign align(*w, replacement.m_where, replacement.m_align);
-//         align.format(outStream, replacement.m_options);
-//      }
+         FmtAlign align(*w, replacement.m_where, replacement.m_align);
+         align.format(outStream, replacement.m_options);
+      }
    }
    
    static std::vector<ReplacementItem> parseFormatString(StringRef fmt);
@@ -131,12 +130,11 @@ public:
    
    std::string getStr() const
    {
-      // unittest mark
-//      std::string result;
-//      RawStringOutStream stream(result);
-//      stream << *this;
-//      stream.flush();
-//      return result;
+      std::string result;
+      RawStringOutStream stream(result);
+      stream << *this;
+      stream.flush();
+      return result;
    }
    
    template <unsigned N> SmallString<N> getSmallStr() const
@@ -170,7 +168,8 @@ class FormatvObject : public FormatvObjectBase
 public:
    FormatvObject(StringRef fmt, Tuple &&params)
       : FormatvObjectBase(fmt, std::tuple_size<Tuple>::value),
-        m_parameters(std::move(params)) {
+        m_parameters(std::move(params))
+   {
       m_adapters = polar::basic::apply_tuple(create_adapters(), m_parameters);
    }
    

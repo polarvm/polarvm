@@ -25,21 +25,21 @@ struct FormatProvider
 
 namespace internal {
 
-class FormatAdapter {
+class FormatAdapterImpl {
 protected:
-   virtual ~FormatAdapter()
+   virtual ~FormatAdapterImpl()
    {}
    
 public:
    virtual void format(RawOutStream &stream, StringRef options) = 0;
 };
 
-template <typename T> class provider_FormatAdapter : public FormatAdapter
+template <typename T> class ProviderFormatAdapter : public FormatAdapterImpl
 {
    T m_item;
    
 public:
-   explicit provider_FormatAdapter(T &&item) : m_item(std::forward<T>(item))
+   explicit ProviderFormatAdapter(T &&item) : m_item(std::forward<T>(item))
    {}
    
    void format(polar::utils::RawOutStream &stream, StringRef options) override
@@ -77,7 +77,7 @@ template <typename T>
 struct UsesFormatMember
       : public std::integral_constant<
       bool,
-      std::is_base_of<FormatAdapter,
+      std::is_base_of<FormatAdapterImpl,
       typename std::remove_reference<T>::type>::value> {};
 
 // Simple template that decides whether a type T should use the FormatProvider
@@ -108,10 +108,10 @@ build_format_adapter(T &&item)
 
 template <typename T>
 typename std::enable_if<uses_FormatProvider<T>::value,
-provider_FormatAdapter<T>>::type
+ProviderFormatAdapter<T>>::type
 build_format_adapter(T &&item)
 {
-   return provider_FormatAdapter<T>(std::forward<T>(item));
+   return ProviderFormatAdapter<T>(std::forward<T>(item));
 }
 
 template <typename T>

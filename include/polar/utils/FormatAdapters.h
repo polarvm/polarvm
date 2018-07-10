@@ -22,7 +22,7 @@ namespace polar {
 namespace utils {
 
 template <typename T>
-class FormatAdapter : public internal::FormatAdapter
+class FormatAdapter : public internal::FormatAdapterImpl
 {
 protected:
    explicit FormatAdapter(T &&item) : m_item(item)
@@ -47,7 +47,7 @@ public:
    
    void format(polar::utils::RawOutStream &stream, StringRef style)
    {
-      auto adapter = detail::build_FormatAdapter(std::forward<T>(this->m_item));
+      auto adapter = internal::build_format_adapter(std::forward<T>(this->m_item));
       FmtAlign(adapter, m_where, m_amount, m_fill).format(stream, style);
    }
 };
@@ -59,7 +59,7 @@ class PadAdapter final : public FormatAdapter<T>
    size_t m_right;
    
 public:
-   PadAdapter(T &&item, size_t left, size_t Right)
+   PadAdapter(T &&item, size_t left, size_t right)
       : FormatAdapter<T>(std::forward<T>(item)), m_left(left), m_right(right)
    {}
    
@@ -75,21 +75,22 @@ public:
 template <typename T>
 class RepeatAdapter final : public FormatAdapter<T>
 {
-   size_t m_cout;
+   size_t m_count;
    
 public:
    RepeatAdapter(T &&item, size_t count)
-      : FormatAdapter<T>(std::forward<T>(item)), m_cout(count)
+      : FormatAdapter<T>(std::forward<T>(item)), m_count(count)
    {}
    
-   void format(polar::utils::RawOutStream &stream, StringRef style) {
+   void format(polar::utils::RawOutStream &stream, StringRef style)
+   {
       auto adapter = internal::build_format_adapter(std::forward<T>(this->m_item));
       for (size_t index = 0; index < m_count; ++index) {
          adapter.format(stream, style);
       }
    }
 };
-}
+} // internal
 
 template <typename T>
 internal::AlignAdapter<T> fmt_align(T &&item, AlignStyle where, size_t amount,

@@ -87,7 +87,7 @@ TEST(RawOutStreamTest, testTypesBuffered) {
    EXPECT_EQ("-9223372036854775808", print_to_string(INT64_MIN));
 }
 
-TEST(RawOutStreamTest, Types_Unbuffered) {
+TEST(RawOutStreamTest, testTypesUnbuffered) {
    // Char
    EXPECT_EQ("c", printToStringUnbuffered('c'));
 
@@ -118,7 +118,7 @@ TEST(RawOutStreamTest, Types_Unbuffered) {
    EXPECT_EQ("-9223372036854775808", printToStringUnbuffered(INT64_MIN));
 }
 
-TEST(RawOutStreamTest, BufferEdge) {
+TEST(RawOutStreamTest, testBufferEdge) {
    EXPECT_EQ("1.20", print_to_string(format("%.2f", 1.2), 1));
    EXPECT_EQ("1.20", print_to_string(format("%.2f", 1.2), 2));
    EXPECT_EQ("1.20", print_to_string(format("%.2f", 1.2), 3));
@@ -126,37 +126,36 @@ TEST(RawOutStreamTest, BufferEdge) {
    EXPECT_EQ("1.20", print_to_string(format("%.2f", 1.2), 10));
 }
 
-TEST(RawOutStreamTest, TinyBuffer)
+TEST(RawOutStreamTest, testTinyBuffer)
 {
-   // unitest mark
-//   std::string Str;
-//   RawStringOutStream outstream(Str);
-//   outstream.SetBufferSize(1);
-//   outstream << "hello";
-//   outstream << 1;
-//   outstream << 'w' << 'o' << 'r' << 'l' << 'd';
-//   EXPECT_EQ("hello1world", outstream.str());
+   std::string str;
+   RawStringOutStream outstream(str);
+   outstream.setBufferSize(1);
+   outstream << "hello";
+   outstream << 1;
+   outstream << 'w' << 'o' << 'r' << 'l' << 'd';
+   EXPECT_EQ("hello1world", outstream.getStr());
 }
 
-TEST(RawOutStreamTest, WriteEscaped)
+TEST(RawOutStreamTest, testWriteEscaped)
 {
-    // unitest mark
-//   std::string Str;
+   std::string str;
 
-//   Str = "";
-//   RawStringOutStream(Str).write_escaped("hi");
-//   EXPECT_EQ("hi", Str);
+   str = "";
+   RawStringOutStream(str).writeEscaped("hi");
+   EXPECT_EQ("hi", str);
 
-//   Str = "";
-//   RawStringOutStream(Str).write_escaped("\\\t\n\"");
-//   EXPECT_EQ("\\\\\\t\\n\\\"", Str);
+   str = "";
+   RawStringOutStream(str).writeEscaped("\\\t\n\"");
+   EXPECT_EQ("\\\\\\t\\n\\\"", str);
 
-//   Str = "";
-//   RawStringOutStream(Str).write_escaped("\1\10\200");
-//   EXPECT_EQ("\\001\\010\\200", Str);
+   str = "";
+   RawStringOutStream(str).writeEscaped("\1\10\200");
+   EXPECT_EQ("\\001\\010\\200", str);
 }
 
-TEST(RawOutStreamTest, Justify) {
+TEST(RawOutStreamTest, testJustify)
+{
    EXPECT_EQ("xyz   ", print_to_string(left_justify("xyz", 6), 6));
    EXPECT_EQ("abc",    print_to_string(left_justify("abc", 3), 3));
    EXPECT_EQ("big",    print_to_string(left_justify("big", 1), 3));
@@ -170,7 +169,8 @@ TEST(RawOutStreamTest, Justify) {
    EXPECT_EQ("std::nullopt",    print_to_string(center_justify("std::nullopt", 1), 1));
 }
 
-TEST(RawOutStreamTest, FormatHex) {
+TEST(RawOutStreamTest, testFormatHex)
+{
    EXPECT_EQ("0x1234",     print_to_string(format_hex(0x1234, 6), 6));
    EXPECT_EQ("0x001234",   print_to_string(format_hex(0x1234, 8), 8));
    EXPECT_EQ("0x00001234", print_to_string(format_hex(0x1234, 10), 10));
@@ -188,7 +188,8 @@ TEST(RawOutStreamTest, FormatHex) {
              print_to_string(format_hex((INT64_MIN), 18), 18));
 }
 
-TEST(RawOutStreamTest, FormatDecimal) {
+TEST(RawOutStreamTest, testFormatDecimal)
+{
    EXPECT_EQ("   0",        print_to_string(format_decimal(0, 4), 4));
    EXPECT_EQ("  -1",        print_to_string(format_decimal(-1, 4), 4));
    EXPECT_EQ("    -1",      print_to_string(format_decimal(-1, 6), 6));
@@ -204,9 +205,9 @@ static std::string formatted_bytes_str(ArrayRef<uint8_t> Bytes,
                                        uint32_t NumPerLine = 16,
                                        uint8_t ByteGroupSize = 4) {
    std::string S;
-   RawStringOutStream Str(S);
-   Str << format_bytes(Bytes, Offset, NumPerLine, ByteGroupSize);
-   Str.flush();
+   RawStringOutStream str(S);
+   str << format_bytes(Bytes, Offset, NumPerLine, ByteGroupSize);
+   str.flush();
    return S;
 }
 
@@ -215,13 +216,14 @@ static std::string format_bytes_with_ascii_str(ArrayRef<uint8_t> Bytes,
                                                uint32_t NumPerLine = 16,
                                                uint8_t ByteGroupSize = 4) {
    std::string S;
-   RawStringOutStream Str(S);
-   Str << format_bytes_with_ascii(Bytes, Offset, NumPerLine, ByteGroupSize);
-   Str.flush();
+   RawStringOutStream str(S);
+   str << format_bytes_with_ascii(Bytes, Offset, NumPerLine, ByteGroupSize);
+   str.flush();
    return S;
 }
 
-TEST(RawOutStreamTest, FormattedHexBytes) {
+TEST(RawOutStreamTest, testFormattedHexBytes)
+{
    std::vector<uint8_t> Buf = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i',
                                'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
                                's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0',
@@ -349,12 +351,11 @@ TEST(RawOutStreamTest, FormattedHexBytes) {
              format_bytes_with_ascii_str(B.takeFront(12), 0, 7, 1));
 }
 
-TEST(RawFdOutStreamTest, multiple_RawFdOutStream_to_stdout) {
-   std::error_code EC;
-   // unittest mark
-
-//   { RawFdOutStream("-", EC, sys::fs::OpenFlags::F_O); }
-//   { RawFdOutStream("-", EC, sys::fs::OpenFlags::F_std::nullopt); }
+TEST(RawFdOutStreamTest, testMultipleRawFdOutStreamToStdout)
+{
+   std::error_code errorCode;
+   { RawFdOutStream("-", errorCode, polar::fs::OpenFlags::F_None); }
+   { RawFdOutStream("-", errorCode, polar::fs::OpenFlags::F_None); }
 }
 
 }
