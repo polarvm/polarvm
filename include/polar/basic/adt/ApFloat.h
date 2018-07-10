@@ -32,17 +32,15 @@ namespace basic {
    return m_storage.m_ieee.METHOD_CALL;                                               \
    if (usesLayout<DoubleApFloat>(getSemantics()))                             \
    return m_storage.m_dvalue.METHOD_CALL;                                             \
+   polar_unreachable("Unexpected semantics");                                 \
 } while (false)
 
-// unittest mark
-// polar_unreachable("Unexpected semantics");
 struct FltSemantics;
 class ApSInt;
 class StringRef;
 class ApFloat;
 
 using polar::utils::RawOutStream;
-
 
 template <typename T>
 class SmallVectorImpl;
@@ -780,8 +778,7 @@ class ApFloat : public ApFloatBase
             new (&m_dvalue) DoubleApFloat(semantics, std::forward<ArgTypes>(args)...);
             return;
          }
-         // unittest mark
-         // polar_unreachable("Unexpected semantics");
+         polar_unreachable("Unexpected semantics");
       }
 
       ~Storage()
@@ -795,8 +792,7 @@ class ApFloat : public ApFloatBase
             m_dvalue.~DoubleApFloat();
             return;
          }
-         // unittest mark
-         // polar_unreachable("Unexpected semantics");
+         polar_unreachable("Unexpected semantics");
       }
 
       Storage(const Storage &other)
@@ -809,8 +805,7 @@ class ApFloat : public ApFloatBase
             new (this) DoubleApFloat(other.m_dvalue);
             return;
          }
-         // unittest mark
-         // polar_unreachable("Unexpected semantics");
+         polar_unreachable("Unexpected semantics");
       }
 
       Storage(Storage &&other)
@@ -823,8 +818,7 @@ class ApFloat : public ApFloatBase
             new (this) DoubleApFloat(std::move(other.m_dvalue));
             return;
          }
-         // unittest mark
-         // polar_unreachable("Unexpected semantics");
+         polar_unreachable("Unexpected semantics");
       }
 
       Storage &operator=(const Storage &other)
@@ -879,8 +873,7 @@ class ApFloat : public ApFloatBase
       {
          return m_storage.m_dvalue.getFirst().m_storage.m_ieee;
       }
-      // unittest mark
-      // polar_unreachable("Unexpected semantics");
+      polar_unreachable("Unexpected semantics");
    }
 
    const IEEEFloat &getIEEE() const
@@ -891,8 +884,7 @@ class ApFloat : public ApFloatBase
       if (usesLayout<DoubleApFloat>(*m_storage.m_semantics)) {
          return m_storage.m_dvalue.getFirst().m_storage.m_ieee;
       }
-      // unittest mark
-      // polar_unreachable("Unexpected semantics");
+      polar_unreachable("Unexpected semantics");
    }
 
    void makeZero(bool neg)
@@ -930,8 +922,7 @@ class ApFloat : public ApFloatBase
    // elements in the array is default initialized.
    ApFloat() : m_storage(getIEEEdouble())
    {
-      // unittest mark
-      // polar_unreachable("This is a workaround for old clang.");
+      polar_unreachable("This is a workaround for old clang.");
    }
 
    explicit ApFloat(IEEEFloat fvalue, const FltSemantics &semantic)
@@ -951,8 +942,7 @@ class ApFloat : public ApFloatBase
       if (usesLayout<DoubleApFloat>(getSemantics())) {
          return m_storage.m_dvalue.compareAbsoluteValue(other.m_storage.m_dvalue);
       }
-      // unittest mark
-      // polar_unreachable("Unexpected semantics");
+      polar_unreachable("Unexpected semantics");
    }
 
 public:
@@ -1107,8 +1097,7 @@ public:
       if (usesLayout<DoubleApFloat>(getSemantics())) {
          return m_storage.m_dvalue.subtract(other.m_storage.m_dvalue, rmode);
       }
-      // unittest mark
-      // polar_unreachable("Unexpected semantics");
+      polar_unreachable("Unexpected semantics");
    }
 
    OpStatus multiply(const ApFloat &other, RoundingMode rmode)
@@ -1121,8 +1110,7 @@ public:
       if (usesLayout<DoubleApFloat>(getSemantics())) {
          return m_storage.m_dvalue.multiply(other.m_storage.m_dvalue, rmode);
       }
-      // unittest mark
-      // polar_unreachable("Unexpected semantics");
+      polar_unreachable("Unexpected semantics");
    }
    OpStatus divide(const ApFloat &other, RoundingMode rmode)
    {
@@ -1134,8 +1122,7 @@ public:
       if (usesLayout<DoubleApFloat>(getSemantics())) {
          return m_storage.m_dvalue.divide(other.m_storage.m_dvalue, rmode);
       }
-      // unittest mark
-      // polar_unreachable("Unexpected semantics");
+      polar_unreachable("Unexpected semantics");
    }
 
    OpStatus remainder(const ApFloat &other)
@@ -1149,8 +1136,7 @@ public:
       if (usesLayout<DoubleApFloat>(getSemantics())) {
          return m_storage.m_dvalue.remainder(other.m_storage.m_dvalue);
       }
-      // unittest mark
-      // polar_unreachable("Unexpected semantics");
+      polar_unreachable("Unexpected semantics");
    }
 
    OpStatus mod(const ApFloat &other)
@@ -1164,8 +1150,7 @@ public:
       if (usesLayout<DoubleApFloat>(getSemantics())) {
          return m_storage.m_dvalue.mod(other.m_storage.m_dvalue);
       }
-      // unittest mark
-      // polar_unreachable("Unexpected semantics");
+      polar_unreachable("Unexpected semantics");
    }
 
    OpStatus fusedMultiplyAdd(const ApFloat &multiplicand, const ApFloat &addend,
@@ -1183,8 +1168,7 @@ public:
          return m_storage.m_dvalue.fusedMultiplyAdd(multiplicand.m_storage.m_dvalue, addend.m_storage.m_dvalue,
                                                     rmode);
       }
-      // unittest mark
-      // polar_unreachable("Unexpected semantics");
+      polar_unreachable("Unexpected semantics");
    }
 
    OpStatus roundToIntegral(RoundingMode rmode)
@@ -1340,8 +1324,7 @@ public:
       if (usesLayout<DoubleApFloat>(getSemantics())) {
          return m_storage.m_dvalue.bitwiseIsEqual(other.m_storage.m_dvalue);
       }
-      // unittest mark
-      // polar_unreachable("Unexpected semantics");
+      polar_unreachable("Unexpected semantics");
    }
 
    /// We don't rely on operator== working on double values, as
@@ -1509,8 +1492,7 @@ inline ApFloat frexp(const ApFloat &fvalue, int &exp, ApFloat::RoundingMode roun
    if (ApFloat::usesLayout<internal::DoubleApFloat>(fvalue.getSemantics())) {
       return ApFloat(frexp(fvalue.m_storage.m_dvalue, exp, roundingMode), fvalue.getSemantics());
    }
-   // unittest mark
-   // polar_unreachable("Unexpected semantics");
+   polar_unreachable("Unexpected semantics");
 }
 
 /// Returns the absolute value of the argument.
@@ -1530,7 +1512,8 @@ inline ApFloat neg(ApFloat value)
 /// Implements IEEE minNum semantics. Returns the smaller of the 2 arguments if
 /// both are not NaN. If either argument is a NaN, returns the other argument.
 POLAR_READONLY
-inline ApFloat minnum(const ApFloat &lhs, const ApFloat &rhs) {
+inline ApFloat minnum(const ApFloat &lhs, const ApFloat &rhs)
+{
    if (lhs.isNaN()) {
       return rhs;
    }
@@ -1545,7 +1528,8 @@ inline ApFloat minnum(const ApFloat &lhs, const ApFloat &rhs) {
 /// Implements IEEE maxNum semantics. Returns the larger of the 2 arguments if
 /// both are not NaN. If either argument is a NaN, returns the other argument.
 POLAR_READONLY
-inline ApFloat maxnum(const ApFloat &lhs, const ApFloat &rhs) {
+inline ApFloat maxnum(const ApFloat &lhs, const ApFloat &rhs)
+{
    if (lhs.isNaN()) {
       return rhs;
    }
