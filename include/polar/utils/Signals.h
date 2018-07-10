@@ -32,7 +32,7 @@ using polar::utils::RawOutStream;
 /// This function runs all the registered interrupt handlers, including the
 /// removal of files registered by RemoveFileOnSignal.
 void run_interrupt_handlers();
-
+void run_signal_handlers();
 /// This function registers signal handlers to ensure that if a signal gets
 /// delivered that the named file is removed.
 /// Remove a file if a fatal signal occurs.

@@ -72,11 +72,6 @@ static ManagedStatic<std::mutex> sg_signalsMutex;
 
 static ManagedStatic<std::vector<std::string>> sg_filesToRemove;
 
-// see signals.cpp file
-extern void run_signal_handlers();
-extern void insert_signal_handler(sys::SignalHandlerCallback funcPtr,
-                                  void *cookie);
-
 /// InterruptFunction - The function to call if ctrl-c is pressed.
 using InterruptFunctionType = void (*)();
 InterruptFunctionType sg_interruptFunction = nullptr;
@@ -111,6 +106,11 @@ static const int sg_killSigs[] =
 };
 
 static std::atomic<unsigned> sg_numRegisteredSignals = 0;
+
+
+ManagedStatic<std::vector<std::pair<void (*)(void *), void *>>>
+                                                              sg_callBacksToRun;
+
 static struct
 {
    struct sigaction m_sigaction;
@@ -199,7 +199,7 @@ void unregister_handlers()
 }
 
 /// Process the sg_filesToRemove list.
-void remove_fles_to_remove()
+void remove_files_to_remove()
 {
    // Avoid constructing ManagedStatic in the signal handler.
    // If sg_filesToRemove is not constructed, there are no files to remove.
@@ -230,6 +230,18 @@ void remove_fles_to_remove()
    }
 }
 
+void run_signal_handlers()
+{
+   if (!sg_callBacksToRun.isConstructed()) {
+      return;
+   }
+   for (auto &iter : *sg_callBacksToRun) {
+      iter.first(iter.second);
+   }
+   sg_callBacksToRun->clear();
+}
+
+
 // The signal handler that runs.
 RETSIGTYPE signal_handler(int sig)
 {
@@ -246,7 +258,7 @@ RETSIGTYPE signal_handler(int sig)
 
    {
       std::unique_lock<std::mutex> lockGuard(*sg_signalsMutex);
-      remove_fles_to_remove();
+      remove_files_to_remove();
 
       if (std::find(std::begin(sg_intSigs), std::end(sg_intSigs), sig)
           != std::end(sg_intSigs)) {
@@ -280,7 +292,7 @@ RETSIGTYPE signal_handler(int sig)
 void run_interrupt_handlers()
 {
    std::lock_guard lockGuard(*sg_signalsMutex);
-   remove_fles_to_remove();
+   remove_files_to_remove();
 }
 
 void set_interrupt_function(InterruptFunctionType func)
@@ -314,9 +326,6 @@ void dont_remove_file_on_signal(StringRef filename)
       iter = sg_filesToRemove->erase(reverseIter.base() - 1);
    }
 }
-
-extern ManagedStatic<std::vector<std::pair<void (*)(void *), void *>>>
-                                                                     sg_callBacksToRun;
 
 /// AddSignalHandler - Add a function to be called when a signal is delivered
 /// to the process.  The handler can have a cookie passed to it to identify

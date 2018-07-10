@@ -59,19 +59,6 @@ sg_disableSymbolication("disable-symbolication",
                         cmd::location(sg_disableSymbolicationFlag), cmd::Hidden);
 
 
-ManagedStatic<std::vector<std::pair<void (*)(void *), void *>>>
-                                                              sg_callBacksToRun;
-
-void run_signal_handlers() {
-   if (!sg_callBacksToRun.isConstructed()) {
-      return;
-   }
-   for (auto &iter : *sg_callBacksToRun) {
-      iter.first(iter.second);
-   }
-   sg_callBacksToRun->clear();
-}
-
 bool find_modules_and_offsets(void **stackTrace, int depth,
                               const char **modules, intptr_t *offsets,
                               const char *mainExecutableName,

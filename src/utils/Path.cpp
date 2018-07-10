@@ -29,7 +29,6 @@
 
 using namespace polar::utils::endian;
 using polar::basic::StringRef;
-using polar::fs::path::is_separator;
 using polar::utils::error_code_to_error;
 using polar::fs::path::Style;
 using polar::sys::Process;
@@ -1130,6 +1129,14 @@ std::error_code is_other(const Twine &path, bool &result)
    return std::error_code();
 }
 
+OptionalError<Permission> get_permissions(const Twine &path) {
+   FileStatus fstatus;
+   if (std::error_code errorCode = status(path, fstatus)) {
+      return errorCode;
+   }
+   return fstatus.getPermissions();
+}
+
 void DirectoryEntry::replaceFilename(const Twine &filename,
                                      BasicFileStatus status)
 {
@@ -1137,14 +1144,6 @@ void DirectoryEntry::replaceFilename(const Twine &filename,
    path::append(pathStr, filename);
    m_path = pathStr.getStr();
    m_status = status;
-}
-
-OptionalError<Permission> get_permissions(const Twine &path) {
-   FileStatus fstatus;
-   if (std::error_code errorCode = status(path, fstatus)) {
-      return errorCode;
-   }
-   return fstatus.getPermissions();
 }
 
 TempFile::TempFile(StringRef name, int fd)
@@ -1178,7 +1177,7 @@ Error TempFile::discard()
    // Always try to close and remove.
    if (!m_tmpName.empty()) {
       removeErrorCode = fs::remove(m_tmpName);
-      sys::dont_remove_file_on_signal(m_tmpName);
+      polar::sys::dont_remove_file_on_signal(m_tmpName);
    }
 #endif
 
@@ -1235,8 +1234,9 @@ Error TempFile::keep()
    m_done = true;
 
 #ifdef POLAR_ON_WIN32
-   if (std::error_code errorCode = cancel_delete_on_close(m_fd))
+   if (std::error_code errorCode = cancel_delete_on_close(m_fd)) {
       return error_code_to_error(errorCode);
+   }
 #else
    sys::dont_remove_file_on_signal(m_tmpName);
 #endif
@@ -1262,13 +1262,12 @@ Expected<TempFile> TempFile::create(const Twine &model, unsigned mode)
 
    TempFile ret(resultPath, fd);
 #ifndef POLAR_ON_WIN32
-   // unitest mark
-//   if (sys::remove_file_on_signal(resultPath)) {
-//      // Make sure we delete the file when RemoveFileOnSignal fails.
-//      polar::utils::consume_error(ret.discard());
-//      std::error_code errorCode(ErrorCode::operation_not_permitted);
-//      return error_code_to_error(errorCode);
-//   }
+   if (sys::remove_file_on_signal(resultPath)) {
+      // Make sure we delete the file when RemoveFileOnSignal fails.
+      polar::utils::consume_error(ret.discard());
+      std::error_code errorCode(ErrorCode::operation_not_permitted);
+      return error_code_to_error(errorCode);
+   }
 #endif
    return std::move(ret);
 }
@@ -1278,7 +1277,8 @@ namespace path {
 bool get_user_cache_dir(SmallVectorImpl<char> &result);
 
 bool user_cache_directory(SmallVectorImpl<char> &result, const Twine &path1,
-                          const Twine &path2, const Twine &path3) {
+                          const Twine &path2, const Twine &path3)
+{
    if (get_user_cache_dir(result)) {
       append(result, path1, path2, path3);
       return true;
@@ -1290,3 +1290,4 @@ bool user_cache_directory(SmallVectorImpl<char> &result, const Twine &path1,
 
 } // fs
 } // polar
+
