@@ -42,9 +42,8 @@ using polar::utils::debug_stream;
    return m_storage.m_ieee.METHOD_CALL;                                               \
    if (usesLayout<DoubleApFloat>(getSemantics()))                             \
    return m_storage.m_dvalue.METHOD_CALL;                                             \
+   polar_unreachable("Unexpected semantics");                              \
 } while (false)
-// unittest mark need add this
-// polar_unreachable("Unexpected semantics");
 
 
 /// A macro used to combine two fcCategory enums into one key which can be used
@@ -1351,8 +1350,7 @@ bool IEEEFloat::roundAwayFromZero(RoundingMode roundingMode,
    case RoundingMode::rmTowardNegative:
       return m_sign;
    }
-   // unittest mark
-   // polar_unreachable("Invalid rounding mode found");
+   polar_unreachable("Invalid rounding mode found");
 }
 
 IEEEFloat::OpStatus IEEEFloat::normalize(RoundingMode roundingMode,
@@ -1466,8 +1464,7 @@ IEEEFloat::OpStatus IEEEFloat::addOrSubtractSpecials(const IEEEFloat &other,
 {
    switch (PackCategoriesIntoKey(m_category, other.m_category)) {
    default:
-      // unittest mark
-      // polar_unreachable(nullptr);
+      polar_unreachable(nullptr);
 
    case PackCategoriesIntoKey(FltCategory::fcNaN, FltCategory::fcZero):
    case PackCategoriesIntoKey(FltCategory::fcNaN, FltCategory::fcNormal):
@@ -1595,8 +1592,7 @@ IEEEFloat::OpStatus IEEEFloat::multiplySpecials(const IEEEFloat &other)
 {
    switch (PackCategoriesIntoKey(m_category, other.m_category)) {
    default:
-      // unittest mark
-      // polar_unreachable(nullptr);
+      polar_unreachable(nullptr);
 
    case PackCategoriesIntoKey(FltCategory::fcNaN, FltCategory::fcZero):
    case PackCategoriesIntoKey(FltCategory::fcNaN, FltCategory::fcNormal):
@@ -1639,8 +1635,7 @@ IEEEFloat::OpStatus IEEEFloat::divideSpecials(const IEEEFloat &other)
 {
    switch (PackCategoriesIntoKey(m_category, other.m_category)) {
    default:
-      // unittest mark
-      // polar_unreachable(nullptr);
+      polar_unreachable(nullptr);
 
    case PackCategoriesIntoKey(FltCategory::fcZero, FltCategory::fcNaN):
    case PackCategoriesIntoKey(FltCategory::fcNormal, FltCategory::fcNaN):
@@ -1682,8 +1677,7 @@ IEEEFloat::OpStatus IEEEFloat::modSpecials(const IEEEFloat &other)
 {
    switch (PackCategoriesIntoKey(m_category, other.m_category)) {
    default:
-      // unittest mark
-      // polar_unreachable(nullptr);
+      polar_unreachable(nullptr);
 
    case PackCategoriesIntoKey(FltCategory::fcNaN, FltCategory::fcZero):
    case PackCategoriesIntoKey(FltCategory::fcNaN, FltCategory::fcNormal):
@@ -1964,8 +1958,7 @@ IEEEFloat::CmpResult IEEEFloat::compare(const IEEEFloat &other) const
 
    switch (PackCategoriesIntoKey(m_category, other.m_category)) {
    default:
-      // unittest mark
-     //  polar_unreachable(nullptr);
+      polar_unreachable(nullptr);
 
    case PackCategoriesIntoKey(FltCategory::fcNaN, FltCategory::fcZero):
    case PackCategoriesIntoKey(FltCategory::fcNaN, FltCategory::fcNormal):
@@ -2560,7 +2553,7 @@ IEEEFloat::roundSignificandWithExponent(const integerPart *decSigParts,
          above we must adjust our exponent to compensate for the
          implicit right shift.  */
          m_exponent = (decSig.m_exponent + m_semantics->m_precision
-                     - (calcSemantics.m_precision - excessPrecision));
+                       - (calcSemantics.m_precision - excessPrecision));
          calcLostFraction = lostfraction_through_truncation(decSig.getSignificandParts(),
                                                             decSig.getPartCount(),
                                                             truncatedBits);
@@ -3432,8 +3425,7 @@ void IEEEFloat::initFromApInt(const FltSemantics *semantics, const ApInt &apint)
    if (semantics == &sg_semPPCDoubleDoubleLegacy) {
       return initFromPPCDoubleDoubleApInt(apint);
    }
-   // unittest mark
-   // polar_unreachable(nullptr);
+   polar_unreachable(nullptr);
 }
 
 /// Make this number the largest magnitude normal number in the given
@@ -4737,8 +4729,7 @@ ApFloat::Storage::Storage(IEEEFloat fvalue, const FltSemantics &semantics)
                           ApFloat(sg_semIEEEdouble));
       return;
    }
-   // unittest mark
-   // polar_unreachable("Unexpected semantics");
+   polar_unreachable("Unexpected semantics");
 }
 
 ApFloat::OpStatus ApFloat::convertFromString(StringRef str, RoundingMode roundingMode)
@@ -4754,8 +4745,7 @@ HashCode hash_value(const ApFloat &arg)
    if (ApFloat::usesLayout<internal::DoubleApFloat>(arg.getSemantics())) {
       return hash_value(arg.m_storage.m_dvalue);
    }
-   // unittest mark
-   // polar_unreachable("Unexpected semantics");
+   polar_unreachable("Unexpected semantics");
 }
 
 ApFloat::ApFloat(const FltSemantics &semantics, StringRef str)
@@ -4789,8 +4779,7 @@ ApFloat::OpStatus ApFloat::convert(const FltSemantics &toSemantics,
       *this = ApFloat(std::move(getIEEE()), toSemantics);
       return ret;
    }
-   // unittest mark
-   // polar_unreachable("Unexpected semantics");
+   polar_unreachable("Unexpected semantics");
 }
 
 ApFloat ApFloat::getAllOnesValue(unsigned bitWidth, bool isIEEE) {
@@ -4807,8 +4796,7 @@ ApFloat ApFloat::getAllOnesValue(unsigned bitWidth, bool isIEEE) {
       case 128:
          return ApFloat(sg_semIEEEquad, ApInt::getAllOnesValue(bitWidth));
       default:
-         // unittest mark
-         // polar_unreachable("Unknown floating bit width");
+         polar_unreachable("Unknown floating bit width");
          break;
       }
    } else {
