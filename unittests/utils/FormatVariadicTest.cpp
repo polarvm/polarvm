@@ -488,10 +488,10 @@ TEST(FormatVariadicTest, testBigTest)
    Stream.flush();
    const char *Expected =
          R"foo(There are {14} items in the tuple, and {2} tuple(s) in the array.
-         Char|  HexInt|   Str    |   Ref    |  std::str   | double|  float|   pointer|comma  |       exp|          bigint|          bigint2| limit|byte
-         a|     0x1|   Str    |          |             |  3.142|-17.53%|0x00000000|123,456|6.0200E+23|-908,234,908,423|  908234908422234|   nan|0xAB
-         x| 0xDDB5B|LongerStr |  Strin   | std::string | -2.700|  8.21%|0x00000000|0      |6.6200E-34|-908,234,908,423|  908234908422234|   INF| 0x0
-         )foo";
+  Char|  HexInt|   Str    |   Ref    |  std::str   | double|  float|   pointer|comma  |       exp|          bigint|          bigint2| limit|byte
+     a|     0x1|   Str    |          |             |  3.142|-17.53%|0x00000000|123,456|6.0200E+23|-908,234,908,423|  908234908422234|   nan|0xAB
+     x| 0xDDB5B|LongerStr |  Strin   | std::string | -2.700|  8.21%|0x00000000|0      |6.6200E-34|-908,234,908,423|  908234908422234|   INF| 0x0
+)foo";
 
    EXPECT_EQ(Expected, S);
 }

@@ -47,7 +47,7 @@ enum class Style { windows, posix, native };
 /// * The root-directory element, if present.
 /// * Each successive filename element, if present.
 /// * Dot, if one or more trailing non-root slash characters are present.
-/// Traversing backwards is possible with \a reverse_iterator
+/// Traversing backwards is possible with \a ReverseIterator
 ///
 /// Iteration examples. Each component is separated by ',':
 /// @code
@@ -89,16 +89,16 @@ public:
 /// This is an input iterator that iterates over the individual components in
 /// \a path in reverse order. The traversal order is exactly reversed from that
 /// of \a ConstIterator
-class reverse_iterator
-      : public IteratorFacadeBase<reverse_iterator, std::input_iterator_tag,
+class ReverseIterator
+      : public IteratorFacadeBase<ReverseIterator, std::input_iterator_tag,
       const StringRef> {
    StringRef m_path;      ///< The entire path.
    StringRef m_component; ///< The current component. Not necessarily in Path.
    size_t    m_position;  ///< The iterators current position within Path.
    Style m_style;             ///< The path style to use.
 
-   friend reverse_iterator rbegin(StringRef path, Style style);
-   friend reverse_iterator rend(StringRef path);
+   friend ReverseIterator rbegin(StringRef path, Style style);
+   friend ReverseIterator rend(StringRef path);
 
 public:
    reference operator*() const
@@ -106,11 +106,11 @@ public:
       return m_component;
    }
 
-   reverse_iterator &operator++();    // preincrement
-   bool operator==(const reverse_iterator &other) const;
+   ReverseIterator &operator++();    // preincrement
+   bool operator==(const ReverseIterator &other) const;
 
    /// Difference in bytes between this and other.
-   ptrdiff_t operator-(const reverse_iterator &other) const;
+   ptrdiff_t operator-(const ReverseIterator &other) const;
 };
 
 /// Get begin iterator over \a path.
@@ -126,12 +126,12 @@ ConstIterator end(StringRef path);
 /// Get reverse begin iterator over \a path.
 /// @param path Input path.
 /// @returns Iterator initialized with the first reverse component of \a path.
-reverse_iterator rbegin(StringRef path, Style style = Style::native);
+ReverseIterator rbegin(StringRef path, Style style = Style::native);
 
 /// Get reverse end iterator over \a path.
 /// @param path Input path.
 /// @returns Iterator initialized to the reverse end of \a path.
-reverse_iterator rend(StringRef path);
+ReverseIterator rend(StringRef path);
 
 /// @}
 /// @name Lexical Modifiers

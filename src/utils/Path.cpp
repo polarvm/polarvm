@@ -331,25 +331,25 @@ ptrdiff_t ConstIterator::operator-(const ConstIterator &rhs) const
    return m_position - rhs.m_position;
 }
 
-reverse_iterator rbegin(StringRef path, Style style)
+ReverseIterator rbegin(StringRef path, Style style)
 {
-   reverse_iterator iter;
+   ReverseIterator iter;
    iter.m_path = path;
    iter.m_position = path.getSize();
    iter.m_style = style;
    return ++iter;
 }
 
-reverse_iterator rend(StringRef path)
+ReverseIterator rend(StringRef path)
 {
-   reverse_iterator iter;
+   ReverseIterator iter;
    iter.m_path = path;
    iter.m_component = path.substr(0, 0);
    iter.m_position = 0;
    return iter;
 }
 
-reverse_iterator &reverse_iterator::operator++()
+ReverseIterator &ReverseIterator::operator++()
 {
    // If we're at the end and the previous char was a '/', return '.' unless
    // we are the root path.
@@ -374,13 +374,13 @@ reverse_iterator &reverse_iterator::operator++()
    return *this;
 }
 
-bool reverse_iterator::operator==(const reverse_iterator &rhs) const
+bool ReverseIterator::operator==(const ReverseIterator &rhs) const
 {
    return m_path.begin() == rhs.m_path.begin() && m_component == rhs.m_component &&
          m_position == rhs.m_position;
 }
 
-ptrdiff_t reverse_iterator::operator-(const reverse_iterator &rhs) const
+ptrdiff_t ReverseIterator::operator-(const ReverseIterator &rhs) const
 {
    return m_position - rhs.m_position;
 }
@@ -895,27 +895,28 @@ static std::error_code make_absolute(const Twine &currentDirectory,
          (real_style(Style::native) != Style::windows) || path::has_root_name(p);
 
    // Already absolute.
-   if (rootName && rootDirectory)
+   if (rootName && rootDirectory) {
       return std::error_code();
+   }
 
    // All of the following conditions will need the current directory.
-   SmallString<128> current_dir;
-   if (useCurrentDirectory)
-      currentDirectory.toVector(current_dir);
-   else if (std::error_code ec = current_path(current_dir))
-      return ec;
-
+   SmallString<128> currentDir;
+   if (useCurrentDirectory) {
+       currentDirectory.toVector(currentDir);
+   } else if (std::error_code ec = current_path(currentDir)) {
+       return ec;
+   }
    // Relative path. Prepend the current directory.
    if (!rootName && !rootDirectory) {
       // Append path to the current directory.
-      path::append(current_dir, p);
+      path::append(currentDir, p);
       // Set path to the result.
-      path.swap(current_dir);
+      path.swap(currentDir);
       return std::error_code();
    }
 
    if (!rootName && rootDirectory) {
-      StringRef cdrn = path::root_name(current_dir);
+      StringRef cdrn = path::root_name(currentDir);
       SmallString<128> curDirRootName(cdrn.begin(), cdrn.end());
       path::append(curDirRootName, p);
       // Set path to the result.
@@ -925,8 +926,8 @@ static std::error_code make_absolute(const Twine &currentDirectory,
 
    if (rootName && !rootDirectory) {
       StringRef pRootName      = path::root_name(p);
-      StringRef bRootDirectory = path::root_directory(current_dir);
-      StringRef bRelativePath  = path::relative_path(current_dir);
+      StringRef bRootDirectory = path::root_directory(currentDir);
+      StringRef bRelativePath  = path::relative_path(currentDir);
       StringRef pRelativePath  = path::relative_path(p);
 
       SmallString<128> res;

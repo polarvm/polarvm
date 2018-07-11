@@ -486,6 +486,8 @@ class SmallVectorImpl : public SmallVectorTemplateBase<T, utils::IsPodLike<T>::v
 public:
    using iterator = typename SuperClass::iterator;
    using const_iterator = typename SuperClass::const_iterator;
+   using ConstIterator = const_iterator;
+   using Iterator = iterator;
    using size_type = typename SuperClass::size_type;
 
 protected:

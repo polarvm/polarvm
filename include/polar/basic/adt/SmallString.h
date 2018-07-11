@@ -15,6 +15,7 @@
 #include "polar/basic/adt/SmallVector.h"
 #include "polar/basic/adt/StringRef.h"
 #include <cstddef>
+#include <ostream>
 
 namespace polar {
 namespace basic {
@@ -313,6 +314,12 @@ public:
    operator StringRef() const
    {
       return getStr();
+   }
+
+   /// Implicit conversion to StringRef.
+   operator std::string() const
+   {
+      return std::string(this->begin(), this->getSize());
    }
    
    // Extra operators.

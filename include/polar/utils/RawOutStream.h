@@ -218,7 +218,7 @@ public:
       return write(str.data(), str.length());
    }
 
-   RawOutStream &operator<<(const polar::basic::SmallVectorImpl<char> &str)
+   RawOutStream &operator<<(const SmallVectorImpl<char> &str)
    {
       return write(str.getData(), str.getSize());
    }
@@ -234,7 +234,8 @@ public:
       return this->operator<<(static_cast<unsigned long>(num));
    }
 
-   RawOutStream &operator<<(int num) {
+   RawOutStream &operator<<(int num)
+   {
       return this->operator<<(static_cast<long>(num));
    }
 

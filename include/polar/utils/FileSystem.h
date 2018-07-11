@@ -876,7 +876,7 @@ std::error_code create_temporary_file(const Twine &prefix, StringRef suffix,
 std::error_code create_temporary_file(const Twine &prefix, StringRef suffix,
                                       SmallVectorImpl<char> &resultPath);
 
-std::error_code create_unique_firectory(const Twine &prefix,
+std::error_code create_unique_directory(const Twine &prefix,
                                         SmallVectorImpl<char> &resultPath);
 
 /// Get a unique name, not currently exisiting in the filesystem. Subject
@@ -1098,7 +1098,6 @@ public:
       SmallString<128> pathStorage;
       errorCode = internal::directory_iterator_construct(
                *m_state, path.toStringRef(pathStorage), m_followSymlinks);
-      updateErrorCodeForCurrentEntry(errorCode);
    }
 
    explicit DirectoryIterator(const DirectoryEntry &direEntry, std::error_code &errorCode,
@@ -1108,7 +1107,6 @@ public:
       m_state = std::make_shared<internal::DirIterState>();
       errorCode = internal::directory_iterator_construct(
                *m_state, direEntry.getPath(), m_followSymlinks);
-      updateErrorCodeForCurrentEntry(errorCode);
    }
 
    /// Construct end iterator.
@@ -1118,7 +1116,6 @@ public:
    DirectoryIterator &increment(std::error_code &errorCode)
    {
       errorCode = internal::directory_iterator_increment(*m_state);
-      updateErrorCodeForCurrentEntry(errorCode);
       return *this;
    }
 
@@ -1150,27 +1147,6 @@ public:
    }
    // Other members as required by
    // C++ Std, 24.1.1 Input iterators [input.iterators]
-
-private:
-   // Checks if current entry is valid and populates error code. For example,
-   // current entry may not exist due to broken symbol links.
-   void updateErrorCodeForCurrentEntry(std::error_code &errorCode)
-   {
-      // Bail out if error has already occured earlier to avoid overwriting it.
-      if (errorCode) {
-         return;
-      }
-      // Empty directory entry is used to mark the end of an interation, it's not
-      // an error.
-      if (m_state->m_currentEntry == DirectoryEntry()) {
-         return;
-      }
-
-      OptionalError<BasicFileStatus> status = m_state->m_currentEntry.getStatus();
-      if (!status) {
-         errorCode = status.getError();
-      }
-   }
 };
 
 namespace internal {
