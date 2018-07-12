@@ -138,7 +138,7 @@ ProcessInfo execute_no_wait(StringRef program, const char **args,
 
 /// Return true if the given arguments fit within system-specific
 /// argument length limits.
-bool commandLine_fits_within_system_limits(StringRef program,
+bool command_line_fits_within_system_limits(StringRef program,
                                            ArrayRef<const char *> args);
 
 /// File encoding options when writing contents that a non-UTF8 tool will

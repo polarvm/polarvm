@@ -429,7 +429,7 @@ public:
 protected:
    explicit Option(enum NumOccurrencesFlag occurrencesFlag,
                    enum OptionHidden hidden)
-      : m_occurrences(occurrencesFlag), m_value(0), m_hiddenFlag(Hidden),
+      : m_occurrences(occurrencesFlag), m_value(0), m_hiddenFlag(hidden),
         m_formatting(NormalFormatting), m_misc(0), m_category(&sg_generalCategory)
    {}
 
@@ -2449,7 +2449,7 @@ void tokenize_gnu_command_line(StringRef source, StringSaver &saver,
 /// \param [in] MarkEOLs true if tokenizing a response file and you want end of
 /// lines and end of the response file to be marked with a nullptr string.
 /// \param [out] NewArgv All parsed strings are appended to NewArgv.
-void tokenize_windows_commandLine(StringRef source, StringSaver &saver,
+void tokenize_windows_command_line(StringRef source, StringSaver &saver,
                                   SmallVectorImpl<const char *> &newArgv,
                                   bool markEOLs = false);
 
