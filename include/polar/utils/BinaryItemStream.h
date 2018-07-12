@@ -90,12 +90,12 @@ private:
    void computeItemOffsets()
    {
       m_itemEndOffsets.clear();
-      m_itemEndOffsets.reserve(m_items.size());
+      m_itemEndOffsets.reserve(m_items.getSize());
       uint32_t m_currentOffset = 0;
       for (const auto &item : m_items) {
-         uint32_t Len = Traits::getLength(item);
-         assert(Len > 0 && "no empty items");
-         m_currentOffset += Len;
+         uint32_t length = Traits::getLength(item);
+         assert(length > 0 && "no empty items");
+         m_currentOffset += length;
          m_itemEndOffsets.push_back(m_currentOffset);
       }
    }
@@ -110,7 +110,7 @@ private:
       auto iter =
             std::lower_bound(m_itemEndOffsets.begin(), m_itemEndOffsets.end(), offset);
       size_t idx = std::distance(m_itemEndOffsets.begin(), iter);
-      assert(idx < m_items.size() && "binary search for offset failed");
+      assert(idx < m_items.getSize() && "binary search for offset failed");
       return idx;
    }
 

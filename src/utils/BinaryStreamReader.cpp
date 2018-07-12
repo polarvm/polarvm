@@ -21,7 +21,7 @@ BinaryStreamReader::BinaryStreamReader(BinaryStreamRef ref)
 {}
 
 BinaryStreamReader::BinaryStreamReader(BinaryStream &stream)
-   : m_stream(m_stream)
+   : m_stream(stream)
 {}
 
 BinaryStreamReader::BinaryStreamReader(ArrayRef<uint8_t> data,

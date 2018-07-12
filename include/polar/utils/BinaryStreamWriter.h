@@ -196,7 +196,7 @@ public:
       return m_stream.getLength();
    }
 
-   uint32_t bytesRemaining() const
+   uint32_t getBytesRemaining() const
    {
       return getLength() - getOffset();
    }

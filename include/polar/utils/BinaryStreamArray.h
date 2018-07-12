@@ -176,20 +176,20 @@ class VarStreamArrayIterator
    typedef VarStreamArray<ValueType, Extractor> ArrayType;
 
 public:
-   VarStreamArrayIterator(const ArrayType &m_array, const Extractor &extractor,
+   VarStreamArrayIterator(const ArrayType &array, const Extractor &extractor,
                           bool *hadError)
-      : VarStreamArrayIterator(m_array, extractor, 0, hadError)
+      : VarStreamArrayIterator(array, extractor, 0, hadError)
    {}
 
-   VarStreamArrayIterator(const ArrayType &m_array, const Extractor &extractor,
+   VarStreamArrayIterator(const ArrayType &array, const Extractor &extractor,
                           uint32_t offset, bool *hadError)
-      : m_iterRef(m_array.m_stream.dropFront(offset)), m_extractor(extractor),
-        m_m_array(&m_array), m_absOffset(offset), m_hadError(hadError)
+      : m_iterRef(array.m_stream.dropFront(offset)), m_extractor(extractor),
+        m_m_array(&array), m_absOffset(offset), m_hadError(hadError)
    {
       if (m_iterRef.getLength() == 0) {
          moveToEnd();
       } else {
-         auto errorCode = extract(m_iterRef, m_thisLen, m_thisValue);
+         auto errorCode = m_extractor(m_iterRef, m_thisLen, m_thisValue);
          if (errorCode) {
             consume_error(std::move(errorCode));
             markError();

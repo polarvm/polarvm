@@ -24,7 +24,7 @@ BinaryStreamWriter::BinaryStreamWriter(WritableBinaryStreamRef ref)
 {}
 
 BinaryStreamWriter::BinaryStreamWriter(WritableBinaryStream &stream)
-   : m_stream(m_stream)
+   : m_stream(stream)
 {}
 
 BinaryStreamWriter::BinaryStreamWriter(MutableArrayRef<uint8_t> data,

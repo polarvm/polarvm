@@ -3,6 +3,7 @@ polar_add_unittest(PolarBaseLibTests BasicUtilsTest
    AlignOfTest.cpp
    AllocatorTest.cpp
    ARMAttributeParserTest.cpp
+   BinaryStreamTest.cpp
    ChronoTest.cpp
    ConvertUtfTest.cpp
    CommandLineTest.cpp
@@ -15,3 +16,5 @@ polar_add_unittest(PolarBaseLibTests BasicUtilsTest
    UnicodeTest.cpp
 
    )
+
+target_link_libraries(BasicUtilsTest PRIVATE TestSupport)
