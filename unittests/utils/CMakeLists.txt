@@ -4,10 +4,12 @@ polar_add_unittest(PolarBaseLibTests BasicUtilsTest
    AllocatorTest.cpp
    ARMAttributeParserTest.cpp
    BinaryStreamTest.cpp
+   BranchProbabilityTest.cpp
    ChronoTest.cpp
    ConvertUtfTest.cpp
    CommandLineTest.cpp
    CastingTest.cpp
+   CachePruningTest.cpp
    FastHashTest.cpp
    FormatVariadicTest.cpp
    RawOutStreamTest.cpp
