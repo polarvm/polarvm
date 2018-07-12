@@ -60,12 +60,12 @@ template <class T, size_t Align = alignof(T)> class ArrayRecycler
    void push(unsigned index, T *ptr)
    {
       assert(ptr && "Cannot recycle NULL pointer");
-      FreeList *entry = reinterpret_cast<FreeList*>(Ptr);
+      FreeList *entry = reinterpret_cast<FreeList*>(ptr);
       if (index >= m_bucket.getSize()) {
          m_bucket.resize(size_t(index) + 1);
       }
       entry->m_next = m_bucket[index];
-      m_bucket[Idx] = entry;
+      m_bucket[index] = entry;
       __asan_poison_memory_region(ptr, Capacity::get(index).getSize());
    }
 
@@ -87,7 +87,7 @@ public:
       /// Get the capacity of an array that can hold at least N elements.
       static Capacity get(size_t N)
       {
-         return Capacity(N ? log2_ceil(N) : 0);
+         return Capacity(N ? log2_ceil(static_cast<uint64_t>(N)) : 0);
       }
 
       /// Get the number of elements in an array with this capacity.

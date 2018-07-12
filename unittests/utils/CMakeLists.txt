@@ -1,4 +1,5 @@
 polar_add_unittest(PolarBaseLibTests BasicUtilsTest
+   ArrayRecyclerTest.cpp
    AlignOfTest.cpp
    AllocatorTest.cpp
    ChronoTest.cpp
