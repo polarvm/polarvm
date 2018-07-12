@@ -2,6 +2,7 @@ polar_add_unittest(PolarBaseLibTests BasicUtilsTest
    ArrayRecyclerTest.cpp
    AlignOfTest.cpp
    AllocatorTest.cpp
+   ARMAttributeParserTest.cpp
    ChronoTest.cpp
    ConvertUtfTest.cpp
    CommandLineTest.cpp
