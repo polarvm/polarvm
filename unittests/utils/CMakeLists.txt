@@ -4,6 +4,7 @@ polar_add_unittest(PolarBaseLibTests BasicUtilsTest
    ChronoTest.cpp
    ConvertUtfTest.cpp
    CommandLineTest.cpp
+   CastingTest.cpp
    FastHashTest.cpp
    FormatVariadicTest.cpp
    RawOutStreamTest.cpp

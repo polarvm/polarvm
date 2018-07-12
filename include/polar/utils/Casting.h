@@ -36,7 +36,8 @@ namespace utils {
 // fact that they are automatically dereferenced, and are not involved with the
 // template selection process...  the default implementation is a noop.
 //
-template<typename From> struct SmplifyType {
+template<typename From> struct SmplifyType
+{
    using SimpleType = From; // The real type this represents...
 
    // An accessor to get the real value...
