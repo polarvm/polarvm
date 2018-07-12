@@ -25,6 +25,10 @@ elseif(CMAKE_HOST_UNIX)
    endif()
 endif(MSVC OR MINGW)
 
+if (HAVE_LIBZ)
+   list(APPEND system_libs ${ZLIB_LIBRARIES})
+endif()
+
 polar_collect_files(
    TYPE_SOURCE
    RELATIVE
