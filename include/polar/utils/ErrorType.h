@@ -68,7 +68,7 @@ public:
    // Returns the class ID for this type.
    static const void *getClassId()
    {
-      return &m_id;
+      return &sm_id;
    }
 
    // Returns the class ID for the dynamic type of this ErrorInfoBase instance.
@@ -90,7 +90,7 @@ public:
 private:
    virtual void anchor();
 
-   static char m_id;
+   static char sm_id;
 };
 
 /// Lightweight error class with error context and mandatory checking.
@@ -361,12 +361,12 @@ class ErrorInfo : public ParentErrorType
 public:
    static const void *getClassId()
    {
-      return &ThisErrorType::m_id;
+      return &ThisErrorType::sm_id;
    }
 
    const void *getDynamicClassId() const override
    {
-      return &ThisErrorType::m_id;
+      return &ThisErrorType::sm_id;
    }
 
    bool isA(const void *const classId) const override
@@ -384,8 +384,8 @@ class ErrorList final : public ErrorInfo<ErrorList>
    template <typename... HandlerTs>
    friend Error handle_errors(Error error, HandlerTs &&... handlers);
 
-   // joinErrors is implemented in terms of join.
-   friend Error joinErrors(Error, Error);
+   // join_errors is implemented in terms of join.
+   friend Error join_errors(Error, Error);
 
 public:
    void log(RawOutStream &outStream) const override
@@ -400,7 +400,7 @@ public:
    std::error_code convertToErrorCode() const override;
 
    // Used by ErrorInfo::classId.
-   static char m_id;
+   static char sm_id;
 
 private:
    ErrorList(std::unique_ptr<ErrorInfoBase> payload1,
@@ -450,7 +450,7 @@ private:
 /// Concatenate errors. The resulting Error is unchecked, and contains the
 /// ErrorInfo(s), if any, contained in E1, followed by the
 /// ErrorInfo(s), if any, contained in E2.
-inline Error joinErrors(Error error1, Error error2)
+inline Error join_errors(Error error1, Error error2)
 {
    return ErrorList::join(std::move(error1), std::move(error2));
 }
@@ -1181,7 +1181,7 @@ public:
    }
 
    // Used by ErrorInfo::m_classId.
-   static char m_id;
+   static char sm_id;
 
 protected:
    ECError() = default;
@@ -1236,7 +1236,7 @@ OptionalError<T> expected_to_optional_error(Expected<T> &&expected)
 class StringError : public ErrorInfo<StringError>
 {
 public:
-   static char m_id;
+   static char sm_id;
 
    StringError(const Twine &twine, std::error_code errorCode);
 

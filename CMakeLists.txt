@@ -99,9 +99,20 @@ else()
    set(POLAR_STDLIB_ASSERTIONS_default TRUE)
 endif()
 
+string(TOUPPER "${CMAKE_BUILD_TYPE}" uppercase_CMAKE_BUILD_TYPE)
+
+if(NOT uppercase_CMAKE_BUILD_TYPE STREQUAL "DEBUG" )
+   option(POLAR_ENABLE_ASSERTIONS "Enable assertions" OFF)
+else()
+   option(POLAR_ENABLE_ASSERTIONS "Enable assertions" ON)
+endif()
+
 option(POLAR_STDLIB_ASSERTIONS
    "Enable internal checks for the polarVM standard library (useful for debugging the library itself, does not affect checks required for safety)"
    "${POLAR_STDLIB_ASSERTIONS_default}")
+
+set(POLAR_ABI_BREAKING_CHECKS "WITH_ASSERTS" CACHE STRING
+   "Enable abi-breaking checks.  Can be WITH_ASSERTS, FORCE_ON or FORCE_OFF.")
 
 # POLAR_VERSION is deliberately /not/ cached so that an existing build directory
 # can be reused when a new version of Swift comes out (assuming the user hasn't
@@ -216,7 +227,7 @@ include(Config-ix)
 # By default, we target the host, but this can be overridden at CMake
 # invocation time.
 set(POLAR_DEFAULT_TARGET_TRIPLE "${POLAR_HOST_TRIPLE}" CACHE STRING
-   "Default target for which LLVM will generate code." )
+   "Default target for which POLAR will generate code." )
 set(TARGET_TRIPLE "${POLAR_DEFAULT_TARGET_TRIPLE}")
 message(STATUS "polarVM host triple: ${POLAR_HOST_TRIPLE}")
 message(STATUS "polarVM default target triple: ${POLAR_DEFAULT_TARGET_TRIPLE}")

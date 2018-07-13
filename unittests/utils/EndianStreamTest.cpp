@@ -104,7 +104,8 @@ TEST(EndianStreamTest, testWriteInt64LE)
    EXPECT_EQ(static_cast<uint8_t>(data[7]), 0xFE);
 }
 
-TEST(EndianStreamTest, testWriteInt64BE) {
+TEST(EndianStreamTest, testWriteInt64BE)
+{
    SmallVector<char, 16> data;
 
    {
@@ -123,7 +124,8 @@ TEST(EndianStreamTest, testWriteInt64BE) {
    EXPECT_EQ(static_cast<uint8_t>(data[7]), 0xCD);
 }
 
-TEST(EndianStreamTest, testWriteDoubleLE) {
+TEST(EndianStreamTest, testWriteDoubleLE)
+{
    SmallString<16> data;
 
    {

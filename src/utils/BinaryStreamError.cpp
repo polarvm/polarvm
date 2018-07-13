@@ -15,7 +15,7 @@
 namespace polar {
 namespace utils {
 
-char BinaryStreamError::m_id = 0;
+char BinaryStreamError::sm_id = 0;
 
 BinaryStreamError::BinaryStreamError(StreamErrorCode code)
    : BinaryStreamError(code, "")

@@ -69,7 +69,7 @@ public:
       {}
 
       explicit HandleBase(const DebugEpochBase *parent)
-         : m_epochAddress(&Parent->Epoch),
+         : m_epochAddress(&parent->m_epoch),
            m_epochAtCreation(parent->m_epoch)
       {}
 

@@ -58,10 +58,10 @@ namespace utils {
 
 void ErrorInfoBase::anchor()
 {}
-char ErrorInfoBase::m_id = 0;
-char ErrorList::m_id = 0;
-char ECError::m_id = 0;
-char StringError::m_id = 0;
+char ErrorInfoBase::sm_id = 0;
+char ErrorList::sm_id = 0;
+char ECError::sm_id = 0;
+char StringError::sm_id = 0;
 
 void log_all_unhandled_errors(Error error, RawOutStream &outStream, Twine errorBanner) {
    if (!error) {

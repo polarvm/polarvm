@@ -38,7 +38,7 @@ template <typename T> struct ExpectedHolder : public ErrorHolder
   Expected<T> &m_expected;
 };
 
-inline void print_to(const ErrorHolder &error, std::ostream *outstream)
+inline void PrintTo(const ErrorHolder &error, std::ostream *outstream)
 {
   *outstream << (error.m_success ? "succeeded" : "failed");
   if (!error.m_success) {
@@ -47,12 +47,12 @@ inline void print_to(const ErrorHolder &error, std::ostream *outstream)
 }
 
 template <typename T>
-void print_to(const ExpectedHolder<T> &item, std::ostream *outstream)
+void PrintTo(const ExpectedHolder<T> &item, std::ostream *outstream)
 {
   if (item.m_success) {
     *outstream << "succeeded with value " << ::testing::PrintToString(*item.m_expected);
   } else {
-    print_to(static_cast<const ErrorHolder &>(item), outstream);
+    PrintTo(static_cast<const ErrorHolder &>(item), outstream);
   }
 }
 

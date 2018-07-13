@@ -15,8 +15,12 @@ polar_add_unittest(PolarBaseLibTests BasicUtilsTest
    DataExtractorTest.cpp
    DebugTest.cpp
    EndianStreamTest.cpp
+   EndianTest.cpp
+   ErrorNumberTest.cpp
+   ErrorTest.cpp
    FastHashTest.cpp
    FormatVariadicTest.cpp
+   OptionalErrorTest.cpp
    RawOutStreamTest.cpp
    SwapByteOrderTest.cpp
    PathTest.cpp

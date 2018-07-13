@@ -32,7 +32,7 @@ enum class StreamErrorCode
 class BinaryStreamError : public ErrorInfo<BinaryStreamError>
 {
 public:
-   static char m_id;
+   static char sm_id;
    explicit BinaryStreamError(StreamErrorCode errorCode);
    explicit BinaryStreamError(StringRef context);
    BinaryStreamError(StreamErrorCode errorCode, StringRef context);

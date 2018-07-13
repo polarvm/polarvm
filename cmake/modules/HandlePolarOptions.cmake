@@ -647,3 +647,21 @@ function(get_compile_definitions)
 endfunction()
 
 get_compile_definitions()
+
+string(TOUPPER "${POLAR_ABI_BREAKING_CHECKS}" uppercase_POLAR_ABI_BREAKING_CHECKS)
+
+if( uppercase_POLAR_ABI_BREAKING_CHECKS STREQUAL "WITH_ASSERTS" )
+
+  if( POLAR_ENABLE_ASSERTIONS )
+    set( POLAR_ENABLE_ABI_BREAKING_CHECKS 1 )
+  endif()
+elseif( uppercase_POLAR_ABI_BREAKING_CHECKS STREQUAL "FORCE_ON" )
+  set( POLAR_ENABLE_ABI_BREAKING_CHECKS 1 )
+elseif( uppercase_POLAR_ABI_BREAKING_CHECKS STREQUAL "FORCE_OFF" )
+  # We don't need to do anything special to turn off ABI breaking checks.
+elseif( NOT DEFINED POLAR_ABI_BREAKING_CHECKS )
+  # Treat POLAR_ABI_BREAKING_CHECKS like "FORCE_OFF" when it has not been
+  # defined.
+else()
+  message(FATAL_ERROR "Unknown value for POLAR_ABI_BREAKING_CHECKS: \"${POLAR_ABI_BREAKING_CHECKS}\"!")
+endif()

@@ -45,33 +45,33 @@ public:
    explicit ValueMatchesMono(const testing::Matcher<T> &m_matcher)
       : m_matcher(m_matcher) {}
 
-   bool matchAndExplain(const ExpectedHolder<T> &holder,
+   bool MatchAndExplain(const ExpectedHolder<T> &holder,
                         testing::MatchResultListener *listener) const override
    {
       if (!holder.m_success) {
          return false;
       }
-      bool result = m_matcher.matchAndExplain(*holder.expected, listener);
+      bool result = m_matcher.MatchAndExplain(*holder.m_expected, listener);
       if (result) {
          return result;
       }
       *listener << "(";
-      m_matcher.describeNegationTo(listener->stream());
+      m_matcher.DescribeNegationTo(listener->stream());
       *listener << ")";
       return result;
    }
 
-   void describeTo(std::ostream *outstream) const override
+   void DescribeTo(std::ostream *outstream) const override
    {
       *outstream << "succeeded with value (";
-      m_matcher.describeTo(outstream);
+      m_matcher.DescribeTo(outstream);
       *outstream << ")";
    }
 
-   void describeNegationTo(std::ostream *outstream) const override
+   void DescribeNegationTo(std::ostream *outstream) const override
    {
       *outstream << "did not succeed or value (";
-      m_matcher.describeNegationTo(outstream);
+      m_matcher.DescribeNegationTo(outstream);
       *outstream << ")";
    }
 
@@ -111,7 +111,7 @@ MATCHER(Succeeded, "") { return arg.m_success; }
 MATCHER(Failed, "") { return !arg.m_success; }
 
 template <typename M>
-internal::ValueMatchesPoly<M> hash_value(M matcher)
+internal::ValueMatchesPoly<M> has_value(M matcher)
 {
    return internal::ValueMatchesPoly<M>(matcher);
 }

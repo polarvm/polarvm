@@ -11,6 +11,7 @@
 
 #include "Error.h"
 #include "polar/basic/adt/StringRef.h"
+#include <iostream>
 
 namespace polar {
 namespace unittest {
