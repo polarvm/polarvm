@@ -30,7 +30,6 @@ TEST(FormattedRawOutStreamTest, testTell)
 
    for (unsigned i = 0; i != 3; ++i) {
       C.write(tmp, 100);
-
       EXPECT_EQ(100*(i+1), (unsigned) C.tell());
    }
 }

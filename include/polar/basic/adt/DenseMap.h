@@ -869,7 +869,7 @@ public:
       // Reduce the number of buckets.
       unsigned newNumBuckets = 0;
       if (oldNumEntries) {
-         newNumBuckets = std::max(64, 1 << (polar::utils::log2_ceil(oldNumEntries) + 1));
+         newNumBuckets = std::max(64, 1 << (polar::utils::log2_ceil_32(oldNumEntries) + 1));
       }
       if (newNumBuckets == m_numBuckets) {
          this->BaseType::initEmpty();
@@ -938,7 +938,7 @@ class SmallDenseMap
    // simplicity of referring to them.
    using BaseType = DenseMapBase<SmallDenseMap, KeyType, ValueType, KeyInfoType, BucketType>;
 
-   static_assert(polar::utils::is_power_of_two(inlineBuckets),
+   static_assert(polar::utils::is_power_of_two_64(inlineBuckets),
                  "InlineBuckets must be a power of 2.");
 
    unsigned m_small : 1;
@@ -1157,7 +1157,7 @@ public:
       // Reduce the number of buckets.
       unsigned newNumBuckets = 0;
       if (oldSize) {
-         newNumBuckets = 1 << (polar::utils::log2_ceil(oldSize) + 1);
+         newNumBuckets = 1 << (polar::utils::log2_ceil_32(oldSize) + 1);
          if (newNumBuckets > inlineBuckets && newNumBuckets < 64u) {
             newNumBuckets = 64;
          }

@@ -27,7 +27,8 @@
 namespace polar {
 namespace basic {
 
-using polar::utils::log2_ceil;
+using polar::utils::log2_ceil_32;
+using polar::utils::log2_ceil_64;
 using polar::utils::report_bad_alloc_error;
 
 void SmallPtrSetImplBase::shrinkAndClear()
@@ -37,7 +38,7 @@ void SmallPtrSetImplBase::shrinkAndClear()
 
    // Reduce the number of buckets.
    unsigned size = getSize();
-   m_curArraySize = size > 16 ? 1 << (log2_ceil(size) + 1) : 32;
+   m_curArraySize = size > 16 ? 1 << (log2_ceil_32(size) + 1) : 32;
    m_numNonEmpty = m_numTombstones = 0;
 
    // Install the new array.  Clear all the buckets to empty.

@@ -87,7 +87,7 @@ public:
       /// Get the capacity of an array that can hold at least N elements.
       static Capacity get(size_t N)
       {
-         return Capacity(N ? log2_ceil(static_cast<uint64_t>(N)) : 0);
+         return Capacity(N ? log2_ceil_64(static_cast<uint64_t>(N)) : 0);
       }
 
       /// Get the number of elements in an array with this capacity.

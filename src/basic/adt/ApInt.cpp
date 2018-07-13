@@ -29,7 +29,9 @@ namespace basic {
 
 #define DEBUG_TYPE "ApInt"
 
-using polar::utils::byte_swap;
+using polar::utils::byte_swap_16;
+using polar::utils::byte_swap_32;
+using polar::utils::byte_swap_64;
 using polar::utils::reverse_bits;
 using polar::utils::sign_extend;
 using polar::utils::debug_stream;
@@ -704,26 +706,26 @@ ApInt ApInt::byteSwap() const
 {
    assert(m_bitWidth >= 16 && m_bitWidth % 16 == 0 && "Cannot byteswap!");
    if (m_bitWidth == 16) {
-      return ApInt(m_bitWidth, byte_swap(uint16_t(m_intValue.m_value)));
+      return ApInt(m_bitWidth, byte_swap_16(uint16_t(m_intValue.m_value)));
    }
 
    if (m_bitWidth == 32) {
-      return ApInt(m_bitWidth, byte_swap(unsigned(m_intValue.m_value)));
+      return ApInt(m_bitWidth, byte_swap_32(unsigned(m_intValue.m_value)));
    }
 
    if (m_bitWidth == 48) {
       unsigned temp1 = unsigned(m_intValue.m_value >> 16);
-      temp1 = byte_swap(temp1);
+      temp1 = byte_swap_32(temp1);
       uint16_t temp2 = uint16_t(m_intValue.m_value);
-      temp2 = byte_swap(temp2);
+      temp2 = byte_swap_16(temp2);
       return ApInt(m_bitWidth, (uint64_t(temp2) << 32) | temp1);
    }
    if (m_bitWidth == 64) {
-      return ApInt(m_bitWidth, byte_swap(m_intValue.m_value));
+      return ApInt(m_bitWidth, byte_swap_64(m_intValue.m_value));
    }
    ApInt result(getNumWords() * APINT_BITS_PER_WORD, 0);
    for (unsigned index = 0, num = getNumWords(); index != num; ++index) {
-      result.m_intValue.m_pValue[index] = byte_swap(m_intValue.m_pValue[num - index - 1]);
+      result.m_intValue.m_pValue[index] = byte_swap_64(m_intValue.m_pValue[num - index - 1]);
    }
    if (result.m_bitWidth != m_bitWidth) {
       result.lshrInPlace(result.m_bitWidth - m_bitWidth);

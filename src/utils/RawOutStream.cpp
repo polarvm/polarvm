@@ -427,7 +427,7 @@ RawOutStream &RawOutStream::operator<<(const FormattedBytes &fbytes)
       uint64_t maxOffset = *fbytes.m_firstByteOffset + lines * fbytes.m_numPerLine;
       unsigned power = 0;
       if (maxOffset > 0) {
-         power = log2_ceil(maxOffset);
+         power = log2_ceil_64(maxOffset);
       }
       offsetWidth = std::max<uint64_t>(4, align_to(power, 4) / 4);
    }

@@ -37,7 +37,7 @@ using polar::utils::count_trailing_ones;
 using polar::utils::count_trailing_zeros;
 using polar::utils::RawOutStream;
 using polar::utils::count_population;
-using polar::utils::is_power_of_two;
+using polar::utils::is_power_of_two_64;
 using polar::utils::is_mask;
 using polar::utils::is_shifted_mask;
 using polar::utils::sign_extend;
@@ -529,7 +529,7 @@ public:
    bool isPowerOf2() const
    {
       if (isSingleWord()) {
-         return is_power_of_two(m_intValue.m_value);
+         return is_power_of_two_64(m_intValue.m_value);
       }
       return countPopulationSlowCase() == 1;
    }

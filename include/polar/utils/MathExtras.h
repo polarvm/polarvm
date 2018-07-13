@@ -469,33 +469,32 @@ constexpr inline bool is_shifted_mask(uint64_t value)
    return value && is_mask((value - 1) | value);
 }
 
-/// Return true if the argument is a power of two > 0.
-/// Ex. is_power_of_two(0x00100000U) == true (32 bit edition.)
-constexpr inline bool is_power_of_two(uint32_t value)
+/// Return true if the argument is a power of two > 0 of 32-bit version
+constexpr inline bool is_power_of_two_32(std::uint32_t value)
 {
    return value && !(value & (value - 1));
 }
 
-/// Return true if the argument is a power of two > 0 (64 bit edition.)
-constexpr inline bool is_power_of_two(uint64_t value)
+/// Return true if the argument is a power of two > 0 of 64-bit version
+constexpr inline bool is_power_of_two_64(std::uint64_t value)
 {
    return value && !(value & (value - 1));
 }
 
 /// Return a byte-swapped representation of the 16-bit argument.
-inline uint16_t byte_swap(uint16_t value)
+inline uint16_t byte_swap_16(uint16_t value)
 {
    return polar::utils::swap_byte_order_16(value);
 }
 
 /// Return a byte-swapped representation of the 32-bit argument.
-inline uint32_t byte_swap(uint32_t value)
+inline uint32_t byte_swap_32(uint32_t value)
 {
    return polar::utils::swap_byte_order_32(value);
 }
 
 /// Return a byte-swapped representation of the 64-bit argument.
-inline uint64_t byte_swap(uint64_t value)
+inline uint64_t byte_swap_64(uint64_t value)
 {
    return polar::utils::swap_byte_order_64(value);
 }
@@ -591,21 +590,21 @@ inline double log2(double value)
 #if defined(__ANDROID_API__) && __ANDROID_API__ < 18
    return __builtin_log(value) / __builtin_log(2.0);
 #else
-   return log2(value);
+   return ::log2(value);
 #endif
 }
 
 /// Return the floor log base 2 of the specified value, -1 if the value is zero.
 /// (32 bit edition.)
 /// Ex. log2(32) == 5, log2(1) == 0, log2(0) == -1, log2(6) == 2
-inline unsigned log2(uint32_t value)
+inline unsigned log2_32(uint32_t value)
 {
    return 31 - count_leading_zeros(value);
 }
 
 /// Return the floor log base 2 of the specified value, -1 if the value is zero.
 /// (64 bit edition.)
-inline unsigned log2(uint64_t value)
+inline unsigned log2_64(uint64_t value)
 {
    return 63 - count_leading_zeros(value);
 }
@@ -613,14 +612,14 @@ inline unsigned log2(uint64_t value)
 /// Return the ceil log base 2 of the specified value, 32 if the value is zero.
 /// (32 bit edition).
 /// Ex. log2_ceil(32) == 5, log2_ceil(1) == 0, log2_ceil(6) == 3
-inline unsigned log2_ceil(uint32_t value)
+inline unsigned log2_ceil_32(uint32_t value)
 {
    return 32 - count_leading_zeros(value - 1);
 }
 
 /// Return the ceil log base 2 of the specified value, 64 if the value is zero.
 /// (64 bit edition.)
-inline unsigned log2_ceil(uint64_t value)
+inline unsigned log2_ceil_64(uint64_t value)
 {
    return 64 - count_leading_zeros(value - 1);
 }
@@ -693,7 +692,7 @@ constexpr inline uint64_t min_align(uint64_t lhs, uint64_t rhs)
 /// align_addr(7, 4) == 8 and align_addr(8, 4) == 8.
 inline uintptr_t align_addr(const void *addr, size_t alignment)
 {
-   assert(alignment && is_power_of_two((uint64_t)alignment) &&
+   assert(alignment && is_power_of_two_64((uint64_t)alignment) &&
           "alignment is not a power of two!");
    assert((uintptr_t)addr + alignment - 1 >= (uintptr_t)addr);
    return (((uintptr_t)addr + alignment - 1) & ~(uintptr_t)(alignment - 1));
