@@ -20,6 +20,8 @@ polar_add_unittest(PolarBaseLibTests BasicUtilsTest
    ErrorTest.cpp
    FastHashTest.cpp
    FormatVariadicTest.cpp
+   FileOutputBufferTest.cpp
+   FormattedRawOutStreamTest.cpp
    OptionalErrorTest.cpp
    RawOutStreamTest.cpp
    SwapByteOrderTest.cpp
