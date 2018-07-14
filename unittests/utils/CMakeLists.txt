@@ -37,6 +37,7 @@ polar_add_unittest(PolarBaseLibTests BasicUtilsTest
    OptionalErrorTest.cpp
    RawOutStreamTest.cpp
    SwapByteOrderTest.cpp
+   ProcessTest.cpp
    PathTest.cpp
    ParallelTest.cpp
    UnicodeTest.cpp
