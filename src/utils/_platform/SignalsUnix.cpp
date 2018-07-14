@@ -517,7 +517,7 @@ void print_stacktrace(RawOutStream &outstream) {
 #endif
 }
 
-static void print_stacktrace_signal_handler(void *)
+static void print_stack_trace_signal_handler(void *)
 {
    print_stacktrace(error_stream());
 }
@@ -527,12 +527,12 @@ void disable_system_dialogs_on_crash()
 
 /// When an error signal (such as SIGABRT or SIGSEGV) is delivered to the
 /// process, print a stack trace and then exit.
-void print_stacktrace_on_error_signal(StringRef argv0,
+void print_stack_trace_on_error_signal(StringRef argv0,
                                       bool disableCrashReporting)
 {
    sg_argv0 = argv0;
 
-   add_signal_handler(print_stacktrace_signal_handler, nullptr);
+   add_signal_handler(print_stack_trace_signal_handler, nullptr);
 
 #if defined(__APPLE__) && ENABLE_CRASH_OVERRIDES
    // Environment variable to disable any kind of crash dialog.

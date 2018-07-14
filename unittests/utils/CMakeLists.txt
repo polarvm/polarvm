@@ -38,9 +38,11 @@ polar_add_unittest(PolarBaseLibTests BasicUtilsTest
    RawOutStreamTest.cpp
    SwapByteOrderTest.cpp
    ProcessTest.cpp
+   ProgramTest.cpp
    PathTest.cpp
    ParallelTest.cpp
    UnicodeTest.cpp
+   ../TestEntry.cpp
    )
 
 target_link_libraries(BasicUtilsTest PRIVATE TestSupport)
