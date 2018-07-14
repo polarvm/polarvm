@@ -177,6 +177,17 @@ MemoryBuffer::getMemBufferCopy(StringRef inputData, const Twine &bufferName)
    return nullptr;
 }
 
+std::unique_ptr<MemoryBuffer>
+MemoryBuffer::getNewMemBuffer(size_t size, StringRef bufferName)
+{
+   auto sb = WritableMemoryBuffer::getNewUninitMemBuffer(size, bufferName);
+   if (!sb) {
+      return nullptr;
+   }
+   memset(sb->getBufferStart(), 0, size);
+   return std::move(sb);
+}
+
 OptionalError<std::unique_ptr<MemoryBuffer>>
 MemoryBuffer::getFileOrStdIn(const Twine &filename, int64_t fileSize,
                              bool requiresNullTerminator)

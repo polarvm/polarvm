@@ -29,7 +29,10 @@ polar_add_unittest(PolarBaseLibTests BasicUtilsTest
    LockFileManagerTest.cpp
    MathExtrasTest.cpp
    ManagedStaticTest.cpp
+   MemoryBufferTest.cpp
    Md5Test.cpp
+   MemoryBufferTest.cpp
+   MemoryTest.cpp
    OptionalErrorTest.cpp
    RawOutStreamTest.cpp
    SwapByteOrderTest.cpp

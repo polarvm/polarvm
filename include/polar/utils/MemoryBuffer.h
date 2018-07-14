@@ -119,7 +119,7 @@ public:
    getOpenFile(int fd, const Twine &filename, uint64_t fileSize,
                bool requiresNullTerminator = true, bool isVolatile = false);
 
-   /// Open the specified memory range as a MemoryBuffer. Note that InputData
+   /// Open the specified memory range as a MemoryBuffer. Note that inputData
    /// must be null terminated if RequiresNullTerminator is true.
    static std::unique_ptr<MemoryBuffer>
    getMemBuffer(StringRef inputData, StringRef bufferName = "",
@@ -129,9 +129,15 @@ public:
    getMemBuffer(MemoryBufferRef ref, bool requiresNullTerminator = true);
 
    /// Open the specified memory range as a MemoryBuffer, copying the contents
-   /// and taking ownership of it. InputData does not have to be null terminated.
+   /// and taking ownership of it. inputData does not have to be null terminated.
    static std::unique_ptr<MemoryBuffer>
    getMemBufferCopy(StringRef inputData, const Twine &bufferName = "");
+
+   /// Allocate a new zero-initialized MemoryBuffer of the specified size. Note
+   /// that the caller need not initialize the memory allocated by this method.
+   /// The memory is owned by the MemoryBuffer object.
+   static std::unique_ptr<MemoryBuffer>
+   getNewMemBuffer(size_t Size, StringRef bufferName = "");
 
    /// Read all of stdin into a file buffer, and return it.
    static OptionalError<std::unique_ptr<MemoryBuffer>> getStdIn();
