@@ -1,12 +1,11 @@
 // This source file is part of the polarphp.org open source project
-
 // Copyright (c) 2017 - 2018 polarPHP software foundation
 // Copyright (c) 2017 - 2018 zzu_softboy <zzu_softboy@163.com>
 // Licensed under Apache License v2.0 with Runtime Library Exception
-
+//
 // See http://polarphp.org/LICENSE.txt for license information
 // See http://polarphp.org/CONTRIBUTORS.txt for the list of polarPHP project authors
-
+//
 // Created by softboy on 2018/07/13.
 
 #include "polar/global/ManagedStatic.h"
@@ -70,7 +69,8 @@ struct Nest {
 };
 static ManagedStatic<Nest> Ms2;
 
-TEST(ManagedStaticTest, NestedStatics) {
+TEST(ManagedStaticTest, NestedStatics)
+{
    EXPECT_FALSE(Ms1.isConstructed());
    EXPECT_FALSE(Ms2.isConstructed());
 
@@ -80,19 +80,24 @@ TEST(ManagedStaticTest, NestedStatics) {
 }
 } // namespace NestedStatics
 
-namespace CustomCreatorDeletor {
-struct CustomCreate {
+namespace CustomCreatorDeletor
+{
+struct CustomCreate
+{
    static void *call() {
       void *Mem = std::malloc(sizeof(int));
       *((int *)Mem) = 42;
       return Mem;
    }
 };
-struct CustomDelete {
+struct CustomDelete
+{
    static void call(void *P) { std::free(P); }
 };
 static ManagedStatic<int, CustomCreate, CustomDelete> Custom;
-TEST(ManagedStaticTest, CustomCreatorDeletor) {
+
+TEST(ManagedStaticTest, CustomCreatorDeletor)
+{
    EXPECT_EQ(42, *Custom);
 }
 } // namespace CustomCreatorDeletor
