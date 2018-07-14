@@ -33,6 +33,7 @@ polar_add_unittest(PolarBaseLibTests BasicUtilsTest
    Md5Test.cpp
    MemoryBufferTest.cpp
    MemoryTest.cpp
+   NativeFormatTest.cpp
    OptionalErrorTest.cpp
    RawOutStreamTest.cpp
    SwapByteOrderTest.cpp
