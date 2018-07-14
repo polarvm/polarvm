@@ -24,14 +24,13 @@ polar_add_unittest(PolarBaseLibTests BasicUtilsTest
    FormattedRawOutStreamTest.cpp
    GlobPatternTest.cpp
    HostTest.cpp
+   Leb128Test.cpp
    MathExtrasTest.cpp
-
    OptionalErrorTest.cpp
    RawOutStreamTest.cpp
    SwapByteOrderTest.cpp
    PathTest.cpp
    UnicodeTest.cpp
-
    )
 
 target_link_libraries(BasicUtilsTest PRIVATE TestSupport)
