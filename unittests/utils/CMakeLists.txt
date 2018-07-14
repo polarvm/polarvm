@@ -25,6 +25,8 @@ polar_add_unittest(PolarBaseLibTests BasicUtilsTest
    GlobPatternTest.cpp
    HostTest.cpp
    Leb128Test.cpp
+   LineIteratorTest.cpp
+   LockFileManagerTest.cpp
    MathExtrasTest.cpp
    OptionalErrorTest.cpp
    RawOutStreamTest.cpp
