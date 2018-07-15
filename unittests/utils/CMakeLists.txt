@@ -51,6 +51,7 @@ polar_add_unittest(PolarBaseLibTests BasicUtilsTest
    SpecialCaseListTest.cpp
    StringPoolTest.cpp
    TargetParserTest.cpp
+   TarWriterTest.cpp
    UnicodeTest.cpp
    ../TestEntry.cpp
    )
