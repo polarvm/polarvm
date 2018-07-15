@@ -30,7 +30,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-
 #ifndef POLAR_UTILS_STRING_POOL_H
 #define POLAR_UTILS_STRING_POOL_H
 

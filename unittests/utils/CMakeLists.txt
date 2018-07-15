@@ -49,6 +49,7 @@ polar_add_unittest(PolarBaseLibTests BasicUtilsTest
    ScaledNumberTest.cpp
    SourceMgrTest.cpp
    SpecialCaseListTest.cpp
+   StringPoolTest.cpp
    UnicodeTest.cpp
    ../TestEntry.cpp
    )
