@@ -571,12 +571,12 @@ std::vector<StringRef> Output::getKeys()
    report_fatal_error("invalid call");
 }
 
-bool Output::preflightKey(const char *key, bool required, bool SameAsDefault,
+bool Output::preflightKey(const char *key, bool required, bool sameAsDefault,
                           bool &useDefault, void *&) {
    useDefault = false;
-   if (required || !SameAsDefault || m_writeDefaultValues) {
-      auto State = m_stateStack.back();
-      if (State == inFlowMapFirstKey || State == inFlowMapOtherKey) {
+   if (required || !sameAsDefault || m_writeDefaultValues) {
+      auto state = m_stateStack.back();
+      if (state == inFlowMapFirstKey || state == inFlowMapOtherKey) {
          flowKey(key);
       } else {
          this->newLineCheck();
@@ -612,7 +612,8 @@ void Output::endFlowMapping()
    this->outputUpToEndOfLine(" }");
 }
 
-void Output::beginDocuments() {
+void Output::beginDocuments()
+{
    this->outputUpToEndOfLine("---");
 }
 

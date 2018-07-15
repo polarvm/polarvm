@@ -69,9 +69,9 @@ struct MappingTraits
    // Optionally may provide:
    // static StringRef validate(IO &io, T &fields);
    //
-   // The optional flow flag will cause generated YAML to use a flow mapping
+   // The optional sm_flow flag will cause generated YAML to use a sm_flow mapping
    // (e.g. { a: 0, b: 1 }):
-   // static const bool flow = true;
+   // static const bool sm_flow = true;
 };
 
 /// This class is similar to MappingTraits<T> but allows you to pass in
@@ -93,9 +93,9 @@ struct MappingContextTraits
    // Optionally may provide:
    // static StringRef validate(IO &io, T &fields, Context &context);
    //
-   // The optional flow flag will cause generated YAML to use a flow mapping
+   // The optional sm_flow flag will cause generated YAML to use a sm_flow mapping
    // (e.g. { a: 0, b: 1 }):
-   // static const bool flow = true;
+   // static const bool sm_flow = true;
 };
 
 /// This class should be specialized by any integral type that converts
@@ -117,7 +117,7 @@ struct ScalarEnumerationTraits
 };
 
 /// This class should be specialized by any integer type that is a union
-/// of bit values and the YAML representation is a flow sequence of
+/// of bit values and the YAML representation is a sm_flow sequence of
 /// strings.  For example:
 ///
 ///      struct ScalarBitSetTraits<MyFlags> {
@@ -222,8 +222,8 @@ struct SequenceTraits
    // static T::value_type& element(IO &io, T &seq, size_t index);
    //
    // The following is option and will cause generated YAML to use
-   // a flow sequence (e.g. [a,b,c]).
-   // static const bool flow = true;
+   // a sm_flow sequence (e.g. [a,b,c]).
+   // static const bool sm_flow = true;
 };
 
 /// This class should be specialized by any type for which vectors of that
@@ -232,7 +232,7 @@ template<typename T, typename EnableIf = void>
 struct SequenceElementTraits
 {
    // Must provide:
-   // static const bool flow;
+   // static const bool sm_flow;
 };
 
 /// This class should be specialized by any type that needs to be converted
@@ -446,14 +446,14 @@ struct HasFlowTraits<T, true>
 {
    struct Fallback
    {
-      bool m_flow;
+      bool sm_flow;
    };
 
    struct Derived : T, Fallback
    {};
 
    template<typename C>
-   static char (&f(SameType<bool Fallback::*, &C::m_flow>*))[1];
+   static char (&f(SameType<bool Fallback::*, &C::sm_flow>*))[1];
 
    template<typename C>
    static char (&f(...))[2];
@@ -470,7 +470,7 @@ struct HasSequenceTraits : public std::integral_constant<bool,
 
 // Test if DocumentListTraits<T> is defined on type T
 template <class T>
-struct has_DocumentListTraits
+struct HasDocumentListTraits
 {
    using SignatureSize = size_t (*)(class IO &, T &);
 
@@ -628,7 +628,7 @@ struct missingTraits
       !HasMappingTraits<T, Context>::value &&
       !HasSequenceTraits<T>::value &&
       !HasCustomMappingTraits<T>::value &&
-      !has_DocumentListTraits<T>::value>
+      !HasDocumentListTraits<T>::value>
 {};
 
 template <typename T, typename Context>
@@ -863,7 +863,7 @@ private:
    {
       void *saveInfo;
       bool useDefault;
-      if ( this->preflightKey(key, required, false, useDefault, saveInfo)) {
+      if (this->preflightKey(key, required, false, useDefault, saveInfo)) {
          yamlize(*this, value, required, context);
          this->postflightKey(saveInfo);
       }
@@ -1023,7 +1023,7 @@ template <typename T, typename Context>
 typename std::enable_if<HasSequenceTraits<T>::value, void>::type
 yamlize(IO &io, T &seq, bool, Context &context)
 {
-   if ( HasFlowTraits< SequenceTraits<T>>::value ) {
+   if (HasFlowTraits<SequenceTraits<T>>::value) {
       unsigned incnt = io.beginFlowSequence();
       unsigned count = io.outputting() ? SequenceTraits<T>::size(io, seq) : incnt;
       for(unsigned i = 0; i < count; ++i) {
@@ -1641,7 +1641,7 @@ struct ScalarTraits<Hex64>
 // Define non-member operator>> so that Input can stream in a document list.
 template <typename T>
 inline
-typename std::enable_if<has_DocumentListTraits<T>::value, Input &>::type
+typename std::enable_if<HasDocumentListTraits<T>::value, Input &>::type
 operator>>(Input &yin, T &docList) {
    int i = 0;
    EmptyContext context;
@@ -1720,7 +1720,7 @@ operator>>(Input &yin, T &docSeq)
 // Define non-member operator<< so that Output can stream out document list.
 template <typename T>
 inline
-typename std::enable_if<has_DocumentListTraits<T>::value, Output &>::type
+typename std::enable_if<HasDocumentListTraits<T>::value, Output &>::type
 operator<<(Output &yout, T &docList)
 {
    EmptyContext context;
@@ -1745,7 +1745,7 @@ operator<<(Output &yout, T &map)
 {
    EmptyContext context;
    yout.beginDocuments();
-   if ( yout.preflightDocument(0) ) {
+   if (yout.preflightDocument(0)) {
       yamlize(yout, map, true, context);
       yout.postflightDocument();
    }
@@ -1817,7 +1817,7 @@ template <bool B> struct IsFlowSequenceBase
 template <>
 struct IsFlowSequenceBase<true>
 {
-   static const bool flow = true;
+   static const bool sm_flow = true;
 };
 
 template <typename T, bool Flow>
@@ -1854,42 +1854,42 @@ struct CheckIsBool
 template <typename T>
 struct SequenceTraits<std::vector<T>,
       typename std::enable_if<CheckIsBool<
-      SequenceElementTraits<T>::flow>::value>::type>
-      : SequenceTraitsImpl<std::vector<T>, SequenceElementTraits<T>::flow>
+      SequenceElementTraits<T>::sm_flow>::value>::type>
+      : SequenceTraitsImpl<std::vector<T>, SequenceElementTraits<T>::sm_flow>
 {};
 
 template <typename T, unsigned N>
 struct SequenceTraits<SmallVector<T, N>,
       typename std::enable_if<CheckIsBool<
-      SequenceElementTraits<T>::flow>::value>::type>
-      : SequenceTraitsImpl<SmallVector<T, N>, SequenceElementTraits<T>::flow>
+      SequenceElementTraits<T>::sm_flow>::value>::type>
+      : SequenceTraitsImpl<SmallVector<T, N>, SequenceElementTraits<T>::sm_flow>
 {};
 
-// Sequences of fundamental types use flow formatting.
+// Sequences of fundamental types use sm_flow formatting.
 template <typename T>
 struct SequenceElementTraits<
       T, typename std::enable_if<std::is_fundamental<T>::value>::type>
 {
-   static const bool flow = true;
+   static const bool sm_flow = true;
 };
 
 // Sequences of strings use block formatting.
 template<>
 struct SequenceElementTraits<std::string>
 {
-   static const bool flow = false;
+   static const bool sm_flow = false;
 };
 
 template<>
 struct SequenceElementTraits<StringRef>
 {
-   static const bool flow = false;
+   static const bool sm_flow = false;
 };
 
 template<>
 struct SequenceElementTraits<std::pair<std::string, std::string>>
 {
-   static const bool flow = false;
+   static const bool sm_flow = false;
 };
 
 /// Implementation of CustomMappingTraits for std::map<std::string, T>.
@@ -1919,10 +1919,10 @@ struct StdMapStringCustomMappingTraitsImpl
    static_assert(                                                               \
    !std::is_fundamental<TYPE>::value &&                                     \
    !std::is_same<TYPE, std::string>::value &&                               \
-   !std::is_same<TYPE, polar::StringRef>::value,                             \
+   !std::is_same<TYPE, polar::basic::StringRef>::value,                             \
    "only use POLAR_YAML_IS_SEQUENCE_VECTOR for types you control");          \
    template <> struct SequenceElementTraits<TYPE> {                             \
-   static const bool flow = FLOW;                                             \
+   static const bool sm_flow = FLOW;                                             \
    };                                                                           \
    }                                                                            \
    }
@@ -1933,7 +1933,7 @@ struct StdMapStringCustomMappingTraitsImpl
    POLAR_YAML_IS_SEQUENCE_VECTOR_IMPL(type, false)
 
 /// Utility for declaring that a std::vector of a particular type
-/// should be considered a YAML flow sequence.
+/// should be considered a YAML sm_flow sequence.
 #define POLAR_YAML_IS_FLOW_SEQUENCE_VECTOR(type)                                \
    POLAR_YAML_IS_SEQUENCE_VECTOR_IMPL(type, true)
 

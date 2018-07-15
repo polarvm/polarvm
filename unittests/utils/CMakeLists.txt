@@ -55,7 +55,9 @@ polar_add_unittest(PolarBaseLibTests BasicUtilsTest
    TimerTest.cpp
    TrailingObjectsTest.cpp
    TrigramIndexTest.cpp
+   TypeNameTest.cpp
    UnicodeTest.cpp
+   YAMLIOTest.cpp
    ../TestEntry.cpp
    )
 
