@@ -22,7 +22,6 @@
 
 namespace polar {
 namespace utils {
-
 namespace scalednumbers {
 
 /// \brief Maximum m_scale; same as APFloat for easy debug printing.
@@ -47,7 +46,7 @@ inline int get_m_width()
 /// \pre adding 1 to \c m_scale will not overflow INT16_MAX.
 template <class DigitsT>
 inline std::pair<DigitsT, int16_t>
-getRounded(DigitsT m_digits, int16_t m_scale, bool shouldround)
+get_rounded(DigitsT m_digits, int16_t m_scale, bool shouldround)
 {
    static_assert(!std::numeric_limits<DigitsT>::is_signed, "expected unsigned");
    if (shouldround) {
@@ -63,14 +62,14 @@ getRounded(DigitsT m_digits, int16_t m_scale, bool shouldround)
 inline std::pair<uint32_t, int16_t> get_rounded32(uint32_t m_digits, int16_t m_scale,
                                                   bool shouldround)
 {
-   return getRounded(m_digits, m_scale, shouldround);
+   return get_rounded(m_digits, m_scale, shouldround);
 }
 
 /// \brief Convenience helper for 64-bit rounding.
 inline std::pair<uint64_t, int16_t> get_rounded64(uint64_t m_digits, int16_t m_scale,
                                                   bool shouldround)
 {
-   return getRounded(m_digits, m_scale, shouldround);
+   return get_rounded(m_digits, m_scale, shouldround);
 }
 
 /// \brief Adjust a 64-bit scaled number down to the appropriate m_width.
@@ -88,7 +87,7 @@ inline std::pair<DigitsT, int16_t> get_adjusted(uint64_t m_digits,
 
    // shift right and round.
    int shift = 64 - m_width - count_leading_zeros(m_digits);
-   return getRounded<DigitsT>(m_digits >> shift, m_scale + shift,
+   return get_rounded<DigitsT>(m_digits >> shift, m_scale + shift,
                               m_digits & (UINT64_C(1) << (shift - 1)));
 }
 
@@ -232,7 +231,7 @@ template <class DigitsT> int32_t get_lg(DigitsT m_digits, int16_t m_scale)
 /// Get the floor of the lg of \c m_digits*2^m_scale.
 ///
 /// Returns \c INT32_MIN when \c m_digits is zero.
-template <class DigitsT> int32_t get_lgfloor(DigitsT m_digits, int16_t m_scale)
+template <class DigitsT> int32_t get_lg_floor(DigitsT m_digits, int16_t m_scale)
 {
    auto lg = get_lg_impl(m_digits, m_scale);
    return lg.first - (lg.second > 0);
@@ -274,9 +273,9 @@ int compare(DigitsT lhsDigits, int16_t lhsScale, DigitsT rhsDigits, int16_t rhsS
    if (!rhsDigits) {
       return 1;
    }
-   // Check for the m_scale.  Use get_lgfloor to be sure that the m_scale difference
+   // Check for the m_scale.  Use get_lg_floor to be sure that the m_scale difference
    // is always lower than 64.
-   int32_t lgL = get_lgfloor(lhsDigits, lhsScale), lgR = get_lgfloor(rhsDigits, rhsScale);
+   int32_t lgL = get_lg_floor(lhsDigits, lhsScale), lgR = get_lg_floor(rhsDigits, rhsScale);
    if (lgL != lgR) {
       return lgL < lgR ? -1 : 1;
    }
@@ -417,7 +416,7 @@ std::pair<DigitsT, int16_t> get_difference(DigitsT lhsDigits, int16_t lhsScale,
    // Check if rhsDigits just barely lost its last bit.  E.g., for 32-bit:
    //
    //   1*2^32 - 1*2^0 == 0xffffffff != 1*2^32
-   const auto rlgfloor = get_lgfloor(savedRDigits, savedRScale);
+   const auto rlgfloor = get_lg_floor(savedRDigits, savedRScale);
    if (!compare(lhsDigits, lhsScale, DigitsT(1), rlgfloor + get_m_width<DigitsT>())) {
       return std::make_pair(std::numeric_limits<DigitsT>::max(), rlgfloor);
    }
@@ -646,7 +645,7 @@ public:
    /// Get the lg floor.  lg 0 is defined to be INT32_MIN.
    int32_t lgfloor() const
    {
-      return scalednumbers::get_lgfloor(m_digits, m_scale);
+      return scalednumbers::get_lg_floor(m_digits, m_scale);
    }
 
    /// \brief The log base 2, rounded towards INT32_MAX.
@@ -864,13 +863,13 @@ private:
       return adjusted;
    }
 
-   static ScaledNumber getRounded(ScaledNumber snum, bool round)
+   static ScaledNumber get_rounded(ScaledNumber snum, bool round)
    {
       // Saturate.
       if (snum.isLargest()) {
          return snum;
       }
-      return scalednumbers::getRounded(snum.m_digits, snum.m_scale, round);
+      return scalednumbers::get_rounded(snum.m_digits, snum.m_scale, round);
    }
 };
 

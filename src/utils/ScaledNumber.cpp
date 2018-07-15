@@ -59,7 +59,7 @@ std::pair<uint64_t, int16_t> multiply64(uint64_t lhs,
    if (leadingZeros) {
       upper = upper << leadingZeros | lower >> shift;
    }
-   return getRounded(upper, shift,
+   return get_rounded(upper, shift,
                      shift && (lower & UINT64_C(1) << (shift - 1)));
 }
 
@@ -89,7 +89,7 @@ std::pair<uint32_t, int16_t> divide32(uint32_t dividend,
       return get_adjusted<uint32_t>(quotient, shift);
    }
    // Round based on the value of the next bit.
-   return getRounded<uint32_t>(quotient, shift, remainder >= get_half(divisor));
+   return get_rounded<uint32_t>(quotient, shift, remainder >= get_half(divisor));
 }
 
 std::pair<uint64_t, int16_t> divide64(uint64_t dividend, uint64_t divisor)
@@ -133,7 +133,7 @@ std::pair<uint64_t, int16_t> divide64(uint64_t dividend, uint64_t divisor)
       }
    }
 
-   return getRounded(quotient, shift, dividend >= get_half(divisor));
+   return get_rounded(quotient, shift, dividend >= get_half(divisor));
 }
 
 int compare_impl(uint64_t lhs, uint64_t rhs, int scaleDiff)

@@ -44,6 +44,9 @@ polar_add_unittest(PolarBaseLibTests BasicUtilsTest
    RawOutStreamTest.cpp
    RawPwriteStreamTest.cpp
    RawSha1OutStreamTest.cpp
+   ReplaceFileTest.cpp
+   ReverseIterationTest.cpp
+   ScaledNumberTest.cpp
    UnicodeTest.cpp
    ../TestEntry.cpp
    )
