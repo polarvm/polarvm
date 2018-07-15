@@ -327,7 +327,7 @@ public:
    void pushBack(const T &element)
    {
       if (POLAR_UNLIKELY(this->m_endX >= this->m_capacityX)) {
-         grow();
+         this->grow();
       }
       ::new ((void*) this->end()) T(element);
       this->setEnd(this->end() + 1);
@@ -454,7 +454,7 @@ public:
    void pushBack(const T &element)
    {
       if (POLAR_UNLIKELY(this->m_endX >= this->m_capacityX)) {
-         grow();
+         this->grow();
       }
       memcpy(this->end(), &element, sizeof(T));
       this->setEnd(this->end() + 1);

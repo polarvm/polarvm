@@ -52,7 +52,7 @@ bool SpecialCaseList::Matcher::insert(std::string regexp,
       reError = "Supplied regexp was blank";
       return false;
    }
-   if (is_literal_regex) {
+   if (is_literal_regex(regexp)) {
       m_strings[regexp] = lineNumber;
       return true;
    }
@@ -73,6 +73,7 @@ bool SpecialCaseList::Matcher::insert(std::string regexp,
                std::make_pair(std::make_unique<std::regex>(std::move(checkRE)), lineNumber));
       return true;
    } catch (const std::regex_error& e) {
+      reError = e.what();
       return false;
    }
 }
@@ -149,8 +150,9 @@ bool SpecialCaseList::createInternal(const MemoryBuffer *memoryBuffer,
                                      std::string &error)
 {
    StringMap<size_t> m_sections;
-   if (!parse(memoryBuffer, m_sections, error))
+   if (!parse(memoryBuffer, m_sections, error)) {
       return false;
+   }
    return true;
 }
 
@@ -243,7 +245,7 @@ unsigned SpecialCaseList::inSectionBlame(StringRef section, StringRef prefix,
                                          StringRef query,
                                          StringRef category) const
 {
-   for (auto &sectionIter : m_sections)
+   for (auto &sectionIter : m_sections) {
       if (sectionIter.m_sectionMatcher->match(section)) {
          unsigned blame =
                inSectionBlame(sectionIter.m_entries, prefix, query, category);
@@ -251,6 +253,7 @@ unsigned SpecialCaseList::inSectionBlame(StringRef section, StringRef prefix,
             return blame;
          }
       }
+   }
    return 0;
 }
 

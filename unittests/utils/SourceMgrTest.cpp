@@ -177,7 +177,8 @@ TEST_F(SourceMgrTest, testOverlappingRanges)
              output);
 }
 
-TEST_F(SourceMgrTest, testBasicFixit) {
+TEST_F(SourceMgrTest, testBasicFixit)
+{
    setMainBuffer("aaa bbb\nccc ddd\n", "file.in");
    printMessage(getLoc(4), SourceMgr::DK_Error, "message", std::nullopt,
                 make_array_ref(SMFixIt(getRange(4, 3), "zzz")));

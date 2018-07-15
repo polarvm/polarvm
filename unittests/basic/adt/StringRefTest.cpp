@@ -55,9 +55,12 @@ TEST(StringRefTest, testEmptyInitializerList)
 {
    StringRef str = {};
    EXPECT_TRUE(str.empty());
-
+   str.empty();
    str = {};
    EXPECT_TRUE(str.empty());
+   StringRef str1("abc abc");
+   str1.empty();
+   str1.find('c');
 }
 
 TEST(StringRefTest, testIteration)

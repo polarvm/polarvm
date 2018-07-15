@@ -491,7 +491,7 @@ TEST(StringMapCustomTest, testInitialSizeTest)
       CountCtorCopyAndMove::Copy = 0;
       for (int i = 0; i < Size; ++i) {
          // current use std::to_string(i) instead of Twine(i).getStr()
-         std::cout << Twine(i).getStr() << std::endl;
+         // std::cout << Twine(i).getStr() << std::endl;
          Map.insert(std::pair<std::string, CountCtorCopyAndMove>(
                        std::piecewise_construct, std::forward_as_tuple(std::to_string(i)),
                        std::forward_as_tuple(i)));

@@ -48,6 +48,7 @@ polar_add_unittest(PolarBaseLibTests BasicUtilsTest
    ReverseIterationTest.cpp
    ScaledNumberTest.cpp
    SourceMgrTest.cpp
+   SpecialCaseListTest.cpp
    UnicodeTest.cpp
    ../TestEntry.cpp
    )
