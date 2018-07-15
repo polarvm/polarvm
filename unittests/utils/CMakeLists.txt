@@ -57,7 +57,8 @@ polar_add_unittest(PolarBaseLibTests BasicUtilsTest
    TrigramIndexTest.cpp
    TypeNameTest.cpp
    UnicodeTest.cpp
-   YAMLIOTest.cpp
+   YamlIOTest.cpp
+   YamlParserTest.cpp
    ../TestEntry.cpp
    )
 

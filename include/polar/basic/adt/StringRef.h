@@ -23,6 +23,7 @@
 #include <string>
 #include <type_traits>
 #include <utility>
+#include <ostream>
 
 namespace polar {
 namespace basic {
@@ -1027,6 +1028,12 @@ inline bool operator>=(StringRef lhs, StringRef rhs)
 inline std::string &operator+=(std::string &buffer, StringRef string)
 {
    return buffer.append(string.getData(), string.getSize());
+}
+
+inline std::ostream &operator <<(std::ostream &out, const StringRef str)
+{
+   out << str.getStr();
+   return out;
 }
 
 /// @}

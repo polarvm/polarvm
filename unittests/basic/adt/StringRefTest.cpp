@@ -24,13 +24,6 @@ using namespace polar::utils;
 namespace polar {
 namespace basic {
 
-
-std::ostream &operator<<(std::ostream &outstream, const StringRef &str)
-{
-   outstream << str.getStr();
-   return outstream;
-}
-
 std::ostream &operator<<(std::ostream &outstream,
                          const std::pair<StringRef, StringRef> &pair)
 {
