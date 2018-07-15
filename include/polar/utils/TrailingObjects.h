@@ -216,7 +216,7 @@ protected:
                obj, TrailingObjectsBase::OverloadToken<PrevTy>());
 
       if (requiresRealignment()) {
-         return reinterpret_cast<NextTy *>(llvm::alignAddr(ptr, alignof(NextTy)));
+         return reinterpret_cast<NextTy *>(align_addr(ptr, alignof(NextTy)));
       } else {
          return reinterpret_cast<NextTy *>(ptr);
       }
@@ -329,7 +329,7 @@ class TrailingObjects : private trailingobjectsinternal::TrailingObjectsImpl<
    static size_t callNumTrailingObjects(const BaseTy *obj,
                                         TrailingObjectsBase::OverloadToken<T>)
    {
-      return obj->numTrailingObjects(TrailingObjectsBase::OverloadToken<T>());
+      return obj->getNumTrailingObjects(TrailingObjectsBase::OverloadToken<T>());
    }
 
 public:
