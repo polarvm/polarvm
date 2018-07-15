@@ -20,12 +20,12 @@ namespace polar {
 namespace utils {
 
 /// A RawOutStream that hash the content using the getSha1 algorithm.
-class raw_getSha1_ostream : public RawOutStream
+class RawSha1OutStream : public RawOutStream
 {
    Sha1 m_state;
 
-   /// See RawOutStream::write_impl.
-   void write_impl(const char *ptr, size_t size) override
+   /// See RawOutStream::writeImpl.
+   void writeImpl(const char *ptr, size_t size) override
    {
       m_state.update(ArrayRef<uint8_t>((const uint8_t *)ptr, size));
    }
@@ -44,7 +44,7 @@ public:
       m_state.init();
    }
 
-   uint64_t current_pos() const override
+   uint64_t getCurrentPos() const override
    {
       return 0;
    }

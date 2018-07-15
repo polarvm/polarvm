@@ -274,7 +274,7 @@ TEST_F(ProgramEnvTest, testExecuteAndWaitTimeout)
          fs::get_main_executable(TestMainArgv0, &ProgramTestStringArg1);
    const char *argv[] = {
       Executable.c_str(),
-      "--gtest_filter=ProgramEnvTest.TestExecuteAndWaitTimeout",
+      "--gtest_filter=ProgramEnvTest.testExecuteAndWaitTimeout",
       nullptr
    };
 
