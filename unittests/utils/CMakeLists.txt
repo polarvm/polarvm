@@ -54,6 +54,7 @@ polar_add_unittest(PolarBaseLibTests BasicUtilsTest
    TarWriterTest.cpp
    TimerTest.cpp
    TrailingObjectsTest.cpp
+   TrigramIndexTest.cpp
    UnicodeTest.cpp
    ../TestEntry.cpp
    )
