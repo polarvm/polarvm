@@ -839,19 +839,19 @@ TYPED_TEST(BitVectorTest, testIterators)
     EXPECT_TRUE(false);
   }
 
-  TypeParam ToFill(100, false);
-  ToFill.set(0);
-  EXPECT_NE(ToFill.setBitsBegin(), ToFill.setBitsEnd());
-  EXPECT_EQ(++ToFill.setBitsBegin(), ToFill.setBitsEnd());
-  EXPECT_EQ(*ToFill.setBitsBegin(), 0U);
-  ToFill.reset(0);
-  EXPECT_EQ(ToFill.setBitsBegin(), ToFill.setBitsEnd());
+  TypeParam toFill(100, false);
+  toFill.set(0);
+  EXPECT_NE(toFill.setBitsBegin(), toFill.setBitsEnd());
+  EXPECT_EQ(++toFill.setBitsBegin(), toFill.setBitsEnd());
+  EXPECT_EQ(*toFill.setBitsBegin(), 0U);
+  toFill.reset(0);
+  EXPECT_EQ(toFill.setBitsBegin(), toFill.setBitsEnd());
 
   const unsigned List[] = {1, 10, 25, 99};
   for (unsigned Num : List)
-    ToFill.set(Num);
+    toFill.set(Num);
   unsigned i = 0;
-  for (unsigned Bit : ToFill.setBits())
+  for (unsigned Bit : toFill.setBits())
     EXPECT_EQ(List[i++], Bit);
 }
 

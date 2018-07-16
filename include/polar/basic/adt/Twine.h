@@ -324,14 +324,16 @@ public:
    
    /// Construct from a SmallString.
    /*implicit*/ Twine(const SmallVectorImpl<char> &str)
-      : m_lhsKind(NodeKind::SmallStringKind) {
+      : m_lhsKind(NodeKind::SmallStringKind)
+   {
       m_lhs.m_smallString = &str;
       assert(isValid() && "Invalid twine!");
    }
    
    /// Construct from a FormatvObjectBase.
    /*implicit*/ Twine(const FormatvObjectBase &fmt)
-      : m_lhsKind(NodeKind::FormatvObjectKind) {
+      : m_lhsKind(NodeKind::FormatvObjectKind)
+   {
       m_lhs.m_formatvObject = &fmt;
       assert(isValid() && "Invalid twine!");
    }

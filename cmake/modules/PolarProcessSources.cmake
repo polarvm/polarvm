@@ -73,15 +73,15 @@ function(polar_check_source_file_list)
       
       # Don't reject hidden files. Some editors create backups in the
       # same directory as the file.
-#      if (NOT "${fn}" MATCHES "^\\.")
-#         list(FIND POLAR_OPTIONAL_SOURCES ${entry} idx)
-#         if(idx LESS 0)
-#            list(FIND listed ${entry} idx)
-#            if(idx LESS 0)
-#               message(SEND_ERROR "Found unknown source file ${g}
-#                  Please update ${CMAKE_CURRENT_LIST_FILE}\n")
-#            endif()
-#         endif()
-#      endif()
+      if (NOT "${fn}" MATCHES "^\\.")
+         list(FIND POLAR_OPTIONAL_SOURCES ${entry} idx)
+         if(idx LESS 0)
+            list(FIND listed ${entry} idx)
+            if(idx LESS 0)
+               message(SEND_ERROR "Found unknown source file ${g}
+                  Please update ${CMAKE_CURRENT_LIST_FILE}\n")
+            endif()
+         endif()
+      endif()
    endforeach()
 endfunction(polar_check_source_file_list)

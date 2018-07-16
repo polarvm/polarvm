@@ -55,5 +55,6 @@ polar_add_unittest(PolarBaseLibTests BasicAdtTest
    TinyPtrVectorTest.cpp
    TripleTest.cpp
    TestGraph.h
+   TwinTest.cpp
    )
 

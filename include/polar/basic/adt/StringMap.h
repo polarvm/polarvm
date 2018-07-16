@@ -314,22 +314,23 @@ public:
       : StringMapImpl(std::move(rhs)), m_allocator(std::move(rhs.m_allocator))
    {}
 
-   StringMap(const StringMap &rhs) :
+   StringMap(const StringMap &other) :
       StringMapImpl(static_cast<unsigned>(sizeof(MapEntryType))),
-      m_allocator(rhs.m_allocator) {
-      if (rhs.empty()) {
+      m_allocator(other.m_allocator)
+   {
+      if (other.empty()) {
          return;
       }
       // Allocate m_theTable of the same size as RHS's m_theTable, and set the
       // sentinel appropriately (and m_numBuckets).
-      init(rhs.m_numBuckets);
+      init(other.m_numBuckets);
       unsigned *hashTable = (unsigned *)(m_theTable + m_numBuckets + 1),
-            *rhsHashTable = (unsigned *)(rhs.m_theTable + m_numBuckets + 1);
+            *rhsHashTable = (unsigned *)(other.m_theTable + m_numBuckets + 1);
 
-      m_numItems = rhs.m_numItems;
-      m_numTombstones = rhs.m_numTombstones;
+      m_numItems = other.m_numItems;
+      m_numTombstones = other.m_numTombstones;
       for (unsigned index = 0, end = m_numBuckets; index != end; ++index) {
-         StringMapEntryBase *bucket = rhs.m_theTable[index];
+         StringMapEntryBase *bucket = other.m_theTable[index];
          if (!bucket || bucket == getTombstoneValue()) {
             m_theTable[index] = bucket;
             continue;

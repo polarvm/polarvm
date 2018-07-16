@@ -543,7 +543,7 @@ endmacro(polar_add_loadable_module name)
 
 macro(polar_add_executable name)
    cmake_parse_arguments(ARG "DISABLE_POLAR_LINK_POLAR_DYLIB;IGNORE_EXTERNALIZE_DEBUGINFO;NO_INSTALL_RPATH" "" "DEPENDS" ${ARGN})
-   polar_process_sources( ALL_FILES ${ARG_UNPARSED_ARGUMENTS} )
+   polar_process_sources(ALL_FILES ${ARG_UNPARSED_ARGUMENTS} )
 
    list(APPEND POLAR_COMMON_DEPENDS ${ARG_DEPENDS})
 
@@ -579,7 +579,7 @@ macro(polar_add_executable name)
    if(NOT POLAR_ENABLE_OBJLIB)
       polar_update_compile_flags(${name})
    endif()
-   polar_add_link_opts( ${name} )
+   polar_add_link_opts(${name})
 
    # Do not add -Dname_EXPORTS to the command-line when building files in this
    # target. Doing so is actively harmful for the modules build because it
@@ -612,6 +612,11 @@ macro(polar_add_executable name)
       target_link_libraries(${name} PRIVATE ${POLAR_PTHREAD_LIB})
    endif()
 endmacro(polar_add_executable name)
+
+macro(polar_add_bootstrap_tool name)
+  polar_add_executable(${name} ${ARGN})
+  set_target_properties(${name} PROPERTIES FOLDER "Tools")
+endmacro(polar_add_bootstrap_tool name)
 
 function(polar_install_library_symlink name dest type)
    cmake_parse_arguments(ARG "ALWAYS_GENERATE" "COMPONENT" "" ${ARGN})
