@@ -10,7 +10,7 @@
 // Created by softboy on 2018/07/12.
 
 #include "polar/utils/ArrayRecycler.h"
-#include "polar/utils/allocator.h"
+#include "polar/utils/Allocator.h"
 #include "gtest/gtest.h"
 #include <cstdlib>
 

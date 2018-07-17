@@ -14,7 +14,7 @@
 //===          independent code.
 //===----------------------------------------------------------------------===//
 
-#include "polar/utils/program.h"
+#include "polar/utils/Program.h"
 #include "polar/basic/adt/StringRef.h"
 #include "polar/global/PolarConfig.h"
 #include <system_error>

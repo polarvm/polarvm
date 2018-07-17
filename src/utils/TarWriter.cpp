@@ -13,7 +13,7 @@
 #include "polar/basic/adt/StringRef.h"
 #include "polar/utils/FileSystem.h"
 #include "polar/utils/MathExtras.h"
-#include "polar/utils/path.h"
+#include "polar/utils/Path.h"
 
 namespace polar {
 namespace utils {

@@ -47,10 +47,11 @@ if(UNIX)
 endif()
 
 polar_add_library(PolarUtils
-   ${POLAR_UTILS_SOURCES}
+   ${POLAR_UTILS_SOURCES} $<TARGET_OBJECTS:PolarGlobal> $<TARGET_OBJECTS:PolarBasic>
    ADDITIONAL_HEADER_DIRS
    Unix
    Windows
    ${POLAR_MAIN_INCLUDE_DIR}/polar/utils
-   LINK_LIBS ${system_libs} PolarGlobal PolarBasic
+   LINK_LIBS ${system_libs}
    )
+
