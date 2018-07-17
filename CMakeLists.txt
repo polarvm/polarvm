@@ -359,6 +359,8 @@ if(XCODE)
       SOURCES ${POLAR_TOPLEVEL_HEADERS})
 endif()
 
+set(POLAR_LINK_COMPONENTS Utils)
+
 add_subdirectory(include)
 add_subdirectory(src)
 add_subdirectory(tools)

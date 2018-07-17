@@ -78,7 +78,7 @@ macro(polar_config executable)
 endmacro(polar_config)
 
 function(polar_explicit_config executable)
-   set( link_components ${ARGN} )
+   set(link_components ${ARGN})
 
    polar_map_components_to_libnames(LIBRARIES ${link_components})
    get_target_property(t ${executable} TYPE)
