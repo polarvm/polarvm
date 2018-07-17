@@ -6,7 +6,7 @@
 //
 // See http://polarphp.org/LICENSE.txt for license information
 // See http://polarphp.org/CONTRIBUTORS.txt for the list of polarPHP project authors
-// 
+//
 // Created by softboy on 2018/05/27.
 
 #ifndef POLAR_GLOBAL_COMPILERDETECTION_H
@@ -14,7 +14,7 @@
 
 /*
    The compiler, must be one of: (POLAR_CC_x)
-   
+
      SYM      - Digital Mars C/C++ (used to be Symantec C++)
      MSVC     - Microsoft Visual C/C++, Intel C++ for Windows
      BOR      - Borland/Turbo C++
@@ -36,8 +36,8 @@
      GHS      - Green Hills Optimizing C++ Compilers
      RVCT     - ARM Realview Compiler Suite
      CLANG    - C++ front-end for the LLVM compiler
-     
-     
+
+
    Should be sorted most to least authoritative.
 */
 
@@ -109,7 +109,7 @@
 #      define POLAR_DECL_EXPORT __attribute__((visibility("default")))
 #      define POLAR_DECL_IMPORT __attribute__((visibility("default")))
 #      define POLAR_DECL_HIDDEN __attribute__((visibility("hidden")))
-#   else 
+#   else
 #      define POLAR_DECL_EXPORT __declspec(dllexport)
 #      define POLAR_DECL_EXPORT __declspec(dllimport)
 #   endif
@@ -150,7 +150,7 @@
 #         else
 #            error "Unknown Apple Clang version"
 #         endif
-#      else 
+#      else
 #         define POLAR_CC_CLANG ((__clang_major__ * 100) + __clang_minor__)
 #      endif
 #      if __has_builtin(__builtin_assume)
@@ -209,9 +209,9 @@
    the C product, and the C++ product. The C++ compiler is always packaged
    with the latest version of the C compiler. Version numbers do not always
    match. This little table (I'm not sure it's accurate) should be helpful:
-   
+
    C++ product                C product
-   
+
    C Set 3.1                  C Compiler 3.0
    ...                        ...
    C++ Compiler 3.6.6         C Compiler 4.3
@@ -221,7 +221,7 @@
    Visual Age C++ 5.0         C Compiler 5.0
    ...                        ...
    Visual Age C++ 6.0         C Compiler 6.0
-   
+
    Now:
    __xlC__    is the version of the C compiler in hexadecimal notation
               is only an approximation of the C++ compiler version
@@ -1272,9 +1272,9 @@
 #   define POLAR_WARNING_PUSH                       POLAR_DO_PRAGMA(clang diagnostic push)
 #   define POLAR_WARNING_POP                        POLAR_DO_PRAGMA(clang diagnostic pop)
 #   define POLAR_WARNING_DISABLE_CLANG(text)        POLAR_DO_PRAGMA(clang diagnostic ignored text)
-#   define POLAR_WARNING_DISABLE_GCC(text)          
-#   define POLAR_WARNING_DISABLE_INTEL(number)      
-#   define POLAR_WARNING_DISABLE_MSVC(number)       
+#   define POLAR_WARNING_DISABLE_GCC(text)
+#   define POLAR_WARNING_DISABLE_INTEL(number)
+#   define POLAR_WARNING_DISABLE_MSVC(number)
 #   define POLAR_WARNING_DISABLE_DEPRECATED         POLAR_WARNING_DISABLE_CLANG("-Wdeprecated-declarations")
 #elif defined(POLAR_CC_GNU) && (__GNUC__ * 100 + __GNUC_MINOR__ >= 406)
 #   define POLAR_WARNING_PUSH                       POLAR_DO_PRAGMA(GCC diagnostic push)
@@ -1347,6 +1347,26 @@
 #if !defined(POLAR_PROCESSOR_MIPS)
 #   undef POLAR_COMPILER_SUPPORTS_MIPS_DSP
 #   undef POLAR_COMPILER_SUPPORTS_MIPS_DSPR2
+#endif
+
+#ifndef __has_feature
+# define __has_feature(x) 0
+#endif
+
+#ifndef __has_extension
+# define __has_extension(x) 0
+#endif
+
+#ifndef __has_attribute
+# define __has_attribute(x) 0
+#endif
+
+#ifndef __has_cpp_attribute
+# define __has_cpp_attribute(x) 0
+#endif
+
+#ifndef __has_builtin
+# define __has_builtin(x) 0
 #endif
 
 #endif // POLAR_GLOBAL_COMPILERDETECTION_H

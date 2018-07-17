@@ -19,7 +19,7 @@
 
 #include "polar/utils/SourceMgr.h"
 #include "polar/basic/adt/ArrayRef.h"
-#include "polar/basic/adt/STLExtras.h"
+#include "polar/basic/adt/StlExtras.h"
 #include "polar/basic/adt/SmallVector.h"
 #include "polar/basic/adt/StringRef.h"
 #include "polar/basic/adt/Twine.h"

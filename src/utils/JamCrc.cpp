@@ -16,7 +16,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "polar/utils/JamCRC.h"
+#include "polar/utils/JamCrc.h"
 #include "polar/basic/adt/ArrayRef.h"
 
 namespace polar {

@@ -18,7 +18,7 @@
 #include "polar/utils/OptionalError.h"
 #include "polar/utils/FileSystem.h"
 #include "polar/utils/Program.h"
-#include "polar/utils/RawOutstream.h"
+#include "polar/utils/RawOutStream.h"
 #include <cassert>
 #include <system_error>
 #include <string>

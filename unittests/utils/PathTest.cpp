@@ -14,7 +14,7 @@
 #include "polar/basic/adt/SmallVector.h"
 #include "polar/basic/adt/StringRef.h"
 #include "polar/basic/adt/Triple.h"
-#include "polar/utils/ConvertUTF.h"
+#include "polar/utils/ConvertUtf.h"
 #include "polar/utils/ErrorCode.h"
 #include "polar/utils/ErrorHandling.h"
 #include "polar/utils/FileSystem.h"

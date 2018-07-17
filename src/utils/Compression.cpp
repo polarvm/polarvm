@@ -21,12 +21,13 @@
 
 namespace polar {
 namespace utils {
+namespace zlib {
 
 #if POLAR_ENABLE_ZLIB == 1 && HAVE_LIBZ
 
 namespace {
 
-Error createError(StringRef error)
+Error create_error(StringRef error)
 {
    return make_error<StringError>(error, inconvertible_error_code());
 }
@@ -62,8 +63,6 @@ StringRef convert_zlib_code_to_string(int code)
 
 } // anonymous namespace
 
-namespace zlib {
-
 bool is_available()
 {
    return true;
@@ -83,7 +82,7 @@ Error compress(StringRef inputBuffer,
    // This avoids a false report when running polarVM with uninstrumented ZLib.
    __msan_unpoison(compressedBuffer.getData(), compressedSize);
    compressedBuffer.resize(compressedSize);
-   return res ? createError(convert_zlib_code_to_string(res)) : Error::getSuccess();
+   return res ? create_error(convert_zlib_code_to_string(res)) : Error::getSuccess();
 }
 
 Error uncompress(StringRef inputBuffer, char *uncompressedBuffer,
@@ -95,7 +94,7 @@ Error uncompress(StringRef inputBuffer, char *uncompressedBuffer,
    // Tell MemorySanitizer that zlib output buffer is fully initialized.
    // This avoids a false report when running LLVM with uninstrumented ZLib.
    __msan_unpoison(uncompressedBuffer, uncompressedSize);
-   return res ? createError(convert_zlib_code_to_string(res)) : Error::getSuccess();
+   return res ? create_error(convert_zlib_code_to_string(res)) : Error::getSuccess();
 }
 
 Error uncompress(StringRef inputBuffer,
@@ -113,7 +112,6 @@ uint32_t crc32(StringRef buffer)
 {
    return ::crc32(0, (const Bytef *)buffer.getData(), buffer.getSize());
 }
-} // zlib
 
 #else
 bool is_available()
@@ -146,7 +144,7 @@ uint32_t crc32(StringRef buffer)
    polar_unreachable("zlib::crc32 is unavailable");
 }
 #endif
-
+} // zlib
 } // utils
 } // polar
 

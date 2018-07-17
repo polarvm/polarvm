@@ -9,6 +9,7 @@
 // Created by softboy on 2018/07/13.
 
 #include "polar/global/ManagedStatic.h"
+#include "polar/global/Global.h"
 #include <pthread.h>
 
 #include "gtest/gtest.h"

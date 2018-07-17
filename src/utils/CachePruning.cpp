@@ -14,7 +14,7 @@
 #include "polar/utils/ErrorCode.h"
 #include "polar/utils/ErrorType.h"
 #include "polar/utils/FileSystem.h"
-#include "polar/utils/path.h"
+#include "polar/utils/Path.h"
 #include "polar/utils/RawOutStream.h"
 #include <set>
 #include <system_error>

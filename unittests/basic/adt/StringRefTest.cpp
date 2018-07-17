@@ -11,7 +11,7 @@
 
 #include "polar/basic/adt/StringRef.h"
 #include "polar/basic/adt/Hashing.h"
-#include "polar/basic/adt/STLExtras.h"
+#include "polar/basic/adt/StlExtras.h"
 #include "polar/basic/adt/SmallVector.h"
 #include "polar/basic/adt/StringExtras.h"
 #include "polar/utils/Allocator.h"

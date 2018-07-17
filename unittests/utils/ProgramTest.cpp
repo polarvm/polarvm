@@ -11,7 +11,7 @@
 
 #include "polar/utils/Program.h"
 #include "polar/utils/CommandLine.h"
-#include "polar/utils/ConvertUTF.h"
+#include "polar/utils/ConvertUtf.h"
 #include "polar/utils/FileSystem.h"
 #include "polar/utils/Path.h"
 #include "gtest/gtest.h"

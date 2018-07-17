@@ -4,4 +4,5 @@ polar_collect_files(
    DIR ${CMAKE_CURRENT_SOURCE_DIR}
    OUTPUT_VAR POLAR_GLOABL_SOURCES)
 
-add_library(PolarGlobal STATIC ${POLAR_GLOABL_SOURCES})
+add_library(PolarGlobal OBJECT ${POLAR_GLOABL_SOURCES})
+target_include_directories(PolarBasic PUBLIC ${POLAR_MAIN_INCLUDE_DIR}/polar/basic/adt)
