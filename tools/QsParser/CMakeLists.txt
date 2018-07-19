@@ -1,8 +1,8 @@
-polar_collect_files(
-   TYPE_BOTH
-   RELATIVE
-   DIR ${CMAKE_CURRENT_SOURCE_DIR}
-   OUTPUT_VAR QS_PARSER_SOURCES)
+add_subdirectory(lib)
 
 polar_add_bootstrap_tool(QsParser
-   ${QS_PARSER_SOURCES})
+   main.cpp
+   )
+
+target_link_libraries(QsParser PRIVATE qsparserlib)
+

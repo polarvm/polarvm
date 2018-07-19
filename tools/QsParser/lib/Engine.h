@@ -14,26 +14,45 @@
 
 #include <list>
 #include <string>
-#include <experimental/filesystem>
+#include "polar/basic/adt/StringMap.h"
 
 namespace qsparser {
 
-class HelperProvider;
+using polar::basic::StringMap;
 
 class Engine
 {
 public:
-   Engine(const std::string &outputDir, const std::string &tplDir);
-   void parser();
-   void registerHelper(HelperProvider &provider);
+   Engine(std::string outputDir);
+   bool parser(const std::list<std::string> &files);
+   bool getStatus()
+   {
+      return m_status;
+   }
 
+   std::string getErrorMsg()
+   {
+      return m_errorMgs;
+   }
 protected:
    void loadTplFiles();
+   void getIncludeList(const std::list<std::string> &files);
    void generateOutputFilename();
    void processOutputTags();
    void processScriptTags();
+   void prepareEnv(const std::list<std::string> &files);
+   void generate(std::string &generatedCode);
+   void parseFiles(std::string &generatedCode);
 protected:
+   std::list<std::string> m_headers;
    std::string m_outputDir;
+   std::string m_tplDir;
+   std::string m_errorMgs;
+   StringMap<std::string> m_sourceFiles;
+   std::string m_appTpl;
+   std::string m_classTpl;
+   std::string m_methodTpl;
+   bool m_status;
 };
 
 }

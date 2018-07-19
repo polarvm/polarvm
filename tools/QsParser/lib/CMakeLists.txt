@@ -1,0 +1,15 @@
+polar_collect_files(
+   TYPE_BOTH
+   RELATIVE
+   DIR ${CMAKE_CURRENT_SOURCE_DIR}
+   OUTPUT_VAR QS_PARSER_LIB_SOURCES)
+
+polar_add_library(qsparserlib
+   ${QS_PARSER_LIB_SOURCES}
+   ADDITIONAL_HEADER_DIRS
+   ${CMAKE_CURRENT_SOURCE_DIR}
+   )
+
+set(QSPARSER_DEFS QSPARSER_TPL_DIR="${POLAR_TOOLS_DIR}/QsParser/tpl")
+set_target_properties(qsparserlib PROPERTIES
+   COMPILE_DEFINITIONS "${QSPARSER_DEFS}")

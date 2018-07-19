@@ -16,6 +16,7 @@ using namespace polar;
 
 int main(int argc, char *argv[])
 {
+
    cmd::Opt<std::string> outputDir("d", cmd::Desc("output intermediate files"), cmd::ValueDesc("output dir"), cmd::Required);
    cmd::List<std::string> files(cmd::Positional, cmd::Desc("<input files>"), cmd::OneOrMore);
    cmd::parse_command_line_options(argc, argv, "welcome use QsParser");
