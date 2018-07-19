@@ -35,6 +35,7 @@ using polar::basic::SmallVector;
 #define CLS_GENERATOR_METHOD_LIST_MARK "__GENERATOR_METHOD_LIST__"
 #define CLS_METHOD_LIST_MARK "__METHOD_LIST__"
 #define BASE_DIR_MARK "__BASE_DIR__"
+#define CUR_FILENAME_MARK "__CUR_FILENAME__"
 
 namespace {
 
@@ -83,20 +84,37 @@ void Engine::parseFiles(std::string &generatedCode)
    std::regex regex(R"(<%!([^\x00]+?)%>)", std::regex::ECMAScript);
    std::string methodBodies;
    std::string methodNames;
-   for (StringMap<std::string>::iterator iter = m_sourceFiles.begin();
+   int searchPos = -1;
+   for (StringMap<std::pair<std::string, std::string>>::iterator iter = m_sourceFiles.begin();
         iter != m_sourceFiles.end(); ++iter) {
       // 获取环境准备代码
       std::string methodName = "generate_" + iter->first().getStr();
       methodNames += methodName + "();\n";
       std::smatch m;
       std::string methodCode = m_methodTpl;
-      methodCode.replace(methodCode.find(METHOD_NAME_MARK), strlen(METHOD_NAME_MARK), methodName);
-      std::string &content = iter->m_second;
+      searchPos = methodCode.find(METHOD_NAME_MARK);
+      if (searchPos != std::string::npos) {
+         methodCode.replace(searchPos, strlen(METHOD_NAME_MARK), methodName);
+      }
+      searchPos = methodCode.find(CUR_FILENAME_MARK);
+      if (std::string::npos != searchPos) {
+         methodCode.replace(searchPos, strlen(CUR_FILENAME_MARK), "std::string currentFileName = \"" + iter->m_second.first + "\";");
+      }
+
+      std::string &content = iter->m_second.second;
       if (std::regex_search(content, m, regex)) {
          StringRef result(m[1].str().c_str());
          result = result.trim();
-         methodCode.replace(methodCode.find(METHOD_PREPARE_MARK), strlen(METHOD_PREPARE_MARK), result);
+         searchPos = methodCode.find(METHOD_PREPARE_MARK);
+         if (searchPos != std::string::npos) {
+             methodCode.replace(searchPos, strlen(METHOD_PREPARE_MARK), result);
+         }
          content = std::regex_replace(content, regex, "");
+      } else {
+         searchPos = methodCode.find(METHOD_PREPARE_MARK);
+         if (searchPos != std::string::npos) {
+             methodCode.replace(searchPos, strlen(METHOD_PREPARE_MARK), "");
+         }
       }
       std::string methodBodyCode;
       methodBodyCode.reserve(content.size());
@@ -142,12 +160,21 @@ void Engine::parseFiles(std::string &generatedCode)
          }
       }
       methodBodyCode += ")\";\n";
-      methodCode.replace(methodCode.find(METHOD_GENERATE_CODE_MARK), strlen(METHOD_GENERATE_CODE_MARK), methodBodyCode);
+      searchPos = methodCode.find(METHOD_GENERATE_CODE_MARK);
+      if (std::string::npos != searchPos) {
+         methodCode.replace(searchPos, strlen(METHOD_GENERATE_CODE_MARK), methodBodyCode);
+      }
       methodBodies += methodCode;
    }
    generatedCode = m_classTpl;
-   generatedCode.replace(generatedCode.find(CLS_GENERATOR_METHOD_LIST_MARK), strlen(CLS_GENERATOR_METHOD_LIST_MARK), methodNames);
-   generatedCode.replace(generatedCode.find(CLS_METHOD_LIST_MARK), strlen(CLS_METHOD_LIST_MARK), methodBodies);
+   searchPos = generatedCode.find(CLS_GENERATOR_METHOD_LIST_MARK);
+   if (searchPos != std::string::npos) {
+      generatedCode.replace(searchPos, strlen(CLS_GENERATOR_METHOD_LIST_MARK), methodNames);
+   }
+   searchPos = generatedCode.find(CLS_METHOD_LIST_MARK);
+   if (searchPos != std::string::npos) {
+      generatedCode.replace(searchPos, strlen(CLS_METHOD_LIST_MARK), methodBodies);
+   }
 }
 
 void Engine::generate(std::string &generatedCode)
@@ -161,9 +188,18 @@ void Engine::generate(std::string &generatedCode)
    for (const std::string &header : m_headers) {
       headerText += header + "\n";
    }
-   main.replace(main.find(HEADER_MARK), strlen(HEADER_MARK), headerText);
-   main.replace(main.find(GENERATOR_CLS_MARK), strlen(GENERATOR_CLS_MARK), generatedCode);
-   main.replace(main.find(BASE_DIR_MARK), strlen(BASE_DIR_MARK), m_outputDir);
+   int searchPos = main.find(HEADER_MARK);
+   if (std::string::npos != searchPos) {
+      main.replace(searchPos, strlen(HEADER_MARK), headerText);
+   }
+   searchPos = main.find(GENERATOR_CLS_MARK);
+   if (std::string::npos != searchPos) {
+      main.replace(searchPos, strlen(GENERATOR_CLS_MARK), generatedCode);
+   }
+   searchPos = main.find(BASE_DIR_MARK);
+   if (std::string::npos != searchPos) {
+      main.replace(searchPos, strlen(BASE_DIR_MARK), m_outputDir);
+   }
    std::ofstream ostrm(generatorFilename, std::ios_base::trunc);
    if (!ostrm.is_open()) {
       throw std::runtime_error(utils::formatv("open file: {0} failed", generatorFilename));
@@ -196,7 +232,7 @@ void Engine::getIncludeList(const std::list<std::string> &files)
       hash.update(file);
       utils::Md5::Md5Result res;
       hash.final(res);
-      m_sourceFiles[res.getDigest()] = std::move(source);
+      m_sourceFiles[res.getDigest()] = std::make_pair(file, std::move(source));
    }
 }
 

@@ -35,12 +35,12 @@ protected:
       char errorMsg[1024];
       std::ofstream ostrm(outputFilename, std::ios_base::trunc);
       if (!ostrm.is_open()) {
-         snprintf(errorMsg, 1024, "open file: %s failed", m_currentGenerateFilename.c_str());
+         snprintf(errorMsg, 1024, "open file: %s failed", outputFilename.c_str());
          throw std::runtime_error(errorMsg);
       }
       ostrm << code;
       if (!ostrm) {
-         snprintf(errorMsg, 1024, "write generate result error into : %s", m_currentGenerateFilename.c_str());
+         snprintf(errorMsg, 1024, "write generate result error into : %s", outputFilename.c_str());
          throw std::runtime_error(errorMsg);
       }
       ostrm.close();

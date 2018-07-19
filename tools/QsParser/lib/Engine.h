@@ -48,7 +48,7 @@ protected:
    std::string m_outputDir;
    std::string m_tplDir;
    std::string m_errorMgs;
-   StringMap<std::string> m_sourceFiles;
+   StringMap<std::pair<std::string, std::string>> m_sourceFiles;
    std::string m_appTpl;
    std::string m_classTpl;
    std::string m_methodTpl;
