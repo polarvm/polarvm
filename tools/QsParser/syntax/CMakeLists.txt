@@ -1,0 +1,7 @@
+polar_collect_files(
+   TYPE_BOTH
+   RELATIVE
+   DIR ${CMAKE_CURRENT_SOURCE_DIR}
+   OUTPUT_VAR QS_PARSER_SYNTAX_SOURCES)
+
+add_library(qssyntax OBJECT ${QS_PARSER_SYNTAX_SOURCES})

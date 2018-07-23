@@ -5,7 +5,7 @@ polar_collect_files(
    OUTPUT_VAR QS_PARSER_LIB_SOURCES)
 
 polar_add_library(qsparserlib
-   ${QS_PARSER_LIB_SOURCES}
+   ${QS_PARSER_LIB_SOURCES} $<TARGET_OBJECTS:qssyntax>
    ADDITIONAL_HEADER_DIRS
    ${CMAKE_CURRENT_SOURCE_DIR}
    )

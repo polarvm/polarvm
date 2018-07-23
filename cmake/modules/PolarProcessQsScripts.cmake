@@ -55,4 +55,3 @@ add_custom_command(OUTPUT ${QS_SCRIPT_GENERATED_FILES}
    COMMAND qsgenerator
    DEPENDS qsgenerator)
 
-add_library(xxxxx ${QS_SCRIPT_GENERATED_FILES})

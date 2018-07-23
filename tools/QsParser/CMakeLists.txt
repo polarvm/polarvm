@@ -1,3 +1,4 @@
+add_subdirectory(syntax)
 add_subdirectory(lib)
 
 polar_add_bootstrap_tool(QsParser
